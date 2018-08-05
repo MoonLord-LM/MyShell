@@ -139,7 +139,7 @@ function add_user_group(){
         return
     fi
     if [ ! -d "$home_dir" ];then
-        mkdir -m 777 -v -p "$home_dir"
+        mkdir -m 644 -v -p "$home_dir"
     fi
     if [ ! -d "$home_dir" ];then
         die '[ Error ] create home directory failed!'
@@ -161,7 +161,7 @@ function set_user_dir(){
     user_name=$1
     new_dir=$2
     if [ ! -d "$new_dir" ];then
-        mkdir -m 777 -v -p "$new_dir"
+        mkdir -m 644 -v -p "$new_dir"
     fi
     if [ ! -d "$new_dir" ];then
         die '[ Error ] create directory failed!'
@@ -183,7 +183,7 @@ function set_user_file(){
     new_file=$2
     if [ ! -f "$new_file" ];then
         touch "$new_file"
-        chmod 777 "$new_file"
+        chmod 644 "$new_file"
     fi
     if [ ! -f "$new_file" ];then
         die '[ Error ] create file failed!'
