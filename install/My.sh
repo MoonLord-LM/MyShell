@@ -142,7 +142,7 @@ function add_user_group(){
         mkdir -m 777 -v -p "$home_dir"
     fi
     if [ ! -d "$home_dir" ];then
-        die '[ Error ] create home dir failed!'
+        die '[ Error ] create home directory failed!'
         return
     fi
     usermod -c "$user_comment" -d "$home_dir" $user_group_name
@@ -164,7 +164,7 @@ function set_user_dir(){
         mkdir -m 777 -v -p "$new_dir"
     fi
     if [ ! -d "$new_dir" ];then
-        die '[ Error ] create dir failed!'
+        die '[ Error ] create directory failed!'
         return
     fi
     chgrp -R $user_name "$new_dir"
@@ -301,4 +301,24 @@ function unset_memory_swap(){
     cat "$sysctl_conf_file" | grep 'vm.swappiness'
     echo 'show `free -m`:'
     free -m
+}
+
+
+function show_disk_usage(){
+    if [ "$1" == "" ]; then
+        die 'show_disk_usage: missing parameter!'
+        return
+    fi
+    echo "show_disk_usage: \"$1\""
+    dir_name=$1
+    if [ ! -d "$dir_name" ];then
+        die '[ Error ] not a directory!'
+        return
+    fi
+    echo 'show `df -h`:'
+    df -h
+    echo 'show `du -h --max-depth=1`:'
+    cd "$dir_name"
+    du -h --max-depth=1
+    cd - 1>'/dev/null'
 }
