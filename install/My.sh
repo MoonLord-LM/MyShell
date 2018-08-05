@@ -304,6 +304,7 @@ function unset_memory_swap(){
 }
 
 
+# 显示指定目录（$1）的磁盘使用情况
 function show_disk_usage(){
     if [ "$1" == "" ]; then
         die 'show_disk_usage: missing parameter!'
