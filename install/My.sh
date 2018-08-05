@@ -151,7 +151,7 @@ function add_user_group(){
 }
 
 
-# 为指定名称（$1）的用户和用户组，创建目录（$2），并设置相关权限
+# 为指定名称（$1）的用户和用户组，创建目录（$2），并设置 600 权限
 function set_user_dir(){
     if [ "$1" == "" ] || [ "$2" == "" ]; then
         die 'set_user_dir: missing parameter!'
@@ -161,7 +161,7 @@ function set_user_dir(){
     user_name=$1
     new_dir=$2
     if [ ! -d "$new_dir" ];then
-        mkdir -m 644 -v -p "$new_dir"
+        mkdir -m 600 -v -p "$new_dir"
     fi
     if [ ! -d "$new_dir" ];then
         die '[ Error ] create directory failed!'
@@ -172,7 +172,7 @@ function set_user_dir(){
 }
 
 
-# 为指定名称（$1）的用户和用户组，创建文件（$2），并设置相关权限
+# 为指定名称（$1）的用户和用户组，创建文件（$2），并设置 600 权限
 function set_user_file(){
     if [ "$1" == "" ] || [ "$2" == "" ]; then
         die 'set_user_file: missing parameter!'
@@ -183,7 +183,7 @@ function set_user_file(){
     new_file=$2
     if [ ! -f "$new_file" ];then
         touch "$new_file"
-        chmod 644 "$new_file"
+        chmod 600 "$new_file"
     fi
     if [ ! -f "$new_file" ];then
         die '[ Error ] create file failed!'
