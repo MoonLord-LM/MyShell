@@ -13,9 +13,13 @@ trap 'exit 1' TERM
 function die(){
     if [ "$1" == "" ]; then
         echo 'die: missing parameter!'
+        return
     fi
     echo "$1"
-    kill -s TERM $TOP_PID
+    tmp=`echo $BASHOPTS | grep 'login_shell'`
+    if [ $SHLVL -ne 1 ] && [ "${BASH_SOURCE-$0}" != "" ] && [ "$tmp" == "" ]; then
+        kill -s TERM $TOP_PID
+    fi
 }
 
 
