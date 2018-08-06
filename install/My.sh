@@ -139,7 +139,7 @@ function add_user_group(){
         return
     fi
     if [ ! -d "$home_dir" ];then
-        mkdir -m 644 -v -p "$home_dir"
+        mkdir -m 755 -v -p "$home_dir"
     fi
     if [ ! -d "$home_dir" ];then
         die '[ Error ] create home directory failed!'
