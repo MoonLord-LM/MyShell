@@ -271,7 +271,7 @@ function set_memory_swap(){
     echo "set_memory_swap"
     mem_size=`free -k | grep 'Mem:' | awk -F' ' '{print $2}'`
     if [ -f "$swap_file" ];then
-        die 'memory swap file exist!'
+        echo 'memory swap file exist!'
         return
     fi
     dd if='/dev/zero' of="$swap_file" bs=1024 count=$mem_size
