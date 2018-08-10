@@ -17,7 +17,7 @@ function die(){
     fi
     echo "$1"
     tmp=`echo $BASHOPTS | grep 'login_shell'`
-    if [ $SHLVL -ne 1 ] && [ "${BASH_SOURCE-$0}" != "" ] && [ "$tmp" == "" ]; then
+    if [ "${BASH_SOURCE-$0}" != "" ] && [ "$tmp" == "" ]; then
         kill -s TERM $TOP_PID
     fi
 }
