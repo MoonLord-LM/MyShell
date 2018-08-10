@@ -1,15 +1,15 @@
 #!/bin/bash
 source ./My.sh
 
-# MySQL 8.0.12 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./mysql_8.0.12.sh
+# MySQL 5.7.23 在线安装
+# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh
 
 
 # 参数设置
 user_root_password="Ecs1312357@MySQL"
-mysql_version='8.0.12'
-mysql_port='8012'
-mysql_source_url='https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.12.tar.gz'
+mysql_version='5.7.23'
+mysql_port='5723'
+mysql_source_url='https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-5.7.23.tar.gz'
 
 
 # 开始安装
@@ -23,9 +23,9 @@ rm -rf "/var/log/message"
 
 if [ -d "$install_dir" ];then
     die "[ Error ] install_dir: '$install_dir' is not empty!"
-    # sudo systemctl stop "mysqld8012.service"
-    # sudo systemctl disable "mysqld8012.service"
-    # sudo rm -rf "/usr/local/mysql/mysql-8.0.12"
+    # sudo systemctl stop "mysqld5723.service"
+    # sudo systemctl disable "mysqld5723.service"
+    # sudo rm -rf "/usr/local/mysql/mysql-5.7.23"
 fi
 
 prepare_source "$mysql_source_url"
@@ -46,7 +46,7 @@ set_user_file 'mysql' "$install_dir/my.cnf"
 
 set_memory_swap
 
-# https://dev.mysql.com/doc/refman/8.0/en/source-configuration-options.html
+# https://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html
 cd "$source_dir"
 cmake \
  -DMYSQL_TCP_PORT="$mysql_port" \
@@ -62,20 +62,21 @@ cmake \
  -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
  -DWITH_EXAMPLE_STORAGE_ENGINE=1 \
  -DWITH_FEDERATED_STORAGE_ENGINE=1 \
+ -DWITH_PARTITION_STORAGE_ENGINE=1 \
  -DWITH_INNODB_MEMCACHED=1 \
  -DENABLED_LOCAL_INFILE=1 \
  -DDOWNLOAD_BOOST=1 \
  -DWITH_BOOST=./boost \
  -DDEFAULT_CHARSET='utf8mb4' \
- -DDEFAULT_COLLATION='utf8mb4_0900_ai_ci' \
+ -DDEFAULT_COLLATION='utf8mb4_unicode_ci' \
  -DCOMPILATION_COMMENT="`cat '/etc/redhat-release'`" \
  2>&1 | tee 'cmake.log'
 make -j `grep processor '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
 make install
 
-# https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html
-# https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html
+# https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
+# https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html
 cat <<EOF > "$install_dir/my.cnf"
 [mysqld]
 port=$mysql_port
@@ -93,8 +94,8 @@ slow_query_log_file=$install_dir/mysql_slow_query.log
 long_query_time=5
 
 character_set_server='utf8mb4'
-collation_server='utf8mb4_0900_ai_ci'
-init_connect='set names utf8mb4; set collation_connection = utf8mb4_0900_ai_ci;'
+collation_server='utf8mb4_unicode_ci'
+init_connect='set names utf8mb4; set collation_connection = utf8mb4_unicode_ci;'
 
 default-time-zone='+8:00'
 explicit_defaults_for_timestamp=1
@@ -120,7 +121,7 @@ password=$user_root_password
 character_set_client='utf8mb4'
 EOF
 
-# https://dev.mysql.com/doc/refman/8.0/en/server-options.html
+# https://dev.mysql.com/doc/refman/5.7/en/server-options.html
 cd "$install_dir/bin"
 ./mysqld \
  --defaults-file="$install_dir/my.cnf" \
@@ -128,7 +129,7 @@ cd "$install_dir/bin"
  --initialize \
  2>&1 | tee 'mysqld_initialize.log'
 
-# https://dev.mysql.com/doc/refman/8.0/en/mysql-ssl-rsa-setup.html
+# https://dev.mysql.com/doc/refman/5.7/en/mysql-ssl-rsa-setup.html
 ./mysql_ssl_rsa_setup \
  --datadir="$install_dir/data" \
  --uid='mysql' \
