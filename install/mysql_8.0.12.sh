@@ -23,9 +23,9 @@ rm -rf "/var/log/message"
 
 if [ -d "$install_dir" ];then
     die "[ Error ] install_dir: '$install_dir' is not empty!"
-    # systemctl stop "${service_name}.service"
-    # systemctl disable "${service_name}.service"
-    # sudo rm -rf "$install_dir"
+    # sudo systemctl stop "mysqld8012.service"
+    # sudo systemctl disable "mysqld8012.service"
+    # sudo rm -rf "/usr/local/mysql/mysql-8.0.12"
 fi
 
 prepare_source "$mysql_source_url"
