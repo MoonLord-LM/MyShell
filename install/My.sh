@@ -36,7 +36,7 @@ function update_repo(){
     yum makecache
     yum update -y
 }
-update_repo "$aliyun_repo"
+# update_repo "$aliyun_repo" > '/dev/null' 2>&1
 
 
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并解压到当前目录下
@@ -57,11 +57,11 @@ function prepare_source(){
         die '[ Error ] download failed!'
         return
     fi
-    if [ ! -d $output_dir ];then
+    if [ ! -d "$output_dir" ];then
         echo "begin extract: $file_name"
         tar -zxvf $file_name -C ./
     fi
-    if [ ! -d $output_dir ];then
+    if [ ! -d "$output_dir" ];then
         die '[ Error ] extract failed!'
         return
     fi
@@ -215,10 +215,10 @@ function install_require(){
         fi
     fi
 }
-install_require 'make'
-install_require 'cmake'
-install_require 'gcc'
-install_require 'gcc-c++'
+install_require 'make' > '/dev/null' 2>&1
+install_require 'cmake' > '/dev/null' 2>&1
+install_require 'gcc' > '/dev/null' 2>&1
+install_require 'gcc-c++' > '/dev/null' 2>&1
 
 
 # 搜索文件（$1）中的唯一字符串标记（$2），将指定行的内容，修改为字符串（$3）
@@ -261,8 +261,8 @@ function backup_file(){
         cp -f "$file_name" "$new_file"
     fi
 }
-backup_file "$fstab_file"
-backup_file "$sysctl_conf_file"
+backup_file "$fstab_file" > '/dev/null' 2>&1
+backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
 
 
 # 设置 /memory_swap 为虚拟内存，大小和物理内存相同
@@ -325,5 +325,5 @@ function show_disk_usage(){
     echo 'show `du -h --max-depth=1`:'
     cd "$dir_name"
     du -h --max-depth=1
-    cd - 1>'/dev/null'
+    cd - > '/dev/null'
 }
