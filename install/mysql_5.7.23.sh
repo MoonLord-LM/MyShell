@@ -17,15 +17,16 @@ service_name="mysqld$mysql_port"
 source_dir="mysql-$mysql_version"
 install_dir="/usr/local/mysql/mysql-$mysql_version"
 
-rm -rf "/etc/my.cnf"
-rm -rf "/var/log/mysql.log"
-rm -rf "/var/log/message"
+rm -rf '/etc/my.cnf'
+rm -rf '/var/log/mysql.log'
+rm -rf '/var/log/message'
 
 if [ -d "$install_dir" ];then
     die "[ Error ] install_dir: '$install_dir' is not empty!"
-    # sudo systemctl stop "mysqld5723.service"
-    # sudo systemctl disable "mysqld5723.service"
-    # sudo rm -rf "/usr/local/mysql/mysql-5.7.23"
+    # sudo systemctl stop 'mysqld5723.service'
+    # sudo systemctl disable 'mysqld5723.service'
+    # sudo rm -rf '/usr/local/mysql/mysql-5.7.23'
+    # sudo rm -rf '/usr/lib/systemd/system/mysqld5723.service'
 fi
 
 prepare_source "$mysql_source_url"
@@ -77,6 +78,7 @@ make install
 
 # https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
 # https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html
+# https://dev.mysql.com/doc/refman/5.7/en/program-variables.html
 cat <<EOF > "$install_dir/my.cnf"
 [mysqld]
 port=$mysql_port
@@ -97,7 +99,7 @@ character_set_server='utf8mb4'
 collation_server='utf8mb4_unicode_ci'
 init_connect='set names utf8mb4; set collation_connection = utf8mb4_unicode_ci;'
 
-default-time-zone='+8:00'
+default_time_zone='+8:00'
 explicit_defaults_for_timestamp=1
 default_storage_engine='InnoDB'
 default_tmp_storage_engine='InnoDB'
@@ -138,7 +140,13 @@ cd "$install_dir/bin"
 backup_file "../usr/lib/systemd/system/${service_name}.service"
 cp -f "../usr/lib/systemd/system/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
 
+sed -i "s/mysqld.pid/${service_name}.pid/g" "/usr/lib/systemd/system/${service_name}.service"
+modify_config_file "/usr/lib/systemd/system/${service_name}.service" 'LimitNOFILE = ' 'LimitNOFILE = 65536'
+
 systemctl enable "${service_name}.service"
 systemctl daemon-reload
 systemctl start "${service_name}.service"
 systemctl status -l "${service_name}.service"
+
+tmp=`cat $install_dir/${service_name}.pid`
+cat "/proc/$tmp/limits"
