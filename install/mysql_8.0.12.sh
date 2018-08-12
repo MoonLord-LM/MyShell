@@ -115,6 +115,10 @@ max_connections=200
 innodb_rollback_on_timeout=1
 innodb_lock_wait_timeout=120
 
+ssl-ca=$install_dir/data/ca.pem 
+ssl-cert=$install_dir/data/server-cert.pem 
+ssl-key=$install_dir/data/server-key.pem
+
 default_authentication_plugin='mysql_native_password'
 mysqlx=0
 
