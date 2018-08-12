@@ -7,7 +7,7 @@ Linux Shell 常用脚本函数收集整理
 
 ## [说明]
 - 字符编码：UFT-8  
-- 测试环境：阿里云 CentOS 7.4 x64  
+- 测试环境：阿里云 CentOS 7.5 x64  
 
 ## [笔记]
 01. 报错 Permission denied 是因为权限不足，需要使用 chmod 命令增加权限  

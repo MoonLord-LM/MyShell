@@ -3,7 +3,7 @@
 # MyShell 公共函数库
 
 
-# 测试环境： 阿里云，CentOS 7.4 x64
+# 测试环境： 阿里云，CentOS 7.5 x64
 aliyun_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
 
 
