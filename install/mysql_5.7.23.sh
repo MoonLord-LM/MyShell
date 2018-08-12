@@ -173,4 +173,10 @@ EOF
     -- show variables like "%time_zone%";
 EOF
 
+./mysql  << EOF
+    grant all on *.* to 'root'@'%' identified by '$user_root_password' with grant option;
+    flush privileges;
+    select user,host from mysql.user;
+EOF
+
 show_netstat

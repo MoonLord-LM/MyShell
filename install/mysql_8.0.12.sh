@@ -171,4 +171,10 @@ EOF
     -- show variables like "%time_zone%";
 EOF
 
+./mysql  << EOF
+    update mysql.user set host = '%' where user ='root';
+    flush privileges;
+    select user,host from mysql.user;
+EOF
+
 show_netstat
