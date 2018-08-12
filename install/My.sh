@@ -235,8 +235,11 @@ function install_require(){
     if [ "$tmp" == "" ]; then
         yum install "$software" -y
         if [ $? -ne 0 ]; then
-            die '[ Error ] install failed!'
-            return 1
+            pip install "$software"
+            if [ $? -ne 0 ]; then
+                die '[ Error ] install failed!'
+                return 1
+            fi
         fi
     fi
 }
