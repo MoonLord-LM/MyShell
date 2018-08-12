@@ -79,7 +79,8 @@ make install
 # https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
 # https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html
 # https://dev.mysql.com/doc/refman/5.7/en/program-variables.html
-cat <<EOF > "$install_dir/my.cnf"
+cd "$install_dir"
+cat <<EOF > "my.cnf"
 [mysqld]
 port=$mysql_port
 basedir=$install_dir
@@ -120,7 +121,7 @@ port=$mysql_port
 socket=$install_dir/mysql.sock
 user=root
 password=$user_root_password
-character_set_client='utf8mb4'
+default_character_set='utf8mb4'
 EOF
 
 # https://dev.mysql.com/doc/refman/5.7/en/server-options.html
@@ -132,6 +133,7 @@ cd "$install_dir/bin"
  2>&1 | tee 'mysqld_initialize.log'
 
 # https://dev.mysql.com/doc/refman/5.7/en/mysql-ssl-rsa-setup.html
+cd "$install_dir/bin"
 ./mysql_ssl_rsa_setup \
  --datadir="$install_dir/data" \
  --uid='mysql' \
@@ -150,3 +152,25 @@ systemctl status -l "${service_name}.service"
 
 tmp=`cat $install_dir/${service_name}.pid`
 cat "/proc/$tmp/limits"
+
+temporary_password=`grep 'temporary password' "$install_dir/mysql_error.log"`
+temporary_password="${temporary_password##*root@localhost: }"
+echo "temporary_password: $temporary_password"
+cd "$install_dir/bin"
+./mysqladmin -u 'root' "-p$temporary_password" password "$user_root_password"
+
+cd "$install_dir/bin"
+./mysql -u 'root' "-p$user_root_password" << EOF
+    status;
+EOF
+./mysql  << EOF
+    show databases;
+    -- show variables like "%character_set%";
+    -- show variables like "%collation%";
+    -- show variables like "%timeout%";
+    -- show variables like "%log%";
+    -- show variables like "%engine%";
+    -- show variables like "%time_zone%";
+EOF
+
+show_netstat

@@ -331,3 +331,9 @@ function show_disk_usage(){
     du -h --max-depth=1
     cd - > '/dev/null'
 }
+
+function show_netstat(){
+    echo 'show_netstat'
+    echo 'show `netstat -atnlp`:'
+    netstat -atnlp
+}
