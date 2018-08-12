@@ -42,6 +42,7 @@ install_require 'openssl-devel'
 add_user_group 'mysql' 'MySQL Server' '/usr/local/mysql'
 set_user_dir 'mysql' "$install_dir"
 set_user_dir 'mysql' "$install_dir/data"
+set_user_dir 'mysql' "$install_dir/ssl"
 set_user_file 'mysql' "$install_dir/mysql_error.log"
 set_user_file 'mysql' "$install_dir/mysql_general.log"
 set_user_file 'mysql' "$install_dir/mysql_slow_query.log"
@@ -121,9 +122,9 @@ max_connections=200
 innodb_rollback_on_timeout=1
 innodb_lock_wait_timeout=120
 
-ssl_ca=$install_dir/data/ca.pem 
-ssl_cert=$install_dir/data/server-cert.pem 
-ssl_key=$install_dir/data/server-key.pem
+ssl_ca=$install_dir/ssl/ca.pem 
+ssl_cert=$install_dir/ssl/server-cert.pem 
+ssl_key=$install_dir/ssl/server-key.pem
 
 [client]
 host=localhost
@@ -133,15 +134,15 @@ user=root
 password=$user_root_password
 default_character_set='utf8mb4'
 
-ssl_ca=$install_dir/data/ca-cert.pem
-ssl_cert=$install_dir/data/client-cert.pem
-ssl_key=$install_dir/data/client-key.pem
+ssl_ca=$install_dir/ssl/ca-cert.pem
+ssl_cert=$install_dir/ssl/client-cert.pem
+ssl_key=$install_dir/ssl/client-key.pem
 EOF
 
 # https://dev.mysql.com/doc/refman/5.7/en/mysql-ssl-rsa-setup.html
 cd "$install_dir/bin"
 ./mysql_ssl_rsa_setup \
- --datadir="$install_dir/data" \
+ --datadir="$install_dir/ssl" \
  --uid='mysql' \
  2>&1 | tee 'mysql_ssl_rsa_setup.log'
  
