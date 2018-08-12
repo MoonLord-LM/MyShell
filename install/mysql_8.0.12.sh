@@ -30,7 +30,7 @@ if [ "$1" == "--delete_exist" ];then
 fi
 
 if [ -d "$install_dir" ];then
-    die "[ Error ] install_dir: '$install_dir' is not empty!"
+    die "[ Error ] install_dir: '$install_dir' exists!"
 fi
 
 prepare_source "$mysql_source_url"
