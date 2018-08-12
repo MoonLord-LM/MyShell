@@ -3,6 +3,7 @@ source ./My.sh
 
 # MySQL 8.0.12 在线安装
 # sudo chmod -R 777 ./ && sudo sh ./mysql_8.0.12.sh
+# sudo chmod -R 777 ./ && sudo sh ./mysql_8.0.12.sh --delete_exist
 
 
 # 参数设置
@@ -21,12 +22,15 @@ rm -rf '/etc/my.cnf'
 rm -rf '/var/log/mysql.log'
 rm -rf '/var/log/message'
 
+if [ "$1" == "--delete_exist" ];then
+    sudo systemctl stop "${service_name}.service"
+    sudo systemctl disable "${service_name}.service"
+    sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
+    sudo rm -rf "$install_dir"
+fi
+
 if [ -d "$install_dir" ];then
     die "[ Error ] install_dir: '$install_dir' is not empty!"
-    # sudo systemctl stop 'mysqld8012.service'
-    # sudo systemctl disable 'mysqld8012.service'
-    # sudo rm -rf '/usr/local/mysql/mysql-8.0.12'
-    # sudo rm -rf '/usr/lib/systemd/system/mysqld8012.service'
 fi
 
 prepare_source "$mysql_source_url"
@@ -79,6 +83,7 @@ make install
 # https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html
 # https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html
 # https://dev.mysql.com/doc/refman/8.0/en/program-variables.html
+# https://dev.mysql.com/doc/refman/8.0/en/using-encrypted-connections.html
 cd "$install_dir"
 cat <<EOF > "my.cnf"
 [mysqld]
@@ -115,9 +120,9 @@ max_connections=200
 innodb_rollback_on_timeout=1
 innodb_lock_wait_timeout=120
 
-ssl-ca=$install_dir/data/ca.pem 
-ssl-cert=$install_dir/data/server-cert.pem 
-ssl-key=$install_dir/data/server-key.pem
+ssl_ca=$install_dir/data/ca.pem 
+ssl_cert=$install_dir/data/server-cert.pem 
+ssl_key=$install_dir/data/server-key.pem
 
 default_authentication_plugin='mysql_native_password'
 mysqlx=0
@@ -129,7 +134,18 @@ socket=$install_dir/mysql.sock
 user=root
 password=$user_root_password
 default_character_set='utf8mb4'
+
+ssl_ca=$install_dir/data/ca-cert.pem
+ssl_cert=$install_dir/data/client-cert.pem
+ssl_key=$install_dir/data/client-key.pem
 EOF
+
+# https://dev.mysql.com/doc/refman/8.0/en/mysql-ssl-rsa-setup.html
+cd "$install_dir/bin"
+./mysql_ssl_rsa_setup \
+ --datadir="$install_dir/data" \
+ --uid='mysql' \
+ 2>&1 | tee 'mysql_ssl_rsa_setup.log'
 
 # https://dev.mysql.com/doc/refman/8.0/en/server-options.html
 cd "$install_dir/bin"
@@ -138,13 +154,6 @@ cd "$install_dir/bin"
  --user='mysql' \
  --initialize \
  2>&1 | tee 'mysqld_initialize.log'
-
-# https://dev.mysql.com/doc/refman/8.0/en/mysql-ssl-rsa-setup.html
-cd "$install_dir/bin"
-./mysql_ssl_rsa_setup \
- --datadir="$install_dir/data" \
- --uid='mysql' \
- 2>&1 | tee 'mysql_ssl_rsa_setup.log'
 
 backup_file "../usr/lib/systemd/system/${service_name}.service"
 cp -f "../usr/lib/systemd/system/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
@@ -180,9 +189,10 @@ EOF
 EOF
 
 ./mysql  << EOF
-    update mysql.user set host = '%' where user ='root';
+    -- update mysql.user set host = '%', ssl_type = 'ANY' where user ='root';
+    update mysql.user set host = '%', ssl_type = '' where user ='root';
     flush privileges;
-    select user,host from mysql.user;
+    select user,host,ssl_type from mysql.user;
 EOF
 
 show_netstat
