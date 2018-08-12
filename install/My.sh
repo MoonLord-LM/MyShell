@@ -55,7 +55,7 @@ function update_pypi(){
     echo "trusted host: $pypi_host"
     echo '[global]' > "$pip_conf_file"
     echo "index-url=$pypi_url" >> "$pip_conf_file"
-    echo '[global]' >> "$pip_conf_file"
+    echo '[install]' >> "$pip_conf_file"
     echo "trusted-host=$pypi_host" >> "$pip_conf_file"
     yum install 'python' -y
     yum install 'python2-pip' -y
