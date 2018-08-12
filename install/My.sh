@@ -273,11 +273,11 @@ swap_file='/memory_swap'
 function set_memory_swap(){
     echo "set_memory_swap"
     mem_size=`free -k | grep 'Mem:' | awk -F' ' '{print $2}'`
-    if [ -f "$swap_file" ];then
+    tmp=`dd if='/dev/zero' of="$swap_file" bs=1024 count=$mem_size 2>&1 | grep 'busy'`
+    if [ "$tmp" != "" ];then
         echo 'memory swap file exist!'
         return
     fi
-    dd if='/dev/zero' of="$swap_file" bs=1024 count=$mem_size
     mkswap "$swap_file"
     chmod 600 "$swap_file"
     swapon "$swap_file"
