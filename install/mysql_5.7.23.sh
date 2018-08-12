@@ -51,6 +51,7 @@ set_memory_swap
 cd "$source_dir"
 cmake \
  -DMYSQL_TCP_PORT="$mysql_port" \
+ -DMYSQLX_TCP_PORT="1$mysql_port" \
  -DCMAKE_INSTALL_PREFIX="$install_dir" \
  -DMYSQL_DATADIR="$install_dir/data" \
  -DSYSCONFDIR="$install_dir" \
@@ -70,7 +71,7 @@ cmake \
  -DWITH_BOOST=./boost \
  -DDEFAULT_CHARSET='utf8mb4' \
  -DDEFAULT_COLLATION='utf8mb4_unicode_ci' \
- -DCOMPILATION_COMMENT="`cat '/etc/redhat-release'`" \
+ -DCOMPILATION_COMMENT="compiled at `cat '/etc/redhat-release'`" \
  2>&1 | tee 'cmake.log'
 make -j `grep processor '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
