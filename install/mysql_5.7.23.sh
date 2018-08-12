@@ -134,7 +134,7 @@ user=root
 password=$user_root_password
 default_character_set='utf8mb4'
 
-ssl_ca=$install_dir/ssl/ca-cert.pem
+ssl_ca=$install_dir/ssl/ca.pem
 ssl_cert=$install_dir/ssl/client-cert.pem
 ssl_key=$install_dir/ssl/client-key.pem
 EOF
@@ -189,10 +189,12 @@ EOF
 EOF
 
 ./mysql  << EOF
-    -- grant all on *.* to 'root'@'%' identified by '$user_root_password' require ssl with grant option;
     grant all on *.* to 'root'@'%' identified by '$user_root_password' require none with grant option;
     flush privileges;
     select user,host,ssl_type from mysql.user;
+    -- grant all on *.* to 'root'@'%' identified by '$user_root_password' require ssl with grant option;
+    -- alter user 'root'@'%' require ssl;
+    -- alter user 'root'@'%' require none;
 EOF
 
 show_netstat

@@ -136,7 +136,7 @@ user=root
 password=$user_root_password
 default_character_set='utf8mb4'
 
-ssl_ca=$install_dir/ssl/ca-cert.pem
+ssl_ca=$install_dir/ssl/ca.pem
 ssl_cert=$install_dir/ssl/client-cert.pem
 ssl_key=$install_dir/ssl/client-key.pem
 EOF
@@ -190,10 +190,12 @@ EOF
 EOF
 
 ./mysql  << EOF
-    -- update mysql.user set host = '%', ssl_type = 'ANY' where user ='root';
     update mysql.user set host = '%', ssl_type = '' where user ='root';
     flush privileges;
     select user,host,ssl_type from mysql.user;
+    -- update mysql.user set host = '%', ssl_type = 'ANY' where user ='root';
+    -- alter user 'root'@'%' require ssl;
+    -- alter user 'root'@'%' require none;
 EOF
 
 show_netstat
