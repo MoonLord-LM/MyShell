@@ -6,6 +6,7 @@
 
 # 测试环境： 阿里云，CentOS 7.5 x64
 aliyun_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
+aliyun_pypi='http://mirrors.aliyun.com/pypi/simple/'
 
 
 # 实现类似 PHP 的 die 函数，输出字符串（$1）并立即退出脚本
@@ -24,7 +25,7 @@ function die(){
 }
 
 
-# 从指定的 repo 链接（$1）更新系统和软件
+# 更改 yum 的 repo 源为指定的链接，并更新系统和软件
 function update_repo(){
     if [ "$1" == "" ]; then
         die 'update_repo: missing parameter!'
@@ -38,6 +39,29 @@ function update_repo(){
     yum update -y
 }
 # update_repo "$aliyun_repo" > '/dev/null' 2>&1
+
+
+# 更改 pip 的 pypi 源为指定的链接
+pip_conf_file='/root/.pip/pip.conf'
+function update_pypi(){
+    if [ "$1" == "" ]; then
+        die 'update_pypi: missing parameter!'
+        return
+    fi
+    echo "update_pypi: \"$1\""
+    pypi_url=$1
+    tmp="${pypi_url##*//}"
+    pypi_host="${tmp%%/*}"
+    echo "trusted host: $pypi_host"
+    echo '[global]' > "$pip_conf_file"
+    echo "index-url=$pypi_url" >> "$pip_conf_file"
+    echo '[global]' >> "$pip_conf_file"
+    echo "trusted-host=$pypi_host" >> "$pip_conf_file"
+    yum install 'python' -y
+    yum install 'python2-pip' -y
+    yum install 'python-setuptools' -y
+}
+# update_pypi "$aliyun_pypi" > '/dev/null' 2>&1
 
 
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并解压到当前目录下
