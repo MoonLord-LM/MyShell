@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # MyShell 公共函数库
+# source ./My.sh
 
 
 # 测试环境： 阿里云，CentOS 7.5 x64
@@ -263,6 +264,8 @@ function backup_file(){
 }
 backup_file "$fstab_file" > '/dev/null' 2>&1
 backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+# cp -f "${fstab_file}.bak" "$fstab_file" > '/dev/null' 2>&1
+# cp -f "${sysctl_conf_file}.bak" "$sysctl_conf_file" > '/dev/null' 2>&1
 
 
 # 设置 /memory_swap 为虚拟内存，大小和物理内存相同
@@ -301,7 +304,7 @@ function unset_memory_swap(){
     tmp=`cat "$fstab_file" | grep "$swap_file"`
     if [ "$tmp" != "" ]; then
         new_setting=`cat "$fstab_file" | grep -v "$swap_file"`
-        echo $new_setting > "$fstab_file"
+        echo "$new_setting" > "$fstab_file"
     fi
     cat "$fstab_file"
     mount -a
