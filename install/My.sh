@@ -332,6 +332,7 @@ function show_disk_usage(){
     cd - > '/dev/null'
 }
 
+# 显示服务器正在监听的 TCP 端口号
 function show_netstat(){
     echo 'show_netstat'
     echo 'show `netstat -atnlp`:'
