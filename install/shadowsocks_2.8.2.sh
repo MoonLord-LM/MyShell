@@ -19,6 +19,7 @@ ss_config_file="$install_dir/shadowsocks.json"
 ss_pid_file="$install_dir/ssserver.pid"
 ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
+ss_workers=`grep processor '/proc/cpuinfo' | wc -l`
 
 if [ "$1" == "--delete_exist" ];then
     sudo ssserver --pid-file "$ss_pid_file" -d stop
@@ -60,7 +61,7 @@ cat <<EOF > "$ss_config_file"
     "timeout": 300,
     "method": "aes-256-cfb",
     "fast_open": true,
-    "workers": 8
+    "workers": $ss_workers
 }
 EOF
 
