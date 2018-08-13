@@ -18,10 +18,6 @@ service_name="mysqld$mysql_port"
 source_dir="mysql-$mysql_version"
 install_dir="/usr/local/mysql/mysql-$mysql_version"
 
-rm -rf '/etc/my.cnf'
-rm -rf '/var/log/mysql.log'
-rm -rf '/var/log/message'
-
 if [ "$1" == "--delete_exist" ];then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
@@ -29,8 +25,12 @@ if [ "$1" == "--delete_exist" ];then
     sudo rm -rf "$install_dir"
 fi
 
+rm -rf '/etc/my.cnf'
+rm -rf '/var/log/mysql.log'
+rm -rf '/var/log/message'
+
 if [ -d "$install_dir" ];then
-    die "[ Error ] install_dir: '$install_dir' exists!"
+    die '[ Error ] install_dir exists!'
 fi
 
 prepare_source "$mysql_source_url"

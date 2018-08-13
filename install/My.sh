@@ -57,11 +57,11 @@ function update_pypi(){
     echo "index-url=$pypi_url" >> "$pip_conf_file"
     echo '[install]' >> "$pip_conf_file"
     echo "trusted-host=$pypi_host" >> "$pip_conf_file"
-    yum install 'python' -y
-    yum install 'python2-pip' -y
-    yum install 'python-setuptools' -y
 }
 # update_pypi "$aliyun_pypi" > '/dev/null' 2>&1
+yum install 'python' -y  > '/dev/null' 2>&1
+yum install 'python2-pip' -y  > '/dev/null' 2>&1
+yum install 'python-setuptools' -y > '/dev/null' 2>&1
 
 
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并解压到当前目录下
