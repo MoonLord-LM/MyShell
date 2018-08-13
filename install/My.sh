@@ -362,9 +362,16 @@ function show_disk_usage(){
     cd - > '/dev/null'
 }
 
-# 显示服务器正在监听的 TCP 端口号
+# 显示服务器的 TCP 连接信息
 function show_netstat(){
     echo 'show_netstat'
     echo 'show `netstat -atnlp`:'
     netstat -atnlp
+}
+
+# 显示服务器正在监听的 TCP 端口号
+function show_listen(){
+    echo 'show_listen'
+    echo 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
+    netstat -atnlp | grep 'LISTEN'
 }

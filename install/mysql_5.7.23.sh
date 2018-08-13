@@ -197,4 +197,4 @@ EOF
     -- alter user 'root'@'%' require none;
 EOF
 
-show_netstat
+show_listen
