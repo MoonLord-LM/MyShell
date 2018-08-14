@@ -252,10 +252,10 @@ install_require 'gcc-c++' > '/dev/null' 2>&1
 # 搜索文件（$1）中的唯一字符串标记（$2），将指定行的内容，修改为字符串（$3）
 function modify_config_file(){
     if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ]; then
-        die 'change_file_line: missing parameter!'
+        die 'modify_config_file: missing parameter!'
         return
     fi
-    echo "change_file_line: \"$1\" \"$2\" \"$3\""
+    echo "modify_config_file: \"$1\" \"$2\" \"$3\""
     file_name=$1
     search_tag=$2
     new_content=$3
