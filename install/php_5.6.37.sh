@@ -42,6 +42,9 @@ install_require "postgresql-devel"
 
 add_user_group 'php' 'PHP Server' '/usr/local/php'
 set_user_dir 'php' "$install_dir"
+set_user_file 'php' "$install_dir/php.error.log"
+set_user_file 'php' "$install_dir/php-fpm.error.log"
+set_user_file 'php' "$install_dir/php-fpm.access.log"
 
 cd "$source_dir"
 ./configure \
@@ -97,49 +100,46 @@ make -j `grep processor '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
 make install
 
-tmp="$install_dir/etc/php.ini-production"
-cp -f 'php.ini-production' "$tmp"
-tmp="$install_dir/etc/php.ini-development"
-cp -f 'php.ini-development' "$tmp"
-modify_config_file "$tmp" 'error_log =' 'error_log = php.error.log'
-modify_config_file "$tmp" 'log_errors_max_len =' 'log_errors_max_len = 0'
-modify_config_file "$tmp" 'date.timezone =' 'date.timezone = "Asia/Shanghai"'
-modify_config_file "$tmp" 'upload_max_filesize =' 'upload_max_filesize = 100M'
-modify_config_file "$tmp" 'max_file_uploads =' 'max_file_uploads = 100'
-modify_config_file "$tmp" 'post_max_size =' 'post_max_size = 100M'
-modify_config_file "$tmp" 'max_input_time =' 'max_input_time = 120'
-modify_config_file "$tmp" 'max_execution_time =' 'max_execution_time = 120'
-modify_config_file "$tmp" 'opcache.enable=' 'opcache.enable=1'
-modify_config_file "$tmp" 'opcache.enable_cli=' 'opcache.enable_cli=1'
-modify_config_file "$tmp" 'opcache.validate_timestamps=' 'opcache.validate_timestamps=1'
-modify_config_file "$tmp" 'opcache.revalidate_freq=' 'opcache.revalidate_freq=0'
-modify_config_file "$tmp" 'opcache.memory_consumption=' 'opcache.memory_consumption=128'
-modify_config_file "$tmp" 'opcache.interned_strings_buffer=' 'opcache.interned_strings_buffer=8'
-modify_config_file "$tmp" 'opcache.max_accelerated_files=' 'opcache.max_accelerated_files=100000'
-cp -f "$tmp" "$install_dir/php.ini"
+rm -rf "$install_dir/var"
 
-tmp="$install_dir/etc/php-fpm.conf.default"
-sed -i "s#run/#./#g" "$tmp"
-modify_config_file "$tmp" 'pid = ' "pid = $service_name.pid"
-modify_config_file "$tmp" 'listen = ' "listen = 127.0.0.1:$php_port"
-modify_config_file "$tmp" 'listen.allowed_clients =' 'listen.allowed_clients = 127.0.0.1'
-modify_config_file "$tmp" 'error_log =' 'error_log = php-fpm.error.log'
-modify_config_file "$tmp" 'access.log = ' 'access.log = php-fpm.$pool.access.log'
-cp -f "$tmp" "$install_dir/php-fpm.conf"
+cp -f 'php.ini-production' "$install_dir/etc/php.ini-production"
+cp -f 'php.ini-development' "$install_dir/etc/php.ini-development"
+cp -f 'php.ini-development' "$install_dir/php.ini"
+modify_config_file "$install_dir/php.ini" 'error_log = syslog' 'error_log = php.error.log'
+modify_config_file "$install_dir/php.ini" 'log_errors_max_len =' 'log_errors_max_len = 0'
+modify_config_file "$install_dir/php.ini" 'date.timezone =' 'date.timezone = "Asia/Shanghai"'
+modify_config_file "$install_dir/php.ini" 'upload_max_filesize =' 'upload_max_filesize = 100M'
+modify_config_file "$install_dir/php.ini" 'max_file_uploads =' 'max_file_uploads = 100'
+modify_config_file "$install_dir/php.ini" 'post_max_size =' 'post_max_size = 100M'
+modify_config_file "$install_dir/php.ini" 'max_input_time =' 'max_input_time = 120'
+modify_config_file "$install_dir/php.ini" 'max_execution_time =' 'max_execution_time = 120'
+modify_config_file "$install_dir/php.ini" 'opcache.enable=' 'opcache.enable=1'
+modify_config_file "$install_dir/php.ini" 'opcache.enable_cli=' 'opcache.enable_cli=1'
+modify_config_file "$install_dir/php.ini" 'opcache.validate_timestamps=' 'opcache.validate_timestamps=1'
+modify_config_file "$install_dir/php.ini" 'opcache.revalidate_freq=' 'opcache.revalidate_freq=0'
+modify_config_file "$install_dir/php.ini" 'opcache.memory_consumption=' 'opcache.memory_consumption=128'
+modify_config_file "$install_dir/php.ini" 'opcache.interned_strings_buffer=' 'opcache.interned_strings_buffer=8'
+modify_config_file "$install_dir/php.ini" 'opcache.max_accelerated_files=' 'opcache.max_accelerated_files=100000'
 
-tmp="$install_dir/etc/init.d.php-fpm"
-cp -f 'sapi/fpm/init.d.php-fpm' "$tmp"
-sed -i "s#/etc/#/#g" "$tmp"
-sed -i "s#/var/run/#/#g" "$tmp"
-cp -f "$tmp" "/etc/init.d/$service_name"
+modify_config_file "$install_dir/etc/php-fpm.conf.default" 'pid = ' "pid = $install_dir/$service_name.pid"
+modify_config_file "$install_dir/etc/php-fpm.conf.default" 'listen = ' "listen = 127.0.0.1:$php_port"
+modify_config_file "$install_dir/etc/php-fpm.conf.default" 'listen.allowed_clients =' 'listen.allowed_clients = 127.0.0.1'
+modify_config_file "$install_dir/etc/php-fpm.conf.default" 'error_log =' "error_log = $install_dir/php-fpm.error.log"
+modify_config_file "$install_dir/etc/php-fpm.conf.default" 'access.log = ' "access.log = $install_dir/php-fpm.access.log"
+cp -f "$install_dir/etc/php-fpm.conf.default" "$install_dir/php-fpm.conf"
+
+cp -f 'sapi/fpm/init.d.php-fpm' "$install_dir/etc/init.d.php-fpm"
+sed -i "s#/etc/#/#g" "$install_dir/etc/init.d.php-fpm"
+sed -i "s#/var/run/#/#g" "$install_dir/etc/init.d.php-fpm"
+cp -f "$install_dir/etc/init.d.php-fpm" "/etc/init.d/$service_name"
 chmod +x "/etc/init.d/$service_name"
 chkconfig "$service_name" on
 
 service "$service_name" start
 
+"$install_dir/sbin/php-fpm" -v
 "$install_dir/bin/php" -v
 "$install_dir/bin/php" -m
-"$install_dir/sbin/php-fpm" -v
 
 ps -aux | grep "php"
 
