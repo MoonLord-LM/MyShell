@@ -22,6 +22,7 @@ if [ "$1" == "--delete_exist" ];then
     chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"
     sudo rm -rf "$install_dir"
+    sudo systemctl daemon-reload
 fi
 
 rm -rf '/etc/php.ini'

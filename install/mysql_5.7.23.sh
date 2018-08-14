@@ -23,6 +23,7 @@ if [ "$1" == "--delete_exist" ];then
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
+    sudo systemctl daemon-reload
 fi
 
 rm -rf '/etc/my.cnf'
