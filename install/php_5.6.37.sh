@@ -108,7 +108,7 @@ rm -rf "$install_dir/var"
 cp -f 'php.ini-production' "$install_dir/etc/php.ini-production"
 cp -f 'php.ini-development' "$install_dir/etc/php.ini-development"
 cp -f 'php.ini-development' "$install_dir/php.ini"
-modify_config_file "$install_dir/php.ini" 'error_log = syslog' 'error_log = php.error.log'
+modify_config_file "$install_dir/php.ini" 'error_log = syslog' "error_log = $install_dir/php.error.log"
 modify_config_file "$install_dir/php.ini" 'log_errors_max_len =' 'log_errors_max_len = 0'
 modify_config_file "$install_dir/php.ini" 'date.timezone =' 'date.timezone = "Asia/Shanghai"'
 modify_config_file "$install_dir/php.ini" 'upload_max_filesize =' 'upload_max_filesize = 100M'
@@ -133,7 +133,7 @@ cp -f "$install_dir/etc/php-fpm.conf.default" "$install_dir/php-fpm.conf"
 
 cp -f 'sapi/fpm/init.d.php-fpm' "$install_dir/etc/init.d.php-fpm"
 modify_config_file "$install_dir/etc/init.d.php-fpm" 'php_fpm_CONF=' "php_fpm_CONF=$install_dir/php-fpm.conf"
-modify_config_file "$install_dir/etc/init.d.php-fpm" 'php_fpm_PID=' "php_fpm_CONF=$install_dir/$service_name.pid"
+modify_config_file "$install_dir/etc/init.d.php-fpm" 'php_fpm_PID=' "php_fpm_PID=$install_dir/$service_name.pid"
 cp -f "$install_dir/etc/init.d.php-fpm" "/etc/init.d/$service_name"
 chmod +x "/etc/init.d/$service_name"
 chkconfig "$service_name" on
