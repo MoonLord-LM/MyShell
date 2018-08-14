@@ -23,6 +23,7 @@ ss_workers=`grep processor '/proc/cpuinfo' | wc -l`
 
 if [ "$1" == "--delete_exist" ];then
     sudo ssserver --pid-file "$ss_pid_file" -d stop
+    unset_autorun "sh \"$ss_run_script\""
     sudo rm -rf "$install_dir"
 fi
 

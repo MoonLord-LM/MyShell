@@ -18,6 +18,8 @@ source_dir="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
 if [ "$1" == "--delete_exist" ];then
+    service "$service_name" stop
+    chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"
     sudo rm -rf "$install_dir"
 fi
@@ -129,8 +131,8 @@ modify_config_file "$install_dir/etc/php-fpm.conf.default" 'access.log = ' "acce
 cp -f "$install_dir/etc/php-fpm.conf.default" "$install_dir/php-fpm.conf"
 
 cp -f 'sapi/fpm/init.d.php-fpm' "$install_dir/etc/init.d.php-fpm"
-sed -i "s#/etc/#/#g" "$install_dir/etc/init.d.php-fpm"
-sed -i "s#/var/run/#/#g" "$install_dir/etc/init.d.php-fpm"
+modify_config_file "$install_dir/etc/init.d.php-fpm" 'php_fpm_CONF=' "php_fpm_CONF=$install_dir/php-fpm.conf"
+modify_config_file "$install_dir/etc/init.d.php-fpm" 'php_fpm_PID=' "php_fpm_CONF=$install_dir/$service_name.pid"
 cp -f "$install_dir/etc/init.d.php-fpm" "/etc/init.d/$service_name"
 chmod +x "/etc/init.d/$service_name"
 chkconfig "$service_name" on
