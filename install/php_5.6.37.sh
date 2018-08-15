@@ -18,8 +18,8 @@ source_dir="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
 if [ "$1" == "--delete_exist" ];then
-    service "$service_name" stop
-    chkconfig "$service_name" off
+    sudo service "$service_name" stop
+    sudo chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload

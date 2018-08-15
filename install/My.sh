@@ -270,7 +270,7 @@ function modify_config_file(){
     fi
     line_num=`cat "$file_name" | grep -n "$search_tag" | awk -F':' '{print $1}'`
     echo "modify line: $line_num"
-    sed -i "$line_num c $new_content" "$file_name"
+    sed -i "$line_num c\\$new_content" "$file_name"
 }
 
 

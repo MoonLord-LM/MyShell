@@ -22,9 +22,10 @@ ss_run_script="$install_dir/run.sh"
 ss_workers=`grep processor '/proc/cpuinfo' | wc -l`
 
 if [ "$1" == "--delete_exist" ];then
-    sudo ssserver --pid-file "$ss_pid_file" -d stop
-    unset_autorun "sh \"$ss_run_script\""
+    sudo ssserver -d stop
+    sudo unset_autorun "sh \"$ss_run_script\""
     sudo rm -rf "$install_dir"
+    sudo pip uninstall "shadowsocks==$ss_version" -y
 fi
 
 rm -rf '/etc/shadowsocks.json'
@@ -65,6 +66,18 @@ cat <<EOF > "$ss_config_file"
     "workers": $ss_workers
 }
 EOF
+
+shadowsocks_shell_py=`find / -type f -name 'shell.py' | grep '/site-packages/shadowsocks/'`
+if [ "$shadowsocks_shell_py" == "" ]; then
+    die '[ Error ] shadowsocks_shell_py can not be found!'
+fi
+modify_config_file "$shadowsocks_shell_py" \
+ "    config\['pid-file'\] = config.get('pid-file', '/var/run/shadowsocks.pid')" \
+ "    config\['pid-file'\] = config.get('pid-file', '$ss_pid_file')"
+modify_config_file "$shadowsocks_shell_py" \
+ "    config\['log-file'\] = config.get('log-file', '/var/log/shadowsocks.log')" \
+ "    config\['log-file'\] = config.get('log-file', '$ss_log_file')"
+cat "$shadowsocks_shell_py" | grep "$install_dir"
 
 cat <<EOF > "$ss_run_script"
 #!/bin/bash
