@@ -90,15 +90,66 @@ ExecStart="$install_dir/sbin/nginx" -c "$install_dir/nginx.conf"
 ExecReload="$install_dir/sbin/nginx" -s reload
 ExecStop="$install_dir/sbin/nginx" -s quit
 
-LimitNOFILE=65536
+LimitNOFILE=65535
 Restart=on-failure
 PrivateTmp=true
 EOF
 
-cp -f "$install_dir/nginx.conf.default" "$install_dir/nginx.conf"
+cd "$install_dir"
+cat <<EOF > "nginx.conf"
+user  nginx nginx;
+worker_processes  1;
+worker_rlimit_nofile  65535;
+
+events {
+    use  epoll;
+    worker_connections  65535;
+}
+
+http {
+    include  mime.types;
+    default_type  application/octet-stream;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    sendfile  on;
+    tcp_nodelay  on;
+    server_tokens on;
+    keepalive_timeout  120;
+
+    gzip  on;
+    gzip_comp_level  1;
+    gzip_min_length  1k;
+    gzip_types  text/plain text/html text/css text/javascript text/xml;
+
+    open_file_cache  max=65535 inactive=60s;
+    open_file_cache_min_uses  1;
+    open_file_cache_valid 30s;
+
+    include  vhost/*.conf;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page  500 502 503 504 /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+EOF
+
 cp -f $install_dir/*.default "$install_dir/etc/"
 rm -rf $install_dir/*.default
 cp -f "$install_dir/etc/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
+
+wget "http://nginx.org/favicon.ico"  -O "$install_dir/html/favicon.ico"
 
 systemctl enable "${service_name}.service"
 systemctl daemon-reload

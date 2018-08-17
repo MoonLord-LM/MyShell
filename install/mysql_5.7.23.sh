@@ -159,7 +159,7 @@ backup_file "../usr/lib/systemd/system/${service_name}.service"
 cp -f "../usr/lib/systemd/system/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
 
 sed -i "s/mysqld.pid/${service_name}.pid/g" "/usr/lib/systemd/system/${service_name}.service"
-modify_config_file "/usr/lib/systemd/system/${service_name}.service" 'LimitNOFILE = ' 'LimitNOFILE = 65536'
+modify_config_file "/usr/lib/systemd/system/${service_name}.service" 'LimitNOFILE = ' 'LimitNOFILE = 65535'
 
 systemctl enable "${service_name}.service"
 systemctl daemon-reload
