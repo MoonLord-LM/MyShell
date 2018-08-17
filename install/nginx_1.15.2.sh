@@ -96,6 +96,7 @@ Restart=on-failure
 PrivateTmp=true
 EOF
 
+# http://nginx.org/en/docs/beginners_guide.html
 cd "$install_dir"
 cat <<EOF > "nginx.conf"
 user  nginx nginx;
