@@ -412,16 +412,35 @@ function show_disk_usage(){
     cd - > '/dev/null'
 }
 
+
 # 显示服务器的 TCP 连接信息
 function show_netstat(){
     echo 'show_netstat'
     echo 'show `netstat -atnlp`:'
     netstat -atnlp
 }
-
 # 显示服务器正在监听的 TCP 端口号
 function show_listen(){
     echo 'show_listenm'
     echo 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
     netstat -atnlp | grep 'LISTEN'
+}
+
+
+# 显示系统运行状态
+function show(){
+    info 'show'
+    echo "CPU Core:  `grep 'processor' '/proc/cpuinfo' | wc -l` \
+          Virtual: `install_require 'virt-what' > '/dev/null' 2>&1 && 'virt-what'`\
+          Type: `grep 'model name' '/proc/cpuinfo' | awk -F':' '{print $2}'`"
+    echo
+    echo "Now`uptime`"
+    top -b -n 1 | head -n 3 | tail -n 2
+    echo
+    free -h
+    echo
+    df -h
+    echo
+    netstat -atnlp | grep 'LISTEN'
+    echo
 }
