@@ -9,15 +9,65 @@ aliyun_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
 aliyun_pypi='http://mirrors.aliyun.com/pypi/simple/'
 
 
+## 输出红色的错误信息字符串（$1）
+function error(){
+    if [ "$1" == "" ]; then
+        echo -ne '\e[1;31m' && echo 'error: missing parameter!' && echo -ne '\e[0m'
+        return
+    fi
+    echo -ne '\e[1;31m' && echo "$1" && echo -ne '\e[0m'
+}
+## 输出绿色的成功信息字符串（$1）
+function success(){
+    if [ "$1" == "" ]; then
+        error 'success: missing parameter!'
+        return
+    fi
+    echo -ne '\e[1;32m' && echo "$1" && echo -ne '\e[0m'
+}
+## 输出黄色的警告信息字符串（$1）
+function warn(){
+    if [ "$1" == "" ]; then
+        error 'warn: missing parameter!'
+        return
+    fi
+    echo -ne '\e[1;33m' && echo "$1" && echo -ne '\e[0m'
+}
+## 输出深蓝色的注意信息字符串（$1）
+function info(){
+    if [ "$1" == "" ]; then
+        error 'info: missing parameter!'
+        return
+    fi
+    echo -ne '\e[1;34m' && echo "$1" && echo -ne '\e[0m'
+}
+## 输出紫色的注意信息字符串（$1）
+function attention(){
+    if [ "$1" == "" ]; then
+        error 'attention: missing parameter!'
+        return
+    fi
+    echo -ne '\e[1;35m' && echo "$1" && echo -ne '\e[0m'
+}
+## 输出浅蓝色的注意信息字符串（$1）
+function notice(){
+    if [ "$1" == "" ]; then
+        error 'notice: missing parameter!'
+        return
+    fi
+    echo -ne '\e[1;36m' && echo "$1" && echo -ne '\e[0m'
+}
+
+
 # 实现类似 PHP 的 die 函数，输出字符串（$1）并立即退出脚本
 export TOP_PID=$$
 trap 'exit 1' TERM
 function die(){
     if [ "$1" == "" ]; then
-        echo 'die: missing parameter!'
+        error 'die: missing parameter!'
         return
     fi
-    echo "$1"
+    error "$1"
     tmp=`echo $BASHOPTS | grep 'login_shell'`
     if [ "${BASH_SOURCE-$0}" != "" ] && [ "$tmp" == "" ]; then
         kill -s TERM $TOP_PID
@@ -371,7 +421,7 @@ function show_netstat(){
 
 # 显示服务器正在监听的 TCP 端口号
 function show_listen(){
-    echo 'show_listen'
+    echo 'show_listenm'
     echo 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
     netstat -atnlp | grep 'LISTEN'
 }
