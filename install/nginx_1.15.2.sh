@@ -8,12 +8,12 @@ source ./My.sh
 
 # 参数设置
 nginx_version='1.15.2'
-nginx_num='1152'
+nginx_port='1152'
 nginx_source_url='http://nginx.org/download/nginx-1.15.2.tar.gz'
 
 
 # 开始安装
-service_name="nginx$nginx_num"
+service_name="nginx$nginx_port"
 source_dir="nginx-$nginx_version"
 install_dir="/usr/local/nginx/nginx-$nginx_version"
 
@@ -131,7 +131,7 @@ http {
     include  vhost/*.conf;
 
     server {
-        listen       80;
+        listen       [::]:$nginx_port ipv6only=off;
         server_name  localhost;
 
         location / {
