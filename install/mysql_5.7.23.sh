@@ -79,7 +79,7 @@ cmake \
  -DDEFAULT_COLLATION='utf8mb4_unicode_ci' \
  -DCOMPILATION_COMMENT="compiled at `cat '/etc/redhat-release'`" \
  2>&1 | tee 'cmake.log'
-make -j `grep processor '/proc/cpuinfo' | wc -l` \
+make -j `grep 'processor' '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
 make install
 

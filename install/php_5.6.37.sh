@@ -99,7 +99,7 @@ cd "$source_dir"
  --with-xsl \
  --with-zlib \
  2>&1 | tee 'configure.log'
-make -j `grep processor '/proc/cpuinfo' | wc -l` \
+make -j `grep 'processor' '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
 make install
 

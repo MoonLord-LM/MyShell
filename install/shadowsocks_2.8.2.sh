@@ -19,7 +19,7 @@ ss_config_file="$install_dir/shadowsocks.json"
 ss_pid_file="$install_dir/ssserver.pid"
 ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
-ss_workers=`grep processor '/proc/cpuinfo' | wc -l`
+ss_workers=`grep 'processor' '/proc/cpuinfo' | wc -l`
 
 if [ "$1" == "--delete_exist" ];then
     sudo ssserver -d stop

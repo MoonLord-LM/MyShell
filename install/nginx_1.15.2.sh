@@ -62,7 +62,7 @@ cd "$source_dir"
  --with-stream \
  --build="compiled at `cat '/etc/redhat-release'`" \
  2>&1 | tee 'configure.log'
-make -j `grep processor '/proc/cpuinfo' | wc -l` \
+make -j `grep 'processor' '/proc/cpuinfo' | wc -l` \
  2>&1 | tee 'make.log'
 make install
 
@@ -100,7 +100,7 @@ EOF
 cd "$install_dir"
 cat <<EOF > "nginx.conf"
 user  nginx nginx;
-worker_processes  `grep processor '/proc/cpuinfo' | wc -l`;
+worker_processes  `grep 'processor' '/proc/cpuinfo' | wc -l`;
 worker_rlimit_nofile  65535;
 
 events {
