@@ -87,7 +87,7 @@ make install
 # https://dev.mysql.com/doc/refman/8.0/en/program-variables.html
 # https://dev.mysql.com/doc/refman/8.0/en/using-encrypted-connections.html
 cd "$install_dir"
-cat <<EOF > "my.cnf"
+cat << EOF > "my.cnf"
 [mysqld]
 port=$mysql_port
 basedir=$install_dir

@@ -55,19 +55,37 @@ fi
 php_listen_port=`show_listen | grep php | awk -F':' '{print $2}' | awk -F' ' '{print $1}'`
 
 cd "$nginx_vhost_dir"
-cat <<EOF > "$php_site_name.conf"
+openssl genrsa 1024 >"$php_site_name.key"
+openssl req -new -key "$php_site_name.key" -out "$php_site_name.csr" << EOF
+CN
+China
+Beijing
+GitHub
+moonlord.cn
+moonlord.cn
+me@moonlord.cn
+me@moonlord.cn
+me@moonlord.cn
+EOF
+openssl x509 -req -days 36500 -in "$php_site_name.csr" -signkey "$php_site_name.key" -out "$php_site_name.crt"
+
+cd "$nginx_vhost_dir"
+cat << EOF > "$php_site_name.conf"
     server {
         listen       [::]:80 ipv6only=off;
         server_name  $php_site_name;
         root         $site_root_path/$php_site_name;
+
+        listen               [::]:443 ipv6only=off ssl;
+        ssl_certificate      "$nginx_vhost_dir/$php_site_name.crt";
+        ssl_certificate_key  "$nginx_vhost_dir/$php_site_name.key";
 
         location / {
             index  index.php index.html index.htm;
         }
 
         location ~ .*\.php$ {
-            include        fastcgi_params;
-            fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
+            include        fastcgi.conf;
             fastcgi_pass   127.0.0.1:$php_listen_port;
             fastcgi_index  index.php;
         }
@@ -75,7 +93,7 @@ cat <<EOF > "$php_site_name.conf"
 EOF
 
 cd "$site_root_path/$php_site_name"
-cat <<EOF > "index.php"
+cat << EOF > "index.php"
 <?php
     phpinfo();
 ?>

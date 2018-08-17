@@ -68,7 +68,7 @@ make install
 
 # https://www.nginx.com/resources/wiki/start/topics/examples/systemd/
 cd "$install_dir/etc"
-cat <<EOF > "${service_name}.service"
+cat << EOF > "${service_name}.service"
 [Unit]
 Description=Nginx Server
 After=syslog.target
@@ -98,7 +98,7 @@ EOF
 
 # http://nginx.org/en/docs/beginners_guide.html
 cd "$install_dir"
-cat <<EOF > "nginx.conf"
+cat << EOF > "nginx.conf"
 user  nginx nginx;
 worker_processes  `grep 'processor' '/proc/cpuinfo' | wc -l`;
 worker_rlimit_nofile  65535;

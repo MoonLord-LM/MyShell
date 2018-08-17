@@ -53,7 +53,7 @@ set_user_file 'root' "$ss_run_script"
 
 # https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File
 # https://github.com/shadowsocks/shadowsocks/wiki/Configure-Multiple-Users
-cat <<EOF > "$ss_config_file"
+cat << EOF > "$ss_config_file"
 {
     "server": "::",
     "server_port": $ss_server_port,
@@ -79,7 +79,7 @@ modify_config_file "$shadowsocks_shell_py" \
  "    config\['log-file'\] = config.get('log-file', '$ss_log_file')"
 cat "$shadowsocks_shell_py" | grep "$install_dir"
 
-cat <<EOF > "$ss_run_script"
+cat << EOF > "$ss_run_script"
 #!/bin/bash
 ssserver \
  -c "$ss_config_file" \
