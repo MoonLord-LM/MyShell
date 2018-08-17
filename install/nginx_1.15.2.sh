@@ -37,6 +37,7 @@ install_require 'zlib-devel'
 add_user_group 'nginx' 'Nginx Server' '/usr/local/nginx'
 set_user_dir 'nginx' "$install_dir"
 set_user_dir 'nginx' "$install_dir/etc"
+set_user_dir 'nginx' "$install_dir/vhost"
 set_user_file 'nginx' "$install_dir/nginx.conf"
 set_user_file 'nginx' "$install_dir/nginx_error.log"
 set_user_file 'nginx' "$install_dir/nginx_access.log"
@@ -109,9 +110,9 @@ events {
 http {
     include  mime.types;
     default_type  application/octet-stream;
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
+    log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
+                      '\$status \$body_bytes_sent "\$http_referer" '
+                      '"\$http_user_agent" "\$http_x_forwarded_for"';
     sendfile  on;
     tcp_nodelay  on;
     server_tokens on;
@@ -120,7 +121,7 @@ http {
     gzip  on;
     gzip_comp_level  1;
     gzip_min_length  1k;
-    gzip_types  text/plain text/html text/css text/javascript text/xml;
+    gzip_types  text/plain text/css text/javascript text/xml;
 
     open_file_cache  max=65535 inactive=60s;
     open_file_cache_min_uses  1;
