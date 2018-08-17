@@ -100,7 +100,7 @@ EOF
 cd "$install_dir"
 cat <<EOF > "nginx.conf"
 user  nginx nginx;
-worker_processes  1;
+worker_processes  `grep processor '/proc/cpuinfo' | wc -l`;
 worker_rlimit_nofile  65535;
 
 events {
