@@ -8,7 +8,7 @@ source ./My.sh
 
 # 参数设置
 site_root_path='/home/web_root'
-php_site_name='test.moonlord.cn'
+php_site_name='moonlord.cn'
 
 
 # 开始安装
@@ -71,13 +71,26 @@ openssl x509 -req -days 36500 -in "$php_site_name.csr" -signkey "$php_site_name.
 rm -rf "$php_site_name.csr"
 
 cd "$nginx_vhost_dir"
+cat << EOF > "default.conf"
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page  404 500 502 503 504 /50x.html;
+    }
+EOF
 cat << EOF > "$php_site_name.conf"
     server {
-        listen       [::]:80 ipv6only=off;
-        server_name  $php_site_name;
+        listen       80;
+        listen       443 ssl;
+        server_name  $php_site_name *.$php_site_name;
         root         $site_root_path/$php_site_name;
 
-        listen               [::]:443 ipv6only=off ssl;
         ssl_certificate      "$nginx_vhost_dir/$php_site_name.crt";
         ssl_certificate_key  "$nginx_vhost_dir/$php_site_name.key";
 
@@ -90,6 +103,16 @@ cat << EOF > "$php_site_name.conf"
             fastcgi_pass   127.0.0.1:$php_listen_port;
             fastcgi_index  index.php;
         }
+
+        error_page  404  /404.php;
+
+        # if (\$host = "$php_site_name") {
+        #     rewrite  ^/(.*)$  \$scheme://www.$php_site_name/\$1 permanent;
+        # }
+
+        # if (\$scheme = "http") {
+        #     rewrite  ^/(.*)$  https://\$host/\$1 permanent;
+        # }
     }
 EOF
 
