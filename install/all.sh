@@ -68,6 +68,7 @@ me@moonlord.cn
 me@moonlord.cn
 EOF
 openssl x509 -req -days 36500 -in "$php_site_name.csr" -signkey "$php_site_name.key" -out "$php_site_name.crt"
+rm -rf "$php_site_name.csr"
 
 cd "$nginx_vhost_dir"
 cat << EOF > "$php_site_name.conf"
