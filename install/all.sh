@@ -21,12 +21,14 @@ if [ "$1" == "--delete_exist" ];then
     sudo sh ./php_5.6.37.sh --delete_exist
     sudo sh ./nginx_1.15.2.sh --delete_exist
     sudo sh ./shadowsocks_2.8.2.sh --delete_exist
+    sudo sh ./shadowsocks_3.2.0.sh --delete_exist
 else
     sudo sh ./mysql_5.7.23.sh
     sudo sh ./mysql_8.0.12.sh
     sudo sh ./php_5.6.37.sh
     sudo sh ./nginx_1.15.2.sh
     sudo sh ./shadowsocks_2.8.2.sh
+    sudo sh ./shadowsocks_3.2.0.sh
 fi
 
 set_user_dir 'root' "$site_root_path"
