@@ -20,7 +20,6 @@ source_dir="shadowsocks-libev-$ss_version"
 ss_config_file="$install_dir/shadowsocks.json"
 ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
-ss_workers=`grep 'processor' '/proc/cpuinfo' | wc -l`
 
 if [ "$1" == "--delete_exist" ];then
     sudo unset_autorun "sh \"$ss_run_script\""
@@ -72,17 +71,19 @@ cat << EOF > "$ss_config_file"
     "timeout": 300,
     "method": "aes-256-gcm",
     "fast_open": true,
-    "workers": $ss_workers
+    "reuse_port": true,
+    "mode": "tcp_and_udp",
+    "user": "nobody"
 }
 EOF
 
 cat << EOF > "$ss_run_script"
 #!/bin/bash
-$install_dir/bin/ss-server -c "$ss_config_file"
+setsid $install_dir/bin/ss-server -c "$ss_config_file" > "$ss_log_file" 2>&1
 EOF
 
-setsid sh "$ss_run_script" > "$ss_log_file" 2>&1
+setsid sh "$ss_run_script"
 
-set_autorun "setsid sh \"$ss_run_script\" > \"$ss_log_file\" 2>&1"
+set_autorun "sh \"$ss_run_script\""
 
 show_listen
