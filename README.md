@@ -10,7 +10,7 @@ Linux Shell 常用脚本函数收集整理
 - 测试环境：阿里云 CentOS 7.5 x64  
 
 ## [使用]
-    yum install wget -y && mkdir -m 777 -p '/home/install' && cd '/home/install' \  
+    yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' \  
     wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' \  
     source 'My.sh'  
 
