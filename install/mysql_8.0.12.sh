@@ -30,10 +30,11 @@ elif [ "$1" == "--clean_cache" ]; then
     rm -rf "./$source_name"
     rm -rf "./$source_name.tar.gz"
     show_disk_usage '$install_dir'
-    return 0
+    exit 0
 elif [ "$1" == "--install" ]; then
     if [ -d "$install_dir" ];then
         die '[ Error ] install_dir exists!'
+        exit 1
     fi
 else
     echo && \
@@ -49,9 +50,10 @@ else
     echo && \
     info '    --clean_cache  delete cached files' && \
     info '                   use this to save disk space' && \
-    info '                   it will slow down future installations' && \
+    info '                   it will slow down the future installations' && \
     echo && \
     die 'require one option'
+    exit 1
 fi
 
 

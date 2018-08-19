@@ -483,7 +483,7 @@ function show_disk_usage(){
         die '[ Error ] not a directory!'
         return 1
     fi
-    notice 'df -h | grep -v '"'"'tmpfs'"'"':'
+    notice 'show `df -h | grep -v '"'"'tmpfs'"'"'`:'
     df -h | grep -v 'tmpfs'
     notice 'show `du -h --max-depth=1`:'
     cd "$dir"
