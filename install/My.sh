@@ -142,6 +142,7 @@ function remove_unneeded(){
     software=$1
     systemctl stop "$software"
     systemctl disable "$software"
+    systemctl daemon-reload
     tmp=`yum list installed | grep "$software"`
     if [ "$tmp" != "" ]; then
         yum remove "$software" -y
@@ -265,6 +266,9 @@ function set_autorun(){
     info "set_autorun: \"$1\""
     run_cmd=$1
     chmod +x "$rc_local_file"
+    systemctl start 'rc-local.service'
+    systemctl enable 'rc-local.service'
+    systemctl daemon-reload
     while read line
     do
         tmp=`echo $line | grep '^[^#].*$'`
@@ -289,6 +293,9 @@ function unset_autorun(){
     info "unset_autorun: \"$1\""
     run_cmd=$1
     chmod +x "$rc_local_file"
+    systemctl start 'rc-local.service'
+    systemctl enable 'rc-local.service'
+    systemctl daemon-reload
     tmp_line_num=0
     while read line
     do
