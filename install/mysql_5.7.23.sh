@@ -4,6 +4,7 @@ source ./My.sh
 # MySQL 5.7.23 在线安装
 # sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --install
 # sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --reinstall
+# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --clean_cache
 
 
 # 参数设置
@@ -25,6 +26,11 @@ if [ "$1" == "--reinstall" ];then
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
+elif [ "$1" == "--clean_cache" ]; then
+    rm -rf "./$source_name"
+    rm -rf "./$source_name.tar.gz"
+    show_disk_usage '$install_dir'
+    return 0
 elif [ "$1" == "--install" ]; then
     if [ -d "$install_dir" ];then
         die '[ Error ] install_dir exists!'
@@ -40,6 +46,10 @@ else
     info "    --reinstall    reinstall $source_name" && \
     info "                   default install dir: $install_dir" && \
     info '                   if already installed, delete the existed' && \
+    echo && \
+    info '    --clean_cache  delete cached files' && \
+    info '                   use this to save disk space' && \
+    info '                   it will slow down future installations' && \
     echo && \
     die 'require one option'
 fi
