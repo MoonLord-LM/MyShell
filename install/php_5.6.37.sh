@@ -12,9 +12,10 @@ php_port='5637'
 php_source_url='http://cn2.php.net/distributions/php-5.6.37.tar.gz'
 
 
+
 # 开始安装
 service_name="php-fpm-$php_port"
-source_dir="php-$php_version"
+source_name="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
 if [ "$1" == "--reinstall" ];then
@@ -49,7 +50,7 @@ set_user_file 'php' "$install_dir/php.error.log"
 set_user_file 'php' "$install_dir/php-fpm.error.log"
 set_user_file 'php' "$install_dir/php-fpm.access.log"
 
-cd "$source_dir"
+cd "$source_name"
 ./configure \
  --prefix="$install_dir" \
  --with-config-file-path="$install_dir" \

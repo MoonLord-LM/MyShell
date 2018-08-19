@@ -13,6 +13,7 @@ ss_server_port='10000'
 ss_server_password="Ecs1312357@SS"
 
 
+
 # 开始安装
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 ss_config_file="$install_dir/shadowsocks.json"

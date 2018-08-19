@@ -14,9 +14,10 @@ ss_server_password="Ecs1312357@SS"
 ss_source_url='https://github.com/shadowsocks/shadowsocks-libev/releases/download/v3.2.0/shadowsocks-libev-3.2.0.tar.gz'
 
 
+
 # 开始安装
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
-source_dir="shadowsocks-libev-$ss_version"
+source_name="shadowsocks-libev-$ss_version"
 ss_config_file="$install_dir/shadowsocks.json"
 ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
@@ -45,7 +46,7 @@ set_user_file 'root' "$ss_config_file"
 set_user_file 'root' "$ss_log_file"
 set_user_file 'root' "$ss_run_script"
 
-cd "$source_dir"
+cd "$source_name"
 ./configure \
  --prefix="$install_dir" \
  --exec-prefix="$install_dir" \

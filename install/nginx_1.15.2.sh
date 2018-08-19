@@ -12,9 +12,10 @@ nginx_port='1152'
 nginx_source_url='http://nginx.org/download/nginx-1.15.2.tar.gz'
 
 
+
 # 开始安装
 service_name="nginx$nginx_port"
-source_dir="nginx-$nginx_version"
+source_name="nginx-$nginx_version"
 install_dir="/usr/local/nginx/nginx-$nginx_version"
 
 if [ "$1" == "--reinstall" ];then
@@ -44,7 +45,7 @@ set_user_file 'nginx' "$install_dir/nginx_access.log"
 set_user_file 'nginx' "$install_dir/$service_name.lock"
 
 # http://nginx.org/en/docs/configure.html
-cd "$source_dir"
+cd "$source_name"
 ./configure \
  --prefix="$install_dir" \
  --conf-path="$install_dir/nginx.conf" \

@@ -4,7 +4,7 @@
 # source ./My.sh
 
 
-# 测试环境： 阿里云，CentOS 7.5 x64
+# 参数设置：
 github_repository='https://github.com/MoonLord-LM/MyShell'
 aliyun_base_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
 aliyun_epel_repo='http://mirrors.aliyun.com/repo/epel-7.repo'

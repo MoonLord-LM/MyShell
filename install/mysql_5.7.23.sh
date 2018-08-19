@@ -13,9 +13,10 @@ mysql_port='5723'
 mysql_source_url='https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-5.7.23.tar.gz'
 
 
-# 开始安装
+
+# 选项解析
 service_name="mysqld$mysql_port"
-source_dir="mysql-$mysql_version"
+source_name="mysql-$mysql_version"
 install_dir="/usr/local/mysql/mysql-$mysql_version"
 
 if [ "$1" == "--reinstall" ];then
@@ -24,15 +25,30 @@ if [ "$1" == "--reinstall" ];then
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
+elif [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ];then
+        die '[ Error ] install_dir exists!'
+    fi
+else
+    echo && \
+    info 'options:' && \
+    echo && \
+    info "    --install      install $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   if already installed, do nothing' && \
+    echo && \
+    info "    --reinstall    reinstall $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   if already installed, delete the existed' && \
+    echo && \
+    die 'require one option'
 fi
 
+
+
+# 开始安装
 rm -rf '/etc/my.cnf'
 rm -rf '/var/log/mysql.log'
-rm -rf '/var/log/message'
-
-if [ -d "$install_dir" ];then
-    die '[ Error ] install_dir exists!'
-fi
 
 prepare_source "$mysql_source_url"
 install_require 'bison'
@@ -54,7 +70,7 @@ set_user_file 'mysql' "$install_dir/my.cnf"
 set_memory_swap
 
 # https://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html
-cd "$source_dir"
+cd "$source_name"
 cmake \
  -DMYSQL_TCP_PORT="$mysql_port" \
  -DMYSQLX_TCP_PORT="1$mysql_port" \
