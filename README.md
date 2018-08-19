@@ -11,10 +11,10 @@ Linux Shell 常用脚本函数收集整理
 
 ## [使用]
 ```Shell
-    yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' \  
-    wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O 'My.sh' \  
-    source 'My.sh' && my_init  
-      
+yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' \
+wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O 'My.sh' \
+source 'My.sh' && my_init
+
 ```
 
 ## [笔记]
