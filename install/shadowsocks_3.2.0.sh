@@ -2,8 +2,8 @@
 source ./My.sh
 
 # Shadowsocks 3.2.0 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --install
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --reinstall
 
 
 # 参数设置
@@ -21,7 +21,7 @@ ss_config_file="$install_dir/shadowsocks.json"
 ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
 
-if [ "$1" == "--delete_exist" ];then
+if [ "$1" == "--reinstall" ];then
     sudo unset_autorun "sh \"$ss_run_script\""
     sudo rm -rf "$install_dir"
 fi

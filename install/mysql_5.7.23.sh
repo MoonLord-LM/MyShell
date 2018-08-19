@@ -2,8 +2,8 @@
 source ./My.sh
 
 # MySQL 5.7.23 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh
-# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --install
+# sudo chmod -R 777 ./ && sudo sh ./mysql_5.7.23.sh --reinstall
 
 
 # 参数设置
@@ -18,7 +18,7 @@ service_name="mysqld$mysql_port"
 source_dir="mysql-$mysql_version"
 install_dir="/usr/local/mysql/mysql-$mysql_version"
 
-if [ "$1" == "--delete_exist" ];then
+if [ "$1" == "--reinstall" ];then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"

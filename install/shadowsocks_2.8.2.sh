@@ -2,8 +2,8 @@
 source ./My.sh
 
 # Shadowsocks 2.8.2 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --install
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --reinstall
 
 
 # 参数设置
@@ -21,7 +21,7 @@ ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
 ss_workers=`grep 'processor' '/proc/cpuinfo' | wc -l`
 
-if [ "$1" == "--delete_exist" ];then
+if [ "$1" == "--reinstall" ];then
     sudo ssserver -d stop
     sudo unset_autorun "sh \"$ss_run_script\""
     sudo rm -rf "$install_dir"

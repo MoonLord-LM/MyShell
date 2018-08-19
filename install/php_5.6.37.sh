@@ -2,8 +2,8 @@
 source ./My.sh
 
 # PHP 5.6.37 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh
-# sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --install
+# sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --reinstall
 
 
 # 参数设置
@@ -17,7 +17,7 @@ service_name="php-fpm-$php_port"
 source_dir="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
-if [ "$1" == "--delete_exist" ];then
+if [ "$1" == "--reinstall" ];then
     sudo service "$service_name" stop
     sudo chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"

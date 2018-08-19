@@ -540,5 +540,9 @@ function my_init(){
     yum update -y
     check_exist 'postfix' && remove_unneeded 'postfix'
     prepare_github_source 'install/mysql_5.7.23.sh'
+    prepare_github_source 'install/mysql_8.0.12.sh'
+    prepare_github_source 'install/php_5.6.37.sh'
+    prepare_github_source 'install/nginx_1.15.2.sh'
+    prepare_github_source 'install/shadowsocks_2.8.2.sh'
     show
 }

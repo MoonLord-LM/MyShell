@@ -3,7 +3,7 @@ source ./My.sh
 
 # 全部在线安装
 # sudo chmod -R 777 ./ && sudo sh ./all.sh
-# sudo chmod -R 777 ./ && sudo sh ./all.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./all.sh --reinstall
 
 
 # 参数设置
@@ -15,20 +15,20 @@ php_site_name='moonlord.cn'
 update_repo "$aliyun_repo"
 update_pypi "$aliyun_pypi"
 
-if [ "$1" == "--delete_exist" ];then
-    sudo sh ./mysql_5.7.23.sh --delete_exist
-    sudo sh ./mysql_8.0.12.sh --delete_exist
-    sudo sh ./php_5.6.37.sh --delete_exist
-    sudo sh ./nginx_1.15.2.sh --delete_exist
-    sudo sh ./shadowsocks_2.8.2.sh --delete_exist
-    sudo sh ./shadowsocks_3.2.0.sh --delete_exist
+if [ "$1" == "--reinstall" ];then
+    sudo sh ./mysql_5.7.23.sh --reinstall
+    sudo sh ./mysql_8.0.12.sh --reinstall
+    sudo sh ./php_5.6.37.sh --reinstall
+    sudo sh ./nginx_1.15.2.sh --reinstall
+    sudo sh ./shadowsocks_2.8.2.sh --reinstall
+    sudo sh ./shadowsocks_3.2.0.sh --reinstall
 else
-    sudo sh ./mysql_5.7.23.sh
-    sudo sh ./mysql_8.0.12.sh
-    sudo sh ./php_5.6.37.sh
-    sudo sh ./nginx_1.15.2.sh
-    sudo sh ./shadowsocks_2.8.2.sh
-    sudo sh ./shadowsocks_3.2.0.sh
+    sudo sh ./mysql_5.7.23.sh --install
+    sudo sh ./mysql_8.0.12.sh --install
+    sudo sh ./php_5.6.37.sh --install
+    sudo sh ./nginx_1.15.2.sh --install
+    sudo sh ./shadowsocks_2.8.2.sh --install
+    sudo sh ./shadowsocks_3.2.0.sh --install
 fi
 
 set_user_dir 'root' "$site_root_path"

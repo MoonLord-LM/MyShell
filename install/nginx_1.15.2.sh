@@ -2,8 +2,8 @@
 source ./My.sh
 
 # Nginx 1.15.2 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh
-# sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --delete_exist
+# sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --install
+# sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --reinstall
 
 
 # 参数设置
@@ -17,7 +17,7 @@ service_name="nginx$nginx_port"
 source_dir="nginx-$nginx_version"
 install_dir="/usr/local/nginx/nginx-$nginx_version"
 
-if [ "$1" == "--delete_exist" ];then
+if [ "$1" == "--reinstall" ];then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
