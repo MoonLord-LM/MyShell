@@ -5,6 +5,7 @@
 
 
 # 测试环境： 阿里云，CentOS 7.5 x64
+github_repository='https://github.com/MoonLord-LM/MyShell'
 aliyun_base_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
 aliyun_epel_repo='http://mirrors.aliyun.com/repo/epel-7.repo'
 aliyun_simple_pypi='http://mirrors.aliyun.com/pypi/simple/'
@@ -188,9 +189,9 @@ function set_pypi(){
     tmp="${pypi_url##*//}"
     pypi_host="${tmp%%/*}"
     notice "trust host: $pypi_host"
-    pip_conf_path="${pip_conf_file%%/pip.conf}"
-    if [ ! -d "$pip_conf_path" ];then
-        mkdir -m 755 -p "$pip_conf_path"
+    pip_conf_dir="${pip_conf_file%%/pip.conf}"
+    if [ ! -d "$pip_conf_dir" ];then
+        mkdir -m 755 -p "$pip_conf_dir"
     fi
     if [ ! -f "$pip_conf_file" ];then
         touch "$pip_conf_file"
@@ -228,6 +229,27 @@ function prepare_source(){
     fi
     if [ ! -d "$output_dir" ];then
         die '[ Error ] extract failed!'
+        return 1
+    fi
+}
+# 从预定义的 GitHub 仓库下载指定路径（$1）的文件，并保存到当前目录下
+function prepare_github_source(){
+    if [ "$1" == "" ]; then
+        die 'prepare_github_source: missing parameter!'
+        return 1
+    fi
+    info "prepare_github_source: \"$1\""
+    file_url=$1
+    tmp="${github_repository/github.com/raw.githubusercontent.com}"
+    file_url="$tmp/master/$1"
+    file_name="${file_url##*/}"
+    if [ ! -f $file_name ]; then
+        notice "begin download: $file_name"
+        check_exist 'wget' || install_require 'wget'
+        wget "$file_url" -O "$file_name" --no-verbose
+    fi
+    if [ ! -f $file_name ]; then
+        die '[ Error ] download failed!'
         return 1
     fi
 }
@@ -517,5 +539,6 @@ function my_init(){
     set_pypi "$aliyun_simple_pypi"
     yum update -y
     check_exist 'postfix' && remove_unneeded 'postfix'
+    prepare_github_source 'install/mysql_5.7.23.sh'
     show
 }
