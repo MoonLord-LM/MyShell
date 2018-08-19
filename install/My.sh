@@ -397,8 +397,9 @@ function modify_config_file(){
     new_content=$3
     tmp=`cat "$file_name" | grep -n "$search_tag" | wc -l`
     if [ "$tmp" == "0" ]; then
-        die '[ Error ] find no line!'
-        return 1
+        notice 'find no line, add new config line!'
+        echo "$new_content" > "$file_name"
+        return 0
     fi
     if [ "$tmp" != "1" ]; then
         die '[ Error ] find more than one line!'
@@ -435,6 +436,7 @@ function set_memory_swap(){
     mount -a
     modify_config_file "$sysctl_conf_file" 'vm.swappiness' 'vm.swappiness=10'
     cat "$sysctl_conf_file" | grep 'vm.swappiness'
+    sysctl -p | grep 'vm.swappiness'
     notice 'show `free -m`:'
     free -m
 }
@@ -456,6 +458,7 @@ function unset_memory_swap(){
     mount -a
     modify_config_file "$sysctl_conf_file" 'vm.swappiness' 'vm.swappiness=0'
     cat "$sysctl_conf_file" | grep 'vm.swappiness'
+    sysctl -p | grep 'vm.swappiness'
     notice 'show `free -m`:'
     free -m
 }
