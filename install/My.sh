@@ -477,8 +477,8 @@ function show(){
 
 
 # 初始化（备份重要文件，安装、升级基础组件）
-function init(){
-    info "init"
+function my_init(){
+    info "my_init"
     backup_file "$base_repo_file"
     backup_file "$epel_repo_file"
     backup_file "$rc_local_file"
