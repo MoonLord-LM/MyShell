@@ -12,7 +12,7 @@ Linux Shell 常用脚本函数收集整理
 ## [使用]
     yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' \  
     wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' \  
-    source 'My.sh'  
+    source 'My.sh' && init  
 
 ## [笔记]
 01. 报错 Permission denied 是因为权限不足，需要使用 chmod 命令增加权限  
