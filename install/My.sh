@@ -143,9 +143,6 @@ function set_base_repo(){
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
     wget "$repo_url" -O "$base_repo_file"
-    yum clean all
-    yum makecache
-    yum upgrade -y
 }
 # 设置 yum 的 base_repo 源为指定的链接（$1）
 epel_repo_file='/etc/yum.repos.d/epel.repo'
@@ -158,9 +155,6 @@ function set_epel_repo(){
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
     wget "$repo_url" -O "$epel_repo_file"
-    yum clean all
-    yum makecache
-    yum upgrade -y
 }
 # 设置 pip 的 pypi 源为指定的链接（$1）
 pip_conf_file='/root/.pip/pip.conf'
@@ -406,7 +400,11 @@ function set_memory_swap(){
 function unset_memory_swap(){
     info 'unset_memory_swap'
     swapoff "$swap_file"
-    rm -rf "$swap_file"
+    if [ ! -f "$swap_file" ];then
+        notice "memory swap file not exist"
+    else
+        rm -rf "$swap_file"
+    fi
     tmp=`cat "$fstab_file" | grep "$swap_file"`
     if [ "$tmp" != "" ]; then
         new_setting=`cat "$fstab_file" | grep -v "$swap_file"`
@@ -486,6 +484,8 @@ function my_init(){
     backup_file "$sysctl_conf_file"
     set_base_repo "$aliyun_base_repo"
     set_epel_repo "$aliyun_epel_repo"
+    yum clean all
+    yum makecache
     check_exist 'ifconfig' || install_require 'net-tools'
     check_exist 'make' || install_require 'make'
     check_exist 'cmake' || install_require 'cmake'
