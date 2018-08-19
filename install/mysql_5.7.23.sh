@@ -45,7 +45,7 @@ else
     echo && \
     info "    --reinstall    reinstall $source_name" && \
     info "                   default install dir: $install_dir" && \
-    info '                   if already installed, delete the existed' && \
+    info '                   delete the existed, and redo installation' && \
     echo && \
     info '    --clean_cache  delete cached files' && \
     info '                   use this to save disk space' && \

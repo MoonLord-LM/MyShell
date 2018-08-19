@@ -483,8 +483,8 @@ function show_disk_usage(){
         die '[ Error ] not a directory!'
         return 1
     fi
-    notice 'show `df -h`:'
-    df -h
+    notice 'df -h | grep -v '"'"'tmpfs'"'"':'
+    df -h | grep -v 'tmpfs'
     notice 'show `du -h --max-depth=1`:'
     cd "$dir"
     du -h --max-depth=1
@@ -519,7 +519,7 @@ function show(){
     echo
     free -h
     echo
-    df -h
+    df -h | grep -v 'tmpfs'
     echo
     netstat -atnlp | grep 'LISTEN'
     echo
@@ -537,6 +537,7 @@ function my_init(){
     set_base_repo "$aliyun_base_repo"
     set_epel_repo "$aliyun_epel_repo"
     yum clean all
+    rm -rf '/var/cache/yum'    
     yum makecache
     check_exist 'ifconfig' || install_require 'net-tools'
     check_exist 'make' || install_require 'make'
