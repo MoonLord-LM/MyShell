@@ -142,7 +142,7 @@ function set_base_repo(){
     info "set_base_repo: \"$1\""
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
-    wget "$repo_url" -O "$base_repo_file"--no-verbose
+    wget "$repo_url" -O "$base_repo_file" --no-verbose
 }
 # 设置 yum 的 base_repo 源为指定的链接（$1）
 epel_repo_file='/etc/yum.repos.d/epel.repo'
