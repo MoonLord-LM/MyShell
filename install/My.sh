@@ -108,6 +108,7 @@ function check_exist(){
     fi
     info "check_exist: \"$1\""
     cmd=$1
+    hash -d "$cmd" > '/dev/null' 2>&1
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         return 1
@@ -126,6 +127,25 @@ function install_require(){
         yum install "$software" -y
         if [ $? -ne 0 ]; then
             die '[ Error ] install failed!'
+            return 1
+        fi
+    fi
+}
+# 使用 yum 卸载指定名称（$1）的依赖组件
+function remove_unneeded(){
+    if [ "$1" == "" ]; then
+        die 'remove_unneeded: missing parameter!'
+        return 1
+    fi
+    info "remove_unneeded: \"$1\""
+    software=$1
+    systemctl stop "$software"
+    systemctl disable "$software"
+    tmp=`yum list installed | grep "$software"`
+    if [ "$tmp" != "" ]; then
+        yum remove "$software" -y
+        if [ $? -ne 0 ]; then
+            die '[ Error ] remove failed!'
             return 1
         fi
     fi
@@ -496,5 +516,6 @@ function my_init(){
     check_exist 'pip' || install_require 'python2-pip'
     set_pypi "$aliyun_simple_pypi"
     yum update -y
+    check_exist 'postfix' && remove_unneeded 'postfix'
     show
 }
