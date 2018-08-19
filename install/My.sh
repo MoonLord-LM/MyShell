@@ -142,7 +142,7 @@ function set_base_repo(){
     info "set_base_repo: \"$1\""
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
-    wget "$repo_url" -O "$base_repo_file"
+    wget "$repo_url" -O "$base_repo_file"--no-verbose
 }
 # 设置 yum 的 base_repo 源为指定的链接（$1）
 epel_repo_file='/etc/yum.repos.d/epel.repo'
@@ -154,7 +154,7 @@ function set_epel_repo(){
     info "set_epel_repo: \"$1\""
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
-    wget "$repo_url" -O "$epel_repo_file"
+    wget "$repo_url" -O "$epel_repo_file" --no-verbose
 }
 # 设置 pip 的 pypi 源为指定的链接（$1）
 pip_conf_file='/root/.pip/pip.conf'
@@ -196,7 +196,7 @@ function prepare_source(){
     if [ ! -f $file_name ]; then
         notice "begin download: $file_name"
         check_exist 'wget' || install_require 'wget'
-        wget "$file_url" -O "$file_name"
+        wget "$file_url" -O "$file_name" --no-verbose
     fi
     if [ ! -f $file_name ]; then
         die '[ Error ] download failed!'
