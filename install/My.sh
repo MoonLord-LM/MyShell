@@ -537,7 +537,7 @@ function my_init(){
     set_base_repo "$aliyun_base_repo"
     set_epel_repo "$aliyun_epel_repo"
     yum clean all
-    rm -rf '/var/cache/yum'    
+    rm -rf '/var/cache/yum'
     yum makecache
     check_exist 'ifconfig' || install_require 'net-tools'
     check_exist 'make' || install_require 'make'
