@@ -5,67 +5,69 @@
 
 
 # 测试环境： 阿里云，CentOS 7.5 x64
-aliyun_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
-aliyun_pypi='http://mirrors.aliyun.com/pypi/simple/'
+aliyun_base_repo='http://mirrors.aliyun.com/repo/Centos-7.repo'
+aliyun_epel_repo='http://mirrors.aliyun.com/repo/epel-7.repo'
+aliyun_simple_pypi='http://mirrors.aliyun.com/pypi/simple/'
 
 
-# 输出红色的错误信息字符串（$1）
+
+# 输出红色的错误信息（$1）
 function error(){
     if [ "$1" == "" ]; then
         echo -ne '\e[1;31m' && echo 'error: missing parameter!' && echo -ne '\e[0m'
-        return
+        return 1
     fi
     echo -ne '\e[1;31m' && echo "$1" && echo -ne '\e[0m'
 }
-# 输出绿色的成功信息字符串（$1）
+# 输出绿色的成功信息（$1）
 function success(){
     if [ "$1" == "" ]; then
         error 'success: missing parameter!'
-        return
+        return 1
     fi
     echo -ne '\e[1;32m' && echo "$1" && echo -ne '\e[0m'
 }
-# 输出黄色的警告信息字符串（$1）
+# 输出黄色的警告信息（$1）
 function warn(){
     if [ "$1" == "" ]; then
         error 'warn: missing parameter!'
-        return
+        return 1
     fi
     echo -ne '\e[1;33m' && echo "$1" && echo -ne '\e[0m'
 }
-# 输出深蓝色的注意信息字符串（$1）
+# 输出深蓝色的提示信息（$1）
 function info(){
     if [ "$1" == "" ]; then
         error 'info: missing parameter!'
-        return
+        return 1
     fi
     echo -ne '\e[1;34m' && echo "$1" && echo -ne '\e[0m'
 }
-# 输出紫色的注意信息字符串（$1）
+# 输出紫色的提示信息（$1）
 function attention(){
     if [ "$1" == "" ]; then
         error 'attention: missing parameter!'
-        return
+        return 1
     fi
     echo -ne '\e[1;35m' && echo "$1" && echo -ne '\e[0m'
 }
-# 输出浅蓝色的注意信息字符串（$1）
+# 输出浅蓝色的提示信息（$1）
 function notice(){
     if [ "$1" == "" ]; then
         error 'notice: missing parameter!'
-        return
+        return 1
     fi
     echo -ne '\e[1;36m' && echo "$1" && echo -ne '\e[0m'
 }
 
 
-# 实现类似 PHP 的 die 函数，输出字符串（$1）并立即退出脚本
+# 类似 PHP 的 die 函数，输出错误信息（$1），并立即退出脚本
 export TOP_PID=$$
 trap 'exit 1' TERM
 function die(){
     if [ "$1" == "" ]; then
         error 'die: missing parameter!'
-        return
+        return 1
     fi
     error "$1"
     tmp=`echo $BASHOPTS | grep 'login_shell'`
@@ -75,70 +77,144 @@ function die(){
 }
 
 
-# 更改 yum 的 repo 源为指定的链接，并更新系统和软件
-function update_repo(){
+# 备份指定路径的文件（$1），保存到 .bak 后缀的文件中
+function backup_file(){
     if [ "$1" == "" ]; then
-        die 'update_repo: missing parameter!'
-        return
+        die 'backup_file: missing parameter!'
+        return 1
     fi
-    echo "update_repo: \"$1\""
+    info "backup_file: \"$1\""
+    file_name=$1
+    new_file="${file_name}.bak"
+    if [ ! -f "$file_name" ];then
+        die '[ Error ] file not found!'
+        return 1
+    fi
+    if [ ! -f "$new_file" ];then
+        cp -f "$file_name" "$new_file"
+    fi
+    if [ ! -f "$new_file" ];then
+        die '[ Error ] copy failed!'
+        return 1
+    fi
+}
+
+
+# 判断指定名称（$1）的函数或命令是否存在
+function check_exist(){
+    if [ "$1" == "" ]; then
+        die 'check_exist: missing parameter!'
+        return 1
+    fi
+    info "check_exist: \"$1\""
+    cmd=$1
+    command -v "$cmd" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+}
+# 使用 yum 安装指定名称（$1）的依赖组件
+function install_require(){
+    if [ "$1" == "" ]; then
+        die 'install_require: missing parameter!'
+        return 1
+    fi
+    info "install_require: \"$1\""
+    software=$1
+    tmp=`yum list installed | grep "$software"`
+    if [ "$tmp" == "" ]; then
+        yum install "$software" -y
+        if [ $? -ne 0 ]; then
+            die '[ Error ] install failed!'
+            return 1
+        fi
+    fi
+}
+
+
+# 设置 yum 的 base_repo 源为指定的链接（$1）
+base_repo_file='/etc/yum.repos.d/CentOS-Base.repo'
+function set_base_repo(){
+    if [ "$1" == "" ]; then
+        die 'set_base_repo: missing parameter!'
+        return 1
+    fi
+    info "set_base_repo: \"$1\""
     repo_url=$1
-    wget $repo_url -O '/etc/yum.repos.d/CentOS-Base.repo'
+    check_exist 'wget' || install_require 'wget'
+    wget "$repo_url" -O "$base_repo_file"
     yum clean all
     yum makecache
-    yum update -y
+    yum upgrade -y
 }
-# update_repo "$aliyun_repo" > '/dev/null' 2>&1
-
-
-# 更改 pip 的 pypi 源为指定的链接
-pip_conf_file='/root/.pip/pip.conf'
-function update_pypi(){
+# 设置 yum 的 base_repo 源为指定的链接（$1）
+epel_repo_file='/etc/yum.repos.d/epel.repo'
+function set_epel_repo(){
     if [ "$1" == "" ]; then
-        die 'update_pypi: missing parameter!'
-        return
+        die 'set_epel_repo: missing parameter!'
+        return 1
     fi
-    echo "update_pypi: \"$1\""
+    info "set_epel_repo: \"$1\""
+    repo_url=$1
+    check_exist 'wget' || install_require 'wget'
+    wget "$repo_url" -O "$epel_repo_file"
+    yum clean all
+    yum makecache
+    yum upgrade -y
+}
+# 设置 pip 的 pypi 源为指定的链接（$1）
+pip_conf_file='/root/.pip/pip.conf'
+function set_pypi(){
+    if [ "$1" == "" ]; then
+        die 'set_pypi: missing parameter!'
+        return 1
+    fi
+    info "set_pypi: \"$1\""
     pypi_url=$1
     tmp="${pypi_url##*//}"
     pypi_host="${tmp%%/*}"
-    echo "trusted host: $pypi_host"
+    notice "trust host: $pypi_host"
+    pip_conf_path="${pip_conf_file%%/pip.conf}"
+    if [ ! -d "$pip_conf_path" ];then
+        mkdir -m 755 -p "$pip_conf_path"
+    fi
+    if [ ! -f "$pip_conf_file" ];then
+        touch "$pip_conf_file"
+        chmod 755 "$pip_conf_file"
+    fi
     echo '[global]' > "$pip_conf_file"
     echo "index-url=$pypi_url" >> "$pip_conf_file"
     echo '[install]' >> "$pip_conf_file"
     echo "trusted-host=$pypi_host" >> "$pip_conf_file"
 }
-# update_pypi "$aliyun_pypi" > '/dev/null' 2>&1
-yum install 'python' -y  > '/dev/null' 2>&1
-yum install 'python2-pip' -y  > '/dev/null' 2>&1
-yum install 'python-setuptools' -y > '/dev/null' 2>&1
 
 
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并解压到当前目录下
 function prepare_source(){
     if [ "$1" == "" ]; then
         die 'prepare_source: missing parameter!'
-        return
+        return 1
     fi
-    echo "prepare_source: \"$1\""
-    source_url=$1
-    file_name="${source_url##*/}"
+    info "prepare_source: \"$1\""
+    file_url=$1
+    file_name="${file_url##*/}"
     output_dir="${file_name%%.tar.gz}"
     if [ ! -f $file_name ]; then
-        echo "begin download: $file_name"
-        wget $source_url -O $file_name
+        notice "begin download: $file_name"
+        check_exist 'wget' || install_require 'wget'
+        wget "$file_url" -O "$file_name"
     fi
     if [ ! -f $file_name ]; then
         die '[ Error ] download failed!'
-        return
+        return 1
     fi
     if [ ! -d "$output_dir" ];then
-        echo "begin extract: $file_name"
-        tar -zxvf $file_name -C ./
+        notice "begin extract: $file_name"
+        tar -zxvf "$file_name" -C ./
     fi
     if [ ! -d "$output_dir" ];then
         die '[ Error ] extract failed!'
-        return
+        return 1
     fi
 }
 
@@ -148,44 +224,48 @@ rc_local_file='/etc/rc.d/rc.local'
 function set_autorun(){
     if [ "$1" == "" ]; then
         die 'set_autorun: missing parameter!'
-        return
+        return 1
     fi
-    echo "set_autorun: \"$1\""
+    info "set_autorun: \"$1\""
+    run_cmd=$1
     chmod +x "$rc_local_file"
     while read line
     do
         tmp=`echo $line | grep '^[^#].*$'`
-        if [ "$tmp" != "" ] && [ "$tmp" == "$1" ]; then
-            return
+        if [ "$tmp" != "" ] && [ "$tmp" == "$run_cmd" ]; then
+            notice "already set autorun"
+            return 0
         fi
     done < "$rc_local_file"
     echo $line
     if [ "$line" != "" ]; then
         echo "" >> "$rc_local_file"
     fi
-    echo "$1" >> "$rc_local_file"
+    echo "$run_cmd" >> "$rc_local_file"
+    notice "set autorun successfully"
 }
-
-
 # 将程序（$1）从 /etc/rc.d/rc.local 配置文件中移除，取消开机启动
 function unset_autorun(){
     if [ "$1" == "" ]; then
         die 'unset_autorun: missing parameter!'
-        return
+        return 1
     fi
-    echo "unset_autorun: \"$1\""
+    info "unset_autorun: \"$1\""
+    run_cmd=$1
     chmod +x "$rc_local_file"
     tmp_line_num=0
     while read line
     do
         tmp_line_num=$(( $tmp_line_num + 1 ))
         tmp=`echo $line | grep '^[^#].*$'`
-        if [ "$tmp" != "" ] && [ "$tmp" == "$1" ]; then
+        if [ "$tmp" != "" ] && [ "$tmp" == "$run_cmd" ]; then
             sed -i "$tmp_line_num d" "$rc_local_file"
-            unset_autorun "$1"
-            return
+            unset_autorun "$run_cmd"
+            notice "unset autorun successfully"
+            return 0
         fi
     done < "$rc_local_file"
+    notice "not found"
 }
 
 
@@ -193,9 +273,9 @@ function unset_autorun(){
 function add_user_group(){
     if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ]; then
         die 'add_user_group: missing parameter!'
-        return
+        return 1
     fi
-    echo "add_user_group: \"$1\" \"$2\" \"$3\""
+    info "add_user_group: \"$1\" \"$2\" \"$3\""
     user_group_name=$1
     user_comment=$2
     home_dir=$3
@@ -206,7 +286,7 @@ function add_user_group(){
     tmp=`cat '/etc/group' | grep $user_group_name`
     if [ "$tmp" == "" ]; then
         die '[ Error ] add group failed!'
-        return
+        return 1
     fi
     tmp=`cat '/etc/passwd' | grep $user_group_name`
     if [ "$tmp" == "" ]; then
@@ -215,28 +295,26 @@ function add_user_group(){
     tmp=`cat '/etc/passwd' | grep $user_group_name`
     if [ "$tmp" == "" ]; then
         die '[ Error ] add user failed!'
-        return
+        return 1
     fi
     if [ ! -d "$home_dir" ];then
         mkdir -m 755 -v -p "$home_dir"
     fi
     if [ ! -d "$home_dir" ];then
         die '[ Error ] create home directory failed!'
-        return
+        return 1
     fi
     usermod -c "$user_comment" -d "$home_dir" $user_group_name
     chgrp -R $user_group_name "$home_dir"
     chown -R $user_group_name "$home_dir"
 }
-
-
 # 为指定名称（$1）的用户和用户组，创建目录（$2），并设置 755 权限
 function set_user_dir(){
     if [ "$1" == "" ] || [ "$2" == "" ]; then
         die 'set_user_dir: missing parameter!'
-        return
+        return 1
     fi
-    echo "set_user_dir: \"$1\" \"$2\""
+    info "set_user_dir: \"$1\" \"$2\""
     user_name=$1
     new_dir=$2
     if [ ! -d "$new_dir" ];then
@@ -244,20 +322,18 @@ function set_user_dir(){
     fi
     if [ ! -d "$new_dir" ];then
         die '[ Error ] create directory failed!'
-        return
+        return 1
     fi
     chgrp -R $user_name "$new_dir"
     chown -R $user_name "$new_dir"
 }
-
-
 # 为指定名称（$1）的用户和用户组，创建文件（$2），并设置 755 权限
 function set_user_file(){
     if [ "$1" == "" ] || [ "$2" == "" ]; then
         die 'set_user_file: missing parameter!'
-        return
+        return 1
     fi
-    echo "set_user_file: \"$1\" \"$2\""
+    info "set_user_file: \"$1\" \"$2\""
     user_name=$1
     new_file=$2
     if [ ! -f "$new_file" ];then
@@ -266,94 +342,49 @@ function set_user_file(){
     fi
     if [ ! -f "$new_file" ];then
         die '[ Error ] create file failed!'
-        return
+        return 1
     fi
     chgrp $user_name "$new_file"
     chown $user_name "$new_file"
 }
 
 
-# 检查并安装指定名称（$1）的依赖组件
-function install_require(){
-    if [ "$1" == "" ]; then
-        die 'install_require: missing parameter!'
-        return 1
-    fi
-    echo "install_require: \"$1\""
-    software=$1
-    tmp=`yum list installed | grep "$1"`
-    if [ "$tmp" == "" ]; then
-        yum install "$software" -y
-        if [ $? -ne 0 ]; then
-            pip install "$software"
-            if [ $? -ne 0 ]; then
-                die '[ Error ] install failed!'
-                return 1
-            fi
-        fi
-    fi
-}
-install_require 'make' > '/dev/null' 2>&1
-install_require 'cmake' > '/dev/null' 2>&1
-install_require 'gcc' > '/dev/null' 2>&1
-install_require 'gcc-c++' > '/dev/null' 2>&1
-
-
 # 搜索文件（$1）中的唯一字符串标记（$2），将指定行的内容，修改为字符串（$3）
 function modify_config_file(){
     if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ]; then
         die 'modify_config_file: missing parameter!'
-        return
+        return 1
     fi
-    echo "modify_config_file: \"$1\" \"$2\" \"$3\""
+    info "modify_config_file: \"$1\" \"$2\" \"$3\""
     file_name=$1
     search_tag=$2
     new_content=$3
     tmp=`cat "$file_name" | grep -n "$search_tag" | wc -l`
     if [ "$tmp" == "0" ]; then
         die '[ Error ] find no line!'
-        return
+        return 1
     fi
     if [ "$tmp" != "1" ]; then
         die '[ Error ] find more than one line!'
-        return
+        return 1
     fi
     line_num=`cat "$file_name" | grep -n "$search_tag" | awk -F':' '{print $1}'`
-    echo "modify line: $line_num"
+    notice "modify line num: $line_num"
     sed -i "$line_num c\\$new_content" "$file_name"
 }
 
 
-# 备份指定路径的文件（$1），保存到 .bak 后缀的文件中
-fstab_file='/etc/fstab'
-sysctl_conf_file='/etc/sysctl.conf'
-function backup_file(){
-    if [ "$1" == "" ]; then
-        die 'backup_file: missing parameter!'
-        return
-    fi
-    echo "backup_file: \"$1\""
-    file_name=$1
-    new_file="${file_name}.bak"
-    if [ ! -f "$new_file" ];then
-        cp -f "$file_name" "$new_file"
-    fi
-}
-backup_file "$fstab_file" > '/dev/null' 2>&1
-backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
-# cp -f "${fstab_file}.bak" "$fstab_file" > '/dev/null' 2>&1
-# cp -f "${sysctl_conf_file}.bak" "$sysctl_conf_file" > '/dev/null' 2>&1
-
-
 # 设置 /memory_swap 为虚拟内存，大小和物理内存相同
 swap_file='/memory_swap'
+fstab_file='/etc/fstab'
+sysctl_conf_file='/etc/sysctl.conf'
 function set_memory_swap(){
-    echo "set_memory_swap"
+    info "set_memory_swap"
     mem_size=`free -k | grep 'Mem:' | awk -F' ' '{print $2}'`
     tmp=`dd if='/dev/zero' of="$swap_file" bs=1024 count=$mem_size 2>&1 | grep 'busy'`
     if [ "$tmp" != "" ];then
-        echo 'memory swap file exist!'
-        return
+        notice "memory swap file exist"
+        return 0
     fi
     mkswap "$swap_file"
     chmod 600 "$swap_file"
@@ -368,14 +399,12 @@ function set_memory_swap(){
     mount -a
     modify_config_file "$sysctl_conf_file" 'vm.swappiness' 'vm.swappiness=10'
     cat "$sysctl_conf_file" | grep 'vm.swappiness'
-    echo 'show `free -m`:'
+    notice 'show `free -m`:'
     free -m
 }
-
-
 # 删除 /memory_swap 的虚拟内存设置
 function unset_memory_swap(){
-    echo 'unset_memory_swap'
+    info 'unset_memory_swap'
     swapoff "$swap_file"
     rm -rf "$swap_file"
     tmp=`cat "$fstab_file" | grep "$swap_file"`
@@ -387,7 +416,7 @@ function unset_memory_swap(){
     mount -a
     modify_config_file "$sysctl_conf_file" 'vm.swappiness' 'vm.swappiness=0'
     cat "$sysctl_conf_file" | grep 'vm.swappiness'
-    echo 'show `free -m`:'
+    notice 'show `free -m`:'
     free -m
 }
 
@@ -396,18 +425,18 @@ function unset_memory_swap(){
 function show_disk_usage(){
     if [ "$1" == "" ]; then
         die 'show_disk_usage: missing parameter!'
-        return
+        return 1
     fi
-    echo "show_disk_usage: \"$1\""
-    dir_name=$1
-    if [ ! -d "$dir_name" ];then
+    info "show_disk_usage: \"$1\""
+    dir=$1
+    if [ ! -d "$dir" ];then
         die '[ Error ] not a directory!'
-        return
+        return 1
     fi
-    echo 'show `df -h`:'
+    notice 'show `df -h`:'
     df -h
-    echo 'show `du -h --max-depth=1`:'
-    cd "$dir_name"
+    notice 'show `du -h --max-depth=1`:'
+    cd "$dir"
     du -h --max-depth=1
     cd - > '/dev/null'
 }
@@ -415,14 +444,14 @@ function show_disk_usage(){
 
 # 显示服务器的 TCP 连接信息
 function show_netstat(){
-    echo 'show_netstat'
-    echo 'show `netstat -atnlp`:'
+    info 'show_netstat'
+    notice 'show `netstat -atnlp`:'
     netstat -atnlp
 }
 # 显示服务器正在监听的 TCP 端口号
 function show_listen(){
-    echo 'show_listenm'
-    echo 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
+    info 'show_listenm'
+    notice 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
     netstat -atnlp | grep 'LISTEN'
 }
 
@@ -430,8 +459,9 @@ function show_listen(){
 # 显示系统运行状态
 function show(){
     info 'show'
+    check_exist 'virt-what' || install_require 'virt-what'
     echo "CPU Core:  `grep 'processor' '/proc/cpuinfo' | wc -l` \
-          Virtual: `install_require 'virt-what' > '/dev/null' 2>&1 && 'virt-what'`\
+          Virtual: `virt-what` \
           Type: `grep 'model name' '/proc/cpuinfo' | awk -F':' '{print $2}'`"
     echo
     echo "Now`uptime`"
@@ -443,4 +473,28 @@ function show(){
     echo
     netstat -atnlp | grep 'LISTEN'
     echo
+}
+
+
+# 初始化（备份重要文件，安装、升级基础组件）
+function init(){
+    info "init"
+    backup_file "$base_repo_file"
+    backup_file "$epel_repo_file"
+    backup_file "$rc_local_file"
+    backup_file "$fstab_file"
+    backup_file "$sysctl_conf_file"
+    set_base_repo "$aliyun_base_repo"
+    set_epel_repo "$aliyun_epel_repo"
+    check_exist 'ifconfig' || install_require 'net-tools'
+    check_exist 'make' || install_require 'make'
+    check_exist 'cmake' || install_require 'cmake'
+    check_exist 'gcc' || install_require 'gcc'
+    check_exist 'g++' || install_require 'gcc-c++'
+    check_exist 'python' || install_require 'python'
+    check_exist 'easy_install' || install_require 'python-setuptools-devel'
+    check_exist 'pip' || install_require 'python2-pip'
+    set_pypi "$aliyun_simple_pypi"
+    yum update -y
+    show
 }

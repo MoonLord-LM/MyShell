@@ -36,15 +36,15 @@ if [ -d "$install_dir" ];then
     die '[ Error ] install_dir exists!'
 fi
 
-install_require 'yolk'
-install_require 'm2crypto'
+pip install 'yolk' || die '[ Error ] install failed!'
+pip install 'm2crypto' || die '[ Error ] install failed!'
 
 tmp=`yolk -V 'shadowsocks' | grep "shadowsocks $ss_version"`
 if [ "$tmp" == "" ]; then
     die '[ Error ] ss_version can not be found!'
 fi
 
-install_require "shadowsocks==$ss_version"
+pip install "shadowsocks==$ss_version" || die '[ Error ] install failed!'
 
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$ss_config_file"
