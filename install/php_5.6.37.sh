@@ -18,7 +18,7 @@ service_name="php-fpm-$php_port"
 source_name="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
-if [ "$1" == "--reinstall" ];then
+if [ "$1" == "--reinstall" ]; then
     sudo service "$service_name" stop
     sudo chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"
@@ -28,7 +28,7 @@ fi
 
 rm -rf '/etc/php.ini'
 
-if [ -d "$install_dir" ];then
+if [ -d "$install_dir" ]; then
     die '[ Error ] install_dir exists!'
 fi
 

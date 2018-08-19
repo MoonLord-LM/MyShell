@@ -22,7 +22,7 @@ ss_log_file="$install_dir/ssserver.log"
 ss_run_script="$install_dir/run.sh"
 ss_workers=`grep 'processor' '/proc/cpuinfo' | wc -l`
 
-if [ "$1" == "--reinstall" ];then
+if [ "$1" == "--reinstall" ]; then
     sudo ssserver -d stop
     sudo unset_autorun "sh \"$ss_run_script\""
     sudo rm -rf "$install_dir"
@@ -33,7 +33,7 @@ rm -rf '/etc/shadowsocks.json'
 rm -rf '/var/run/shadowsocks.pid'
 rm -rf '/var/log/shadowsocks.log'
 
-if [ -d "$install_dir" ];then
+if [ -d "$install_dir" ]; then
     die '[ Error ] install_dir exists!'
 fi
 

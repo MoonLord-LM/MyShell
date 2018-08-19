@@ -15,7 +15,7 @@ php_site_name='moonlord.cn'
 update_repo "$aliyun_repo"
 update_pypi "$aliyun_pypi"
 
-if [ "$1" == "--reinstall" ];then
+if [ "$1" == "--reinstall" ]; then
     sudo sh ./mysql_5.7.23.sh --reinstall
     sudo sh ./mysql_8.0.12.sh --reinstall
     sudo sh ./php_5.6.37.sh --reinstall

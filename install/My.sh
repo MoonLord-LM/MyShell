@@ -87,14 +87,14 @@ function backup_file(){
     info "backup_file: \"$1\""
     file_name=$1
     new_file="${file_name}.bak"
-    if [ ! -f "$file_name" ];then
+    if [ ! -f "$file_name" ]; then
         die '[ Error ] file not found!'
         return 1
     fi
-    if [ ! -f "$new_file" ];then
+    if [ ! -f "$new_file" ]; then
         cp -f "$file_name" "$new_file"
     fi
-    if [ ! -f "$new_file" ];then
+    if [ ! -f "$new_file" ]; then
         die '[ Error ] copy failed!'
         return 1
     fi
@@ -191,10 +191,10 @@ function set_pypi(){
     pypi_host="${tmp%%/*}"
     notice "trust host: $pypi_host"
     pip_conf_dir="${pip_conf_file%%/pip.conf}"
-    if [ ! -d "$pip_conf_dir" ];then
+    if [ ! -d "$pip_conf_dir" ]; then
         mkdir -m 755 -p "$pip_conf_dir"
     fi
-    if [ ! -f "$pip_conf_file" ];then
+    if [ ! -f "$pip_conf_file" ]; then
         touch "$pip_conf_file"
         chmod 755 "$pip_conf_file"
     fi
@@ -224,11 +224,11 @@ function prepare_source(){
         die '[ Error ] download failed!'
         return 1
     fi
-    if [ ! -d "$output_dir" ];then
+    if [ ! -d "$output_dir" ]; then
         notice "begin extract: $file_name"
         tar -zxvf "$file_name" -C ./
     fi
-    if [ ! -d "$output_dir" ];then
+    if [ ! -d "$output_dir" ]; then
         die '[ Error ] extract failed!'
         return 1
     fi
@@ -273,7 +273,7 @@ function set_autorun(){
     do
         tmp=`echo $line | grep '^[^#].*$'`
         if [ "$tmp" != "" ] && [ "$tmp" == "$run_cmd" ]; then
-            notice "already set autorun"
+            notice 'already set autorun'
             return 0
         fi
     done < "$rc_local_file"
@@ -282,7 +282,7 @@ function set_autorun(){
         echo "" >> "$rc_local_file"
     fi
     echo "$run_cmd" >> "$rc_local_file"
-    notice "set autorun successfully"
+    notice 'set autorun successfully'
 }
 # 将程序（$1）从 /etc/rc.d/rc.local 配置文件中移除，取消开机启动
 function unset_autorun(){
@@ -304,11 +304,11 @@ function unset_autorun(){
         if [ "$tmp" != "" ] && [ "$tmp" == "$run_cmd" ]; then
             sed -i "$tmp_line_num d" "$rc_local_file"
             unset_autorun "$run_cmd"
-            notice "unset autorun successfully"
+            notice 'unset autorun successfully'
             return 0
         fi
     done < "$rc_local_file"
-    notice "not found"
+    notice 'not found'
 }
 
 
@@ -340,10 +340,10 @@ function add_user_group(){
         die '[ Error ] add user failed!'
         return 1
     fi
-    if [ ! -d "$home_dir" ];then
+    if [ ! -d "$home_dir" ]; then
         mkdir -m 755 -v -p "$home_dir"
     fi
-    if [ ! -d "$home_dir" ];then
+    if [ ! -d "$home_dir" ]; then
         die '[ Error ] create home directory failed!'
         return 1
     fi
@@ -360,10 +360,10 @@ function set_user_dir(){
     info "set_user_dir: \"$1\" \"$2\""
     user_name=$1
     new_dir=$2
-    if [ ! -d "$new_dir" ];then
+    if [ ! -d "$new_dir" ]; then
         mkdir -m 755 -v -p "$new_dir"
     fi
-    if [ ! -d "$new_dir" ];then
+    if [ ! -d "$new_dir" ]; then
         die '[ Error ] create directory failed!'
         return 1
     fi
@@ -379,11 +379,11 @@ function set_user_file(){
     info "set_user_file: \"$1\" \"$2\""
     user_name=$1
     new_file=$2
-    if [ ! -f "$new_file" ];then
+    if [ ! -f "$new_file" ]; then
         touch "$new_file"
         chmod 755 "$new_file"
     fi
-    if [ ! -f "$new_file" ];then
+    if [ ! -f "$new_file" ]; then
         die '[ Error ] create file failed!'
         return 1
     fi
@@ -418,16 +418,28 @@ function modify_config_file(){
 }
 
 
-# 设置 /memory_swap 为虚拟内存，大小和物理内存相同
+# 设置 /memory_swap 为虚拟内存，保证物理内存和虚拟内存的总量在 4GB
 swap_file='/memory_swap'
 fstab_file='/etc/fstab'
 sysctl_conf_file='/etc/sysctl.conf'
 function set_memory_swap(){
     info "set_memory_swap"
     mem_size=`free -k | grep 'Mem:' | awk -F' ' '{print $2}'`
-    tmp=`dd if='/dev/zero' of="$swap_file" bs=1024 count=$mem_size 2>&1 | grep 'busy'`
-    if [ "$tmp" != "" ];then
-        notice "memory swap file exist"
+    add_size=$(( 1024 * 1024 * 4 - $mem_size ))
+    if [ "$add_size" -le "0" ]; then
+        notice 'physical memory is enough'
+        return 0
+    fi
+    swap_size=`free -k | grep 'Swap:' | awk -F' ' '{print $2}'`
+    add_size=$(( $add_size - $swap_size ))
+    if [ "$add_size" -le "0" ]; then
+        notice 'virtual memory is enough'
+        return 0
+    fi
+    notice "add swap memory: $add_size KB"
+    tmp=`dd if='/dev/zero' of="$swap_file" bs=1024 count=$add_size 2>&1 | grep 'busy'`
+    if [ "$tmp" != "" ]; then
+        notice 'memory swap file exist'
         return 0
     fi
     mkswap "$swap_file"
@@ -451,8 +463,8 @@ function set_memory_swap(){
 function unset_memory_swap(){
     info 'unset_memory_swap'
     swapoff "$swap_file"
-    if [ ! -f "$swap_file" ];then
-        notice "memory swap file not exist"
+    if [ ! -f "$swap_file" ]; then
+        notice 'memory swap file not exist'
     else
         rm -rf "$swap_file"
     fi
@@ -479,7 +491,7 @@ function show_disk_usage(){
     fi
     info "show_disk_usage: \"$1\""
     dir=$1
-    if [ ! -d "$dir" ];then
+    if [ ! -d "$dir" ]; then
         die '[ Error ] not a directory!'
         return 1
     fi

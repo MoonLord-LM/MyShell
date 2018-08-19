@@ -18,7 +18,7 @@ service_name="nginx$nginx_port"
 source_name="nginx-$nginx_version"
 install_dir="/usr/local/nginx/nginx-$nginx_version"
 
-if [ "$1" == "--reinstall" ];then
+if [ "$1" == "--reinstall" ]; then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
@@ -26,7 +26,7 @@ if [ "$1" == "--reinstall" ];then
     sudo systemctl daemon-reload
 fi
 
-if [ -d "$install_dir" ];then
+if [ -d "$install_dir" ]; then
     die '[ Error ] install_dir exists!'
 fi
 

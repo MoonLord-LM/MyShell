@@ -20,7 +20,7 @@ service_name="mysqld$mysql_port"
 source_name="mysql-$mysql_version"
 install_dir="/usr/local/mysql/mysql-$mysql_version"
 
-if [ "$1" == "--reinstall" ];then
+if [ "$1" == "--reinstall" ]; then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
@@ -32,7 +32,7 @@ elif [ "$1" == "--clean_cache" ]; then
     show_disk_usage '$install_dir'
     exit 0
 elif [ "$1" == "--install" ]; then
-    if [ -d "$install_dir" ];then
+    if [ -d "$install_dir" ]; then
         die '[ Error ] install_dir exists!'
         exit 1
     fi
