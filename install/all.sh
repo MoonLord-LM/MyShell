@@ -45,6 +45,10 @@ if [ "$tmp" != "1" ]; then
 fi
 nginx_vhost_dir=`find '/usr/local/nginx' -type d -name 'vhost'`
 
+netstat -atnlp | grep 'LISTEN' | grep 'php-fpm'
+tmp=`ps -aux`
+echo "$tmp" | grep 'php-fpm: master process'
+
 tmp=`show_listen | grep php | awk -F':' '{print $2}' | awk -F' ' '{print $1}' | wc -l`
 if [ "$tmp" == "0" ]; then
     die '[ Error ] can not find php listen port!'
@@ -125,7 +129,7 @@ cat << EOF > "index.php"
 ?>
 EOF
 
-wget "http://www.php.net/favicon.ico"  -O "$site_root_path/$php_site_name/favicon.ico"
+wget 'http://www.php.net/favicon.ico'  -O "$site_root_path/$php_site_name/favicon.ico"
 
 tmp=`find '/usr/lib/systemd/system/' -type f -name  'nginx*.service' | wc -l`
 if [ "$tmp" == "0" ]; then

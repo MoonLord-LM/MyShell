@@ -4,6 +4,7 @@ source ./My.sh
 # Nginx 1.15.2 在线安装
 # sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --install
 # sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --reinstall
+# sudo chmod -R 777 ./ && sudo sh ./nginx_1.15.2.sh --clean_cache
 
 
 # 参数设置
@@ -13,7 +14,7 @@ nginx_source_url='http://nginx.org/download/nginx-1.15.2.tar.gz'
 
 
 
-# 开始安装
+# 选项解析
 service_name="nginx$nginx_port"
 source_name="nginx-$nginx_version"
 install_dir="/usr/local/nginx/nginx-$nginx_version"
@@ -24,12 +25,39 @@ if [ "$1" == "--reinstall" ]; then
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
+elif [ "$1" == "--clean_cache" ]; then
+    sudo rm -rf "./$source_name"
+    sudo rm -rf "./$source_name.tar.gz"
+    show_disk_usage "$install_dir"
+    exit 0
+elif [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ]; then
+        die '[ Error ] install_dir exists!'
+        exit 1
+    fi
+else
+    echo && \
+    info 'options:' && \
+    echo && \
+    info "    --install      install $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   if already installed, do nothing' && \
+    echo && \
+    info "    --reinstall    reinstall $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   delete the existed, and redo installation' && \
+    echo && \
+    info '    --clean_cache  delete cached files' && \
+    info '                   use this to save disk space' && \
+    info '                   it will slow down the future installations' && \
+    echo && \
+    die 'require one option'
+    exit 1
 fi
 
-if [ -d "$install_dir" ]; then
-    die '[ Error ] install_dir exists!'
-fi
 
+
+# 开始安装
 prepare_source "$nginx_source_url"
 install_require 'openssl-devel'
 install_require 'pcre-devel'
@@ -149,11 +177,13 @@ cp -f $install_dir/*.default "$install_dir/etc/"
 rm -rf $install_dir/*.default
 cp -f "$install_dir/etc/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
 
-wget "http://nginx.org/favicon.ico"  -O "$install_dir/html/favicon.ico"
+wget 'http://nginx.org/favicon.ico'  -O "$install_dir/html/favicon.ico"
 
 systemctl enable "${service_name}.service"
 systemctl daemon-reload
 systemctl start "${service_name}.service"
 systemctl status -l "${service_name}.service"
+
+"$install_dir/sbin/nginx" -V
 
 show_listen

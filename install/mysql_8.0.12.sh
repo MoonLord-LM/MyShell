@@ -8,7 +8,7 @@ source ./My.sh
 
 
 # 参数设置
-user_root_password="Ecs1312357@MySQL"
+user_root_password='Ecs1312357@MySQL'
 mysql_version='8.0.12'
 mysql_port='8012'
 mysql_source_url='https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.12.tar.gz'
@@ -27,8 +27,8 @@ if [ "$1" == "--reinstall" ]; then
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
 elif [ "$1" == "--clean_cache" ]; then
-    rm -rf "./$source_name"
-    rm -rf "./$source_name.tar.gz"
+    sudo rm -rf "./$source_name"
+    sudo rm -rf "./$source_name.tar.gz"
     show_disk_usage "$install_dir"
     exit 0
 elif [ "$1" == "--install" ]; then

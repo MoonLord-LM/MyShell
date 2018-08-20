@@ -4,6 +4,7 @@ source ./My.sh
 # PHP 5.6.37 在线安装
 # sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --install
 # sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --reinstall
+# sudo chmod -R 777 ./ && sudo sh ./php_5.6.37.sh --clean_cache
 
 
 # 参数设置
@@ -13,7 +14,7 @@ php_source_url='http://cn2.php.net/distributions/php-5.6.37.tar.gz'
 
 
 
-# 开始安装
+# 选项解析
 service_name="php-fpm-$php_port"
 source_name="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
@@ -24,13 +25,40 @@ if [ "$1" == "--reinstall" ]; then
     sudo rm -rf "/etc/init.d/$service_name"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
+elif [ "$1" == "--clean_cache" ]; then
+    sudo rm -rf "./$source_name"
+    sudo rm -rf "./$source_name.tar.gz"
+    show_disk_usage "$install_dir"
+    exit 0
+elif [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ]; then
+        die '[ Error ] install_dir exists!'
+        exit 1
+    fi
+else
+    echo && \
+    info 'options:' && \
+    echo && \
+    info "    --install      install $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   if already installed, do nothing' && \
+    echo && \
+    info "    --reinstall    reinstall $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   delete the existed, and redo installation' && \
+    echo && \
+    info '    --clean_cache  delete cached files' && \
+    info '                   use this to save disk space' && \
+    info '                   it will slow down the future installations' && \
+    echo && \
+    die 'require one option'
+    exit 1
 fi
 
+
+
+# 开始安装
 rm -rf '/etc/php.ini'
-
-if [ -d "$install_dir" ]; then
-    die '[ Error ] install_dir exists!'
-fi
 
 prepare_source "$php_source_url"
 install_require "bzip2-devel"
