@@ -29,7 +29,7 @@ if [ "$1" == "--reinstall" ]; then
 elif [ "$1" == "--clean_cache" ]; then
     rm -rf "./$source_name"
     rm -rf "./$source_name.tar.gz"
-    show_disk_usage '$install_dir'
+    show_disk_usage "$install_dir"
     exit 0
 elif [ "$1" == "--install" ]; then
     if [ -d "$install_dir" ]; then
