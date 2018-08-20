@@ -16,7 +16,7 @@ ss_server_password='Ecs1312357@SS'
 
 
 # 选项解析
-service_name="ss-$ss_server_port"
+service_name="ssserver$ss_server_port"
 source_name="shadowsocks-$ss_version"
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
@@ -62,15 +62,26 @@ rm -rf '/etc/shadowsocks.json'
 rm -rf '/var/run/shadowsocks.pid'
 rm -rf '/var/log/shadowsocks.log'
 
-install_require 'python2-dev'
-pip install 'yolk' || die '[ Error ] install failed!'
-pip install 'm2crypto' || die '[ Error ] install failed!'
+install_require 'm2crypto'
 
+pip uninstall 'yolk' -y
+pip install 'yolk'
+if [ $? -ne 0 ]; then
+    die '[ Error ] pip install yolk failed!'
+    exit 1
+fi
 tmp=`yolk -V 'shadowsocks' | grep "shadowsocks $ss_version"`
 if [ "$tmp" == "" ]; then
     die '[ Error ] ss_version can not be found!'
+    exit 1
 fi
-pip install "shadowsocks==$ss_version" || die '[ Error ] install failed!'
+
+pip uninstall "shadowsocks==$ss_version" -y
+pip install "shadowsocks==$ss_version"
+if [ $? -ne 0 ]; then
+    die '[ Error ] pip install shadowsocks failed!'
+    exit 1
+fi
 
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$install_dir/shadowsocks.json"
@@ -97,6 +108,7 @@ EOF
 shadowsocks_shell_py=`find / -type f -name 'shell.py' | grep '/site-packages/shadowsocks/'`
 if [ "$shadowsocks_shell_py" == "" ]; then
     die '[ Error ] shadowsocks_shell_py can not be found!'
+    exit 1
 fi
 modify_config_file "$shadowsocks_shell_py" \
  "    config\['pid-file'\] = config.get('pid-file', '/var/run/shadowsocks.pid')" \
@@ -115,6 +127,8 @@ cat << EOF > "${service_name}.service"
 Description=Shadowsocks Server
 After=syslog.target
 After=network.target
+After=remote-fs.target
+After=nss-lookup.target
 
 [Install]
 WantedBy=multi-user.target
@@ -123,12 +137,12 @@ WantedBy=multi-user.target
 User=root
 Group=root
 
-Type=simple
+Type=forking
 PIDFile=$install_dir/ssserver.pid
 
-ExecStart=cd "$install_dir" && ./ssserver -c "shadowsocks.json" --pid-file "ssserver.pid" --log-file "ssserver.log" --user nobody -q -d start
-ExecReload=cd "$install_dir" && ./ssserver --pid-file "ssserver.pid" -d restart
-ExecStop=cd "$install_dir" && ./ssserver --pid-file "ssserver.pid" -d stop
+ExecStart=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -d start
+ExecReload=$install_dir/ssserver --pid-file "ssserver.pid" -d restart
+ExecStop=$install_dir/ssserver --pid-file "ssserver.pid" -d stop
 
 LimitNOFILE=65535
 Restart=on-failure

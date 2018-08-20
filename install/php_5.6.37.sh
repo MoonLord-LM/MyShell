@@ -61,16 +61,16 @@ fi
 rm -rf '/etc/php.ini'
 
 prepare_source "$php_source_url"
-install_require "bzip2-devel"
-install_require "freetype-devel"
-install_require "libcurl-devel"
-install_require "libjpeg-devel"
-install_require "libmcrypt-devel"
-install_require "libpng-devel"
-install_require "libxml2-devel"
-install_require "libxslt-devel"
-install_require "openssl-devel"
-install_require "postgresql-devel"
+install_require 'bzip2-devel'
+install_require 'freetype-devel'
+install_require 'libcurl-devel'
+install_require 'libjpeg-devel'
+install_require 'libmcrypt-devel'
+install_require 'libpng-devel'
+install_require 'libxml2-devel'
+install_require 'libxslt-devel'
+install_require 'openssl-devel'
+install_require 'postgresql-devel'
 
 add_user_group 'php' 'PHP Server' '/usr/local/php'
 set_user_dir 'php' "$install_dir"
