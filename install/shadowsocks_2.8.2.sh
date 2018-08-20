@@ -140,7 +140,8 @@ Group=root
 Type=forking
 PIDFile=$install_dir/ssserver.pid
 
-ExecStart=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -d start
+ExecStartPre=$install_dir/ssserver --version
+ExecStart=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" --user nobody -q -d start
 ExecReload=$install_dir/ssserver --pid-file "ssserver.pid" -d restart
 ExecStop=$install_dir/ssserver --pid-file "ssserver.pid" -d stop
 
