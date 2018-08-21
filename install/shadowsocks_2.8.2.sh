@@ -9,7 +9,6 @@ source ./My.sh
 
 # 参数设置
 ss_version='2.8.2'
-ss_local_port='9999'
 ss_server_port='10000'
 ss_server_password='Ecs1312357@SS'
 
@@ -95,8 +94,6 @@ cat << EOF > "shadowsocks.json"
 {
     "server": "::",
     "server_port": $ss_server_port,
-    "local_address": "::",
-    "local_port": $ss_local_port,
     "password": "$ss_server_password",
     "timeout": 300,
     "method": "aes-256-cfb",

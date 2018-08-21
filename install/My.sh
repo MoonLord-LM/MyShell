@@ -505,16 +505,29 @@ function show_disk_usage(){
 
 
 # 显示服务器的 TCP 连接信息
-function show_netstat(){
-    info 'show_netstat'
+function show_tcp(){
+    info 'show_tcp'
     notice 'show `netstat -atnlp`:'
     netstat -atnlp
 }
+# 显示服务器的 UDP 连接信息
+function show_udp(){
+    info 'show_udp'
+    notice 'show `netstat -aunlp`:'
+    netstat -aunlp
+}
 # 显示服务器正在监听的 TCP 端口号
 function show_listen(){
-    info 'show_listenm'
+    info 'show_listen'
     notice 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
     netstat -atnlp | grep 'LISTEN'
+}
+# 显示服务器的网络连接信息
+function show_netstat(){
+    info 'show_netstat'
+    show_tcp
+    show_udp
+    show_listen
 }
 
 

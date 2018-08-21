@@ -9,7 +9,6 @@ source ./My.sh
 
 # 参数设置
 ss_version='3.2.0'
-ss_local_port='9998'
 ss_server_port='10001'
 ss_server_password="Ecs1312357@SS"
 ss_source_url='https://github.com/shadowsocks/shadowsocks-libev/releases/download/v3.2.0/shadowsocks-libev-3.2.0.tar.gz'
@@ -95,8 +94,6 @@ cat << EOF > "shadowsocks.json"
 {
     "server": "0.0.0.0",
     "server_port": $ss_server_port,
-    "local_address": "0.0.0.0",
-    "local_port": $ss_local_port,
     "password": "$ss_server_password",
     "timeout": 300,
     "method": "aes-256-gcm",
