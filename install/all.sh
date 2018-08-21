@@ -21,14 +21,14 @@ if [ "$1" == "--reinstall" ]; then
     sudo sh ./php_5.6.37.sh --reinstall
     sudo sh ./nginx_1.15.2.sh --reinstall
     sudo sh ./shadowsocks_2.8.2.sh --reinstall
-    sudo sh ./shadowsocks_3.2.0.sh --reinstall
+    # sudo sh ./shadowsocks_3.2.0.sh --reinstall
 else
     sudo sh ./mysql_5.7.23.sh --install
     sudo sh ./mysql_8.0.12.sh --install
     sudo sh ./php_5.6.37.sh --install
     sudo sh ./nginx_1.15.2.sh --install
     sudo sh ./shadowsocks_2.8.2.sh --install
-    sudo sh ./shadowsocks_3.2.0.sh --install
+    # sudo sh ./shadowsocks_3.2.0.sh --install
 fi
 
 set_user_dir 'root' "$site_root_path"

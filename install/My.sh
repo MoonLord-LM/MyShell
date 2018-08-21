@@ -423,7 +423,7 @@ swap_file='/memory_swap'
 fstab_file='/etc/fstab'
 sysctl_conf_file='/etc/sysctl.conf'
 function set_memory_swap(){
-    info "set_memory_swap"
+    info 'set_memory_swap'
     mem_size=`free -k | grep 'Mem:' | awk -F' ' '{print $2}'`
     add_size=$(( 1024 * 1024 * 4 - $mem_size ))
     if [ "$add_size" -le "0" ]; then
@@ -540,7 +540,7 @@ function show(){
 
 # 初始化（备份重要文件，安装、升级基础组件）
 function my_init(){
-    info "my_init"
+    info 'my_init'
     backup_file "$base_repo_file"
     backup_file "$epel_repo_file"
     backup_file "$rc_local_file"
