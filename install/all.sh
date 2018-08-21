@@ -14,7 +14,6 @@ if [ "$1" == "--install" ]; then
     sudo sh ./nginx_1.15.2.sh --install
     sudo sh ./shadowsocks_2.8.2.sh --install
     sudo sh ./shadowsocks_3.2.0.sh --install
-    exit 0
 elif [ "$1" == "--reinstall" ]; then
     sudo sh ./mysql_5.7.23.sh --reinstall
     sudo sh ./mysql_8.0.12.sh --reinstall
@@ -22,7 +21,6 @@ elif [ "$1" == "--reinstall" ]; then
     sudo sh ./nginx_1.15.2.sh --reinstall
     sudo sh ./shadowsocks_2.8.2.sh --reinstall
     sudo sh ./shadowsocks_3.2.0.sh --reinstall
-    exit 0
 elif [ "$1" == "--clean_cache" ]; then
     sudo sh ./mysql_5.7.23.sh --clean_cache
     sudo sh ./mysql_8.0.12.sh --clean_cache
@@ -30,7 +28,6 @@ elif [ "$1" == "--clean_cache" ]; then
     sudo sh ./nginx_1.15.2.sh --clean_cache
     sudo sh ./shadowsocks_2.8.2.sh --clean_cache
     sudo sh ./shadowsocks_3.2.0.sh --clean_cache
-    exit 0
 else
     echo && \
     info 'options:' && \
