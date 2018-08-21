@@ -27,7 +27,7 @@ if [ "$1" == "--reinstall" ]; then
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
 elif [ "$1" == "--clean_cache" ]; then
-    notice 'nothing to do'
+    sudo rm -rf '/root/.cache/pip'
     show_disk_usage "$install_dir"
     exit 0
 elif [ "$1" == "--install" ]; then

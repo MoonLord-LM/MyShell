@@ -4,6 +4,7 @@ source ./My.sh
 # Shadowsocks 3.2.0 在线安装
 # sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --install
 # sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --reinstall
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.2.0.sh --clean_cache
 
 
 # 参数设置
@@ -15,25 +16,53 @@ ss_source_url='https://github.com/shadowsocks/shadowsocks-libev/releases/downloa
 
 
 
-# 开始安装
-install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
+# 选项解析
+service_name="ssserver$ss_server_port"
 source_name="shadowsocks-libev-$ss_version"
-ss_config_file="$install_dir/shadowsocks.json"
-ss_log_file="$install_dir/ssserver.log"
-ss_run_script="$install_dir/run.sh"
+install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
 if [ "$1" == "--reinstall" ]; then
-    sudo unset_autorun "sh \"$ss_run_script\""
+    sudo systemctl stop "${service_name}.service"
+    sudo systemctl disable "${service_name}.service"
+    sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
+    sudo systemctl daemon-reload
+elif [ "$1" == "--clean_cache" ]; then
+    sudo rm -rf "./$source_name"
+    sudo rm -rf "./$source_name.tar.gz"
+    show_disk_usage "$install_dir"
+    exit 0
+elif [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ]; then
+        die '[ Error ] install_dir exists!'
+        exit 1
+    fi
+else
+    echo && \
+    info 'options:' && \
+    echo && \
+    info "    --install      install $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   if already installed, do nothing' && \
+    echo && \
+    info "    --reinstall    reinstall $source_name" && \
+    info "                   default install dir: $install_dir" && \
+    info '                   delete the existed, and redo installation' && \
+    echo && \
+    info '    --clean_cache  delete cached files' && \
+    info '                   use this to save disk space' && \
+    info '                   it will slow down the future installations' && \
+    echo && \
+    die 'require one option'
+    exit 1
 fi
 
+
+
+# 开始安装
 rm -rf '/etc/shadowsocks.json'
 rm -rf '/var/run/shadowsocks.pid'
 rm -rf '/var/log/shadowsocks.log'
-
-if [ -d "$install_dir" ]; then
-    die '[ Error ] install_dir exists!'
-fi
 
 prepare_source "$ss_source_url"
 install_require 'c-ares-devel'
@@ -42,9 +71,9 @@ install_require 'libsodium-devel'
 install_require 'mbedtls-devel'
 
 set_user_dir 'root' "$install_dir"
-set_user_file 'root' "$ss_config_file"
-set_user_file 'root' "$ss_log_file"
-set_user_file 'root' "$ss_run_script"
+set_user_file 'root' "$install_dir/shadowsocks.json"
+set_user_file 'root' "$install_dir/ssserver.log"
+set_user_file 'root' "$install_dir/${service_name}.service"
 
 cd "$source_name"
 ./configure \
@@ -62,7 +91,7 @@ make install
 # https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File
 # https://github.com/shadowsocks/shadowsocks/wiki/Configure-Multiple-Users
 cd "$install_dir"
-cat << EOF > "$ss_config_file"
+cat << EOF > "shadowsocks.json"
 {
     "server": "0.0.0.0",
     "server_port": $ss_server_port,
@@ -78,13 +107,39 @@ cat << EOF > "$ss_config_file"
 }
 EOF
 
-cat << EOF > "$ss_run_script"
-#!/bin/bash
-setsid $install_dir/bin/ss-server -c "$ss_config_file" > "$ss_log_file" 2>&1
+cd "$install_dir"
+cat << EOF > "${service_name}.service"
+[Unit]
+Description=Shadowsocks Server
+After=syslog.target
+After=network.target
+After=remote-fs.target
+After=nss-lookup.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=root
+Group=root
+
+Type=simple
+PIDFile=$install_dir/ssserver.pid
+
+ExecStartPre=$install_dir/bin/ss-server -h | head -n 5
+ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" -f "$install_dir/ssserver.pid" > "$install_dir/ssserver.log" 2>&1
+
+LimitNOFILE=65535
+Restart=on-failure
+PrivateTmp=true
 EOF
 
-setsid sh "$ss_run_script"
+cp -f "$install_dir/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
+systemctl enable "${service_name}.service"
+systemctl daemon-reload
+systemctl start "${service_name}.service"
+systemctl status -l "${service_name}.service"
 
-set_autorun "sh \"$ss_run_script\""
+"$install_dir/bin/ss-server" -h | head -n 5
 
 show_listen
