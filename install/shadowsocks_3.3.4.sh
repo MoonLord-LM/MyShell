@@ -68,6 +68,7 @@ install_require 'c-ares-devel'
 install_require 'libev-devel'
 install_require 'libsodium-devel'
 install_require 'mbedtls-devel'
+install_require 'pcre-devel'
 
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$install_dir/shadowsocks.json"
