@@ -92,7 +92,7 @@ make install
 cd "$install_dir"
 cat << EOF > "shadowsocks.json"
 {
-    "server": "::",
+    "server": "0.0.0.0",
     "server_port": $ss_server_port,
     "password": "$ss_server_password",
     "timeout": 300,
