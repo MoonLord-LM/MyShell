@@ -64,11 +64,11 @@ rm -rf '/var/run/shadowsocks.pid'
 rm -rf '/var/log/shadowsocks.log'
 
 prepare_source "$ss_source_url"
+install_require 'pcre-devel'
 install_require 'c-ares-devel'
 install_require 'libev-devel'
 install_require 'libsodium-devel'
 install_require 'mbedtls-devel'
-install_require 'pcre-devel'
 
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$install_dir/shadowsocks.json"
@@ -84,8 +84,7 @@ cd "$source_name"
  --runstatedir="$install_dir" \
  --disable-documentation \
  2>&1 | tee 'configure.log'
-make -j `grep 'processor' '/proc/cpuinfo' | wc -l` \
- 2>&1 | tee 'make.log'
+make -j `grep 'processor' '/proc/cpuinfo' | wc -l` 2>&1 | tee 'make.log'
 make install
 
 # https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File
@@ -93,11 +92,11 @@ make install
 cd "$install_dir"
 cat << EOF > "shadowsocks.json"
 {
-    "server": "0.0.0.0",
+    "server": "::",
     "server_port": $ss_server_port,
     "password": "$ss_server_password",
     "timeout": 300,
-    "method": "aes-256-ctr",
+    "method": "aes-256-gcm",
     "fast_open": true,
     "reuse_port": true,
     "mode": "tcp_and_udp",

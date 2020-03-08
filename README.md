@@ -21,7 +21,7 @@ set_memory_swap && show
 
 # 安装
 cd '/home/install' && chmod -Rf 777 './'
-./shadowsocks_2.8.2.sh --install && show # Shadowsocks 2.8.2
+./shadowsocks_2.8.2.sh --install # Shadowsocks 2.8.2
 ````
 
 ## [笔记]
