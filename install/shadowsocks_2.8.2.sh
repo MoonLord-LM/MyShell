@@ -19,21 +19,19 @@ service_name="ssserver$ss_server_port"
 source_name="shadowsocks-$ss_version"
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
-if [ "$1" == "--reinstall" ]; then
+if [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ]; then
+        die '[ Error ] install_dir exists!'
+        exit 1
+    fi
+
+elif [ "$1" == "--reinstall" ]; then
+    sudo rm -rf '/root/.cache/pip'
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
-elif [ "$1" == "--clean_cache" ]; then
-    sudo rm -rf '/root/.cache/pip'
-    show_disk_usage "$install_dir"
-    exit 0
-elif [ "$1" == "--install" ]; then
-    if [ -d "$install_dir" ]; then
-        die '[ Error ] install_dir exists!'
-        exit 1
-    fi
 else
     echo && \
     info 'options:' && \
@@ -92,7 +90,8 @@ cat << EOF > "shadowsocks.json"
     "timeout": 300,
     "method": "aes-256-cfb",
     "fast_open": true,
-    "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`
+    "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`,
+    "user": "nobody"
 }
 EOF
 
@@ -132,9 +131,9 @@ Type=forking
 PIDFile=$install_dir/ssserver.pid
 
 ExecStartPre=$install_dir/ssserver --version
-ExecStart=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" --user nobody -q -d start
-ExecReload=$install_dir/ssserver --pid-file "ssserver.pid" -d restart
-ExecStop=$install_dir/ssserver --pid-file "ssserver.pid" -d stop
+ExecStart=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d start
+ExecReload=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d restart
+ExecStop=$install_dir/ssserver -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d stop
 
 LimitNOFILE=65535
 Restart=on-failure

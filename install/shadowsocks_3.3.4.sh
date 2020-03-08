@@ -95,9 +95,10 @@ cat << EOF > "shadowsocks.json"
     "timeout": 300,
     "method": "aes-256-gcm",
     "fast_open": true,
-    "reuse_port": true,
-    "mode": "tcp_and_udp",
+    "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`,
     "user": "nobody"
+    "reuse_port": true,
+    "mode": "tcp_and_udp"
 }
 EOF
 
@@ -117,11 +118,13 @@ WantedBy=multi-user.target
 User=root
 Group=root
 
-Type=simple
+Type=forking
 PIDFile=$install_dir/ssserver.pid
 
 ExecStartPre=$install_dir/bin/ss-server -h | head -n 5
-ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" -f "$install_dir/ssserver.pid" > "$install_dir/ssserver.log" 2>&1
+ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json"--pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d start
+ExecReload=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d restart
+ExecStop=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d stop
 
 LimitNOFILE=65535
 Restart=on-failure
