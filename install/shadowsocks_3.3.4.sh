@@ -122,9 +122,7 @@ Type=forking
 PIDFile=$install_dir/ssserver.pid
 
 ExecStartPre=$install_dir/bin/ss-server -h | head -n 5
-ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json"--pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d start
-ExecReload=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d restart
-ExecStop=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" --pid-file "$install_dir/ssserver.pid" --log-file "$install_dir/ssserver.log" -q -d stop
+ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" -f "$install_dir/ssserver.pid" >"$install_dir/ssserver.log" 2>&1
 
 LimitNOFILE=65535
 Restart=on-failure
