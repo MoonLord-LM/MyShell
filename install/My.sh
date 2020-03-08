@@ -557,11 +557,13 @@ function show(){
 # 初始化（备份重要文件，安装、升级基础组件）
 function my_init(){
     info 'my_init'
+
     backup_file "$base_repo_file"
     backup_file "$epel_repo_file"
     backup_file "$rc_local_file"
     backup_file "$fstab_file"
     backup_file "$sysctl_conf_file"
+
     set_base_repo "$aliyun_base_repo"
     set_epel_repo "$aliyun_epel_repo"
     yum clean all
@@ -577,7 +579,9 @@ function my_init(){
     check_exist 'pip' || install_require 'python2-pip'
     set_pypi "$aliyun_simple_pypi"
     yum update -y
+
     check_exist 'postfix' && remove_unneeded 'postfix'
+
     prepare_github_source 'install/mysql_5.7.23.sh'
     prepare_github_source 'install/mysql_8.0.12.sh'
     prepare_github_source 'install/php_5.6.37.sh'
@@ -585,5 +589,6 @@ function my_init(){
     prepare_github_source 'install/shadowsocks_2.8.2.sh'
     prepare_github_source 'install/shadowsocks_3.2.0.sh'
     prepare_github_source 'install/shadowsocks_3.3.4.sh'
+
     show
 }
