@@ -247,11 +247,12 @@ function prepare_github_source(){
     tmp="${github_repository/github.com/raw.githubusercontent.com}"
     file_url="$tmp/master/$1"
     file_name="${file_url##*/}"
-    if [ ! -f $file_name ]; then
-        notice "begin download: $file_name"
-        check_exist 'wget' || install_require 'wget'
-        wget "$file_url" -O "$file_name" --no-verbose
+    if [ -f $file_name ]; then
+        rm -rf "$file_name"
     fi
+    notice "begin download: $file_name"
+    check_exist 'wget' || install_require 'wget'
+    wget "$file_url" -O "$file_name" --no-verbose
     if [ ! -f $file_name ]; then
         die "[ Error ] \"$file_name\" download failed!"
         return 1
