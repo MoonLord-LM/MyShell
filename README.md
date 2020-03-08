@@ -16,7 +16,8 @@ yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' &
 wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O 'My.sh' &&  \
 source './My.sh' && my_init
 
-# 安装
+# 设置虚拟内存
+set_memory_swap && show
 
 ````
 
