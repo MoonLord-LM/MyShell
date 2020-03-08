@@ -11,9 +11,13 @@ Linux Shell 常用脚本函数收集整理
 
 ## [使用]
 ````Shell
+# 初始化
 yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' &&  \
 wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O 'My.sh' &&  \
 source './My.sh' && my_init
+
+# 安装
+
 ````
 
 ## [笔记]
@@ -25,4 +29,5 @@ source './My.sh' && my_init
 06. 错误修改 /etc/fstab 配置文件后重启，可能导致文件系统只读，无法恢复配置，则需要 ``mount -o remount rw /``  
 07. 远程登录进入 mysql 控制台时，要注意输入的 SQL 语句中的 Shell 变量（如 $tmp），不会被替换为变量的值  
 08. 使用 ``setsid ping -c 5 'www.moonlord.cn'`` 或 ``( ping -c 5 'www.moonlord.cn' &)`` 异步执行命令  
-09. 修改 root 用户密码：使用 ``passwd`` 命令，修改 SSH 远程登录端口号：修改 /etc/ssh/sshd_config  的 Port 值  
+09. 修改 root 用户密码：使用 ``passwd`` 命令  
+10. 修改 SSH 远程登录端口号：修改 /etc/ssh/sshd_config  的 Port 值  
