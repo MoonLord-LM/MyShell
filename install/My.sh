@@ -223,7 +223,7 @@ function prepare_source(){
         check_exist 'wget' || install_require 'wget'
         wget "$file_url" -O "$file_name" --no-verbose
     fi
-    if [ ! -f $file_name ]; then
+    if [ ! -s $file_name ]; then
         die "[ Error ] \"$file_name\" download failed!"
         return 1
     fi
@@ -252,8 +252,8 @@ function prepare_github_source(){
     fi
     notice "begin download: $file_name"
     check_exist 'wget' || install_require 'wget'
-    wget "$file_url" -O "$file_name" --no-verbose
-    if [ ! -f $file_name ]; then
+    wget "$file_url" -O "$file_name"
+    if [ ! -s $file_name ]; then
         die "[ Error ] \"$file_name\" download failed!"
         return 1
     fi
