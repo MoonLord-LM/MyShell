@@ -88,17 +88,17 @@ function backup_file(){
     file_name=$1
     new_file="${file_name}.bak"
     if [ ! -f "$file_name" ]; then
-        die '[ Error ] file "$file_name" is not found!'
+        die "[ Error ] file \"$file_name\" is not found!"
         return 1
     fi
     if [ -f "$new_file" ]; then
-        die '[ Error ] file "$new_file" already exists!'
+        die "[ Error ] file \"$new_file\" already exists!"
     fi
     if [ ! -f "$new_file" ]; then
         cp -f "$file_name" "$new_file"
     fi
     if [ ! -f "$new_file" ]; then
-        die '[ Error ] file "$file_name" copy failed!'
+        die "[ Error ] file \"$file_name\" copy failed!"
         return 1
     fi
 }
@@ -130,7 +130,7 @@ function install_require(){
     if [ "$tmp" == "" ]; then
         yum install "$software" -y
         if [ $? -ne 0 ]; then
-            die '[ Error ] "$software" install failed!'
+            die "[ Error ] \"$software\" install failed!"
             return 1
         fi
     fi
@@ -150,7 +150,7 @@ function remove_unneeded(){
     if [ "$tmp" != "" ]; then
         yum remove "$software" -y
         if [ $? -ne 0 ]; then
-            die '[ Error ] "$software" remove failed!'
+            die "[ Error ] \"$software\" remove failed!"
             return 1
         fi
     fi
@@ -224,7 +224,7 @@ function prepare_source(){
         wget "$file_url" -O "$file_name" --no-verbose
     fi
     if [ ! -f $file_name ]; then
-        die '[ Error ] "$file_name" download failed!'
+        die "[ Error ] \"$file_name\" download failed!"
         return 1
     fi
     if [ ! -d "$output_dir" ]; then
@@ -232,7 +232,7 @@ function prepare_source(){
         tar -zxvf "$file_name" -C ./
     fi
     if [ ! -d "$output_dir" ]; then
-        die '[ Error ] "$file_name" extract failed!'
+        die "[ Error ] \"$file_name\" extract failed!"
         return 1
     fi
 }
@@ -253,7 +253,7 @@ function prepare_github_source(){
         wget "$file_url" -O "$file_name" --no-verbose
     fi
     if [ ! -f $file_name ]; then
-        die '[ Error ] "$file_name" download failed!'
+        die "[ Error ] \"$file_name\" download failed!"
         return 1
     fi
 }
@@ -331,7 +331,7 @@ function add_user_group(){
     fi
     tmp=`cat '/etc/group' | grep $user_group_name`
     if [ "$tmp" == "" ]; then
-        die '[ Error ] add group "$user_group_name" failed!'
+        die "[ Error ] add group \"$user_group_name\" failed!"
         return 1
     fi
     tmp=`cat '/etc/passwd' | grep $user_group_name`
@@ -340,14 +340,14 @@ function add_user_group(){
     fi
     tmp=`cat '/etc/passwd' | grep $user_group_name`
     if [ "$tmp" == "" ]; then
-        die '[ Error ] add user "$user_group_name" failed!'
+        die "[ Error ] add user \"$user_group_name\" failed!"
         return 1
     fi
     if [ ! -d "$home_dir" ]; then
         mkdir -m 755 -v -p "$home_dir"
     fi
     if [ ! -d "$home_dir" ]; then
-        die '[ Error ] create home directory "$home_dir" failed!'
+        die "[ Error ] create home directory \"$home_dir\" failed!"
         return 1
     fi
     usermod -c "$user_comment" -d "$home_dir" $user_group_name
@@ -367,7 +367,7 @@ function set_user_dir(){
         mkdir -m 755 -v -p "$new_dir"
     fi
     if [ ! -d "$new_dir" ]; then
-        die '[ Error ] create directory "$new_dir" failed!'
+        die "[ Error ] create directory \"$new_dir\" failed!"
         return 1
     fi
     chgrp -R $user_name "$new_dir"
@@ -387,7 +387,7 @@ function set_user_file(){
         chmod 755 "$new_file"
     fi
     if [ ! -f "$new_file" ]; then
-        die '[ Error ] create file "new_file" failed!'
+        die "[ Error ] create file \"new_file\" failed!"
         return 1
     fi
     chgrp $user_name "$new_file"
@@ -412,7 +412,7 @@ function modify_config_file(){
         return 0
     fi
     if [ "$tmp" != "1" ]; then
-        die '[ Error ] find more than one line config in "file_name"!'
+        die "[ Error ] find more than one line config in \"file_name\"!"
         return 1
     fi
     line_num=`cat "$file_name" | grep -n "$search_tag" | awk -F':' '{print $1}'`
@@ -495,7 +495,7 @@ function show_disk_usage(){
     info "show_disk_usage: \"$1\""
     dir=$1
     if [ ! -d "$dir" ]; then
-        die '"[ Error ] "$dir" is not a directory!'
+        die "[ Error ] \"$dir\" is not a directory!"
         return 1
     fi
     notice 'show `df -h | grep -v '"'"'tmpfs'"'"'`:'
