@@ -7,7 +7,7 @@ Linux Shell 常用脚本函数收集整理
 
 ## [说明]
 - 字符编码：UFT-8  
-- 测试环境：阿里云 CentOS 7.5 x64  
+- 测试环境：CentOS 7
 
 ## [使用]
 ````Shell
