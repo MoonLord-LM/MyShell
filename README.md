@@ -12,16 +12,19 @@ Linux Shell 常用脚本函数收集整理
 ## [使用]
 ````Shell
 # 初始化
-yum install 'wget' -y && mkdir -m 777 -p '/home/install' && cd '/home/install' &&  \
-wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O 'My.sh' &&  \
-source './My.sh' && my_init
+yum install 'wget' -y && mkdir -m 777 -p '/home/install' &&  \
+wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O '/home/install/My.sh' &&  \
+cd '/home/install' && source './My.sh' && my_init
 
 # 设置虚拟内存
 set_memory_swap && show
 
 # 安装
 cd '/home/install' && chmod -Rf 777 './'
+
 ./shadowsocks_2.8.2.sh --install # Shadowsocks 2.8.2
+./shadowsocks_3.3.4.sh --install # Shadowsocks 3.3.4
+
 ````
 
 ## [笔记]
