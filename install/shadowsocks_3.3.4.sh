@@ -96,7 +96,7 @@ cat << EOF > "shadowsocks.json"
     "method": "aes-256-gcm",
     "fast_open": true,
     "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`,
-    "user": "nobody"
+    "user": "nobody",
     "reuse_port": true,
     "mode": "tcp_and_udp"
 }
