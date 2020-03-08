@@ -170,7 +170,7 @@ function set_base_repo(){
     wget "$repo_url" -O "$base_repo_file" --no-verbose
 }
 # 设置 yum 的 base_repo 源为指定的链接（$1）
-epel_repo_file='/etc/yum.repos.d/epel.repo'
+epel_repo_file='/etc/yum.repos.d/CentOS-Epel.repo'
 function set_epel_repo(){
     if [ "$1" == "" ]; then
         die 'set_epel_repo: missing parameter!'

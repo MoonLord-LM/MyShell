@@ -19,19 +19,21 @@ service_name="ssserver$ss_server_port"
 source_name="shadowsocks-$ss_version"
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
-if [ "$1" == "--install" ]; then
-    if [ -d "$install_dir" ]; then
-        die '[ Error ] install_dir exists!'
-        exit 1
-    fi
-
-elif [ "$1" == "--reinstall" ]; then
-    sudo rm -rf '/root/.cache/pip'
+if [ "$1" == "--reinstall" ]; then
     sudo systemctl stop "${service_name}.service"
     sudo systemctl disable "${service_name}.service"
     sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
     sudo rm -rf "$install_dir"
     sudo systemctl daemon-reload
+elif [ "$1" == "--clean_cache" ]; then
+    sudo rm -rf '/root/.cache/pip'
+    show_disk_usage "$install_dir"
+    exit 0
+elif [ "$1" == "--install" ]; then
+    if [ -d "$install_dir" ]; then
+        die '[ Error ] install_dir exists!'
+        exit 1
+    fi
 else
     echo && \
     info 'options:' && \
