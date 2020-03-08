@@ -88,8 +88,11 @@ function backup_file(){
     file_name=$1
     new_file="${file_name}.bak"
     if [ ! -f "$file_name" ]; then
-        die '[ Error ] file "$file_name" not found!'
+        die '[ Error ] file "$file_name" is not found!'
         return 1
+    fi
+    if [ -f "$new_file" ]; then
+        die '[ Error ] file "$new_file" already exists!'
     fi
     if [ ! -f "$new_file" ]; then
         cp -f "$file_name" "$new_file"
