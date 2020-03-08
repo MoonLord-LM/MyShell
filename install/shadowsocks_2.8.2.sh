@@ -63,13 +63,7 @@ rm -rf '/var/log/shadowsocks.log'
 
 install_require 'm2crypto'
 
-pip uninstall 'yolk' -y
-pip install 'yolk'
-if [ $? -ne 0 ]; then
-    die '[ Error ] pip install yolk failed!'
-    exit 1
-fi
-tmp=`yolk -V 'shadowsocks' | grep "shadowsocks $ss_version"`
+tmp=`pip search shadowsocks | grep "shadowsocks ($ss_version)"`
 if [ "$tmp" == "" ]; then
     die '[ Error ] ss_version can not be found!'
     exit 1

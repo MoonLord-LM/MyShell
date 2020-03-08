@@ -578,6 +578,7 @@ function my_init(){
     check_exist 'easy_install' || install_require 'python-setuptools-devel'
     check_exist 'pip' || install_require 'python2-pip'
     set_pypi "$aliyun_simple_pypi"
+    pip install --upgrade pip
     yum update -y
 
     check_exist 'postfix' && remove_unneeded 'postfix'
