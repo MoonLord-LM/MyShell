@@ -535,6 +535,18 @@ function show_netstat(){
 }
 
 
+# 开启 BBR 的 TCP 拥塞控制算法
+function install_tcp_bbr(){
+    tmp=`sysctl net.ipv4.tcp_available_congestion_control | grep bbr`
+    if [ "$tmp" == "" ]; then
+        info 'BBR is not installed, begin to install now'
+        wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh && chmod +x bbr.sh && ./bbr.sh
+    else
+        info 'BBR is already installed'
+    fi
+}
+
+
 # 显示系统运行状态
 function show(){
     info 'show'
