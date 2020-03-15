@@ -20,7 +20,7 @@ source_name="php-$php_version"
 install_dir="/usr/local/php/php-$php_version"
 
 if [ "$1" == "--reinstall" ]; then
-    sudo service "$service_name" stop
+    systemctl stop "$service_name"
     sudo chkconfig "$service_name" off
     sudo rm -rf "/etc/init.d/$service_name"
     sudo rm -rf "$install_dir"
@@ -167,7 +167,7 @@ cp -f "$install_dir/etc/init.d.php-fpm" "/etc/init.d/$service_name"
 chmod +x "/etc/init.d/$service_name"
 chkconfig "$service_name" on
 
-service "$service_name" start
+systemctl start "$service_name"
 
 "$install_dir/sbin/php-fpm" -v
 "$install_dir/bin/php" -v
