@@ -224,7 +224,10 @@ function prepare_source(){
             file_md5=$2
             tmp=`md5sum $file_name | grep $file_md5`
             if [ "$tmp" == "" ]; then
+                notice "check file md5 error, delete file: $file_name"
                 rm -rf "$file_name"
+            else
+                notice "check file md5 ok: $file_name"
             fi
         fi
     fi
