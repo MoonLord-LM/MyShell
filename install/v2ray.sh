@@ -18,7 +18,7 @@ bash <(curl -L -s https://install.direct/go.sh)
 v2ray_config_json=`find / -type f -name 'config.json' | grep '/etc/v2ray'`
 modify_config_file "$v2ray_config_json" \
  "    \"port\": " \
- "    \"port\": $v2ray_server_port, \"listen\": \"0.0.0.0\","
+ "    \"port\": $v2ray_server_port,"
 modify_config_file "$v2ray_config_json" \
  "          \"id\": " \
  "          \"id\": \"$v2ray_client_user_id\","
