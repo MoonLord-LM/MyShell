@@ -208,7 +208,7 @@ function set_pypi(){
 }
 
 
-# 从指定的链接（$1）下载 .tar.gz 压缩包，并解压到当前目录下
+# 从指定的链接（$1）下载 .tar.gz 压缩包，并检查 MD5 值（$2），然后解压到当前目录下
 function prepare_source(){
     if [ "$1" == "" ]; then
         die 'prepare_source: missing parameter!'
@@ -218,6 +218,16 @@ function prepare_source(){
     file_url=$1
     file_name="${file_url##*/}"
     output_dir="${file_name%%.tar.gz}"
+    if [ -f $file_name ]; then
+        notice "file already exists: $file_name"
+        if [ "$2" != "" ]; then
+            file_md5=$2
+            tmp=`md5sum $file_name | grep $file_md5`
+            if [ "$tmp" == "" ]; then
+                rm -rf "$file_name"
+            fi
+        fi
+    fi
     if [ ! -f $file_name ]; then
         notice "begin download: $file_name"
         check_exist 'wget' || install_require 'wget'
@@ -226,6 +236,9 @@ function prepare_source(){
     if [ ! -s $file_name ]; then
         die "[ Error ] \"$file_name\" download failed!"
         return 1
+    fi
+    if [ -d "$output_dir" ]; then
+        rm -rf "$output_dir"
     fi
     if [ ! -d "$output_dir" ]; then
         notice "begin extract: $file_name"
@@ -443,7 +456,7 @@ function set_memory_swap(){
     notice "add swap memory: $add_size KB"
     tmp=`dd if='/dev/zero' of="$swap_file" bs=1024 count=$add_size 2>&1 | grep 'busy'`
     if [ "$tmp" != "" ]; then
-        notice 'memory swap file exist'
+        notice 'memory swap file already exists'
         return 0
     fi
     mkswap "$swap_file"
@@ -468,7 +481,7 @@ function unset_memory_swap(){
     info 'unset_memory_swap'
     swapoff "$swap_file"
     if [ ! -f "$swap_file" ]; then
-        notice 'memory swap file not exist'
+        notice 'memory swap file does not exist'
     else
         rm -rf "$swap_file"
     fi

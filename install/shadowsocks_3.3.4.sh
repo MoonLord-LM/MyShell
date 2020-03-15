@@ -2,9 +2,8 @@
 source ./My.sh
 
 # Shadowsocks 3.3.4 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.3.4.sh --install
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.3.4.sh --reinstall
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.3.4.sh --clean_cache
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_3.3.4.sh
+
 
 
 # 参数设置
@@ -12,58 +11,31 @@ ss_version='3.3.4'
 ss_server_port='10002'
 ss_server_password="Ecs1312357@SS"
 ss_source_url='https://github.com/shadowsocks/shadowsocks-libev/releases/download/v3.3.4/shadowsocks-libev-3.3.4.tar.gz'
+ss_source_md5='fb41e60db217b658a14fe3519cd78c62'
 
 
 
-# 选项解析
-service_name="ssserver$ss_server_port"
+# 卸载清理
+service_name="ssserver$ss_server_port.service"
 source_name="shadowsocks-libev-$ss_version"
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
-if [ "$1" == "--reinstall" ]; then
-    sudo systemctl stop "${service_name}.service"
-    sudo systemctl disable "${service_name}.service"
-    sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
-    sudo rm -rf "$install_dir"
+service_file="/usr/lib/systemd/system/$service_name"
+if [ -f $service_file ]; then
+    sudo systemctl stop "$service_name"
+    sudo systemctl disable "$service_name"
     sudo systemctl daemon-reload
-elif [ "$1" == "--clean_cache" ]; then
-    sudo rm -rf "./$source_name"
-    sudo rm -rf "./$source_name.tar.gz"
-    show_disk_usage "$install_dir"
-    exit 0
-elif [ "$1" == "--install" ]; then
-    if [ -d "$install_dir" ]; then
-        die '[ Error ] install_dir exists!'
-        exit 1
-    fi
-else
-    echo && \
-    info 'options:' && \
-    echo && \
-    info "    --install      install $source_name" && \
-    info "                   default install dir: $install_dir" && \
-    info '                   if already installed, do nothing' && \
-    echo && \
-    info "    --reinstall    reinstall $source_name" && \
-    info "                   default install dir: $install_dir" && \
-    info '                   delete the existed, and redo installation' && \
-    echo && \
-    info '    --clean_cache  delete cached files' && \
-    info '                   use this to save disk space' && \
-    info '                   it will slow down the future installations' && \
-    echo && \
-    die 'require one option'
-    exit 1
+    sudo rm -rf '/etc/shadowsocks.json'
+    sudo rm -rf '/var/run/shadowsocks.pid'
+    sudo rm -rf '/var/log/shadowsocks.log'
+    sudo rm -rf "$install_dir"
+    sudo rm -rf "$service_file"
 fi
 
 
 
 # 开始安装
-rm -rf '/etc/shadowsocks.json'
-rm -rf '/var/run/shadowsocks.pid'
-rm -rf '/var/log/shadowsocks.log'
-
-prepare_source "$ss_source_url"
+prepare_source "$ss_source_url" "$ss_source_md5"
 install_require 'pcre-devel'
 install_require 'c-ares-devel'
 install_require 'libev-devel'
@@ -73,7 +45,7 @@ install_require 'mbedtls-devel'
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$install_dir/shadowsocks.json"
 set_user_file 'root' "$install_dir/ssserver.log"
-set_user_file 'root' "$install_dir/${service_name}.service"
+set_user_file 'root' "$install_dir/$service_name"
 
 cd "$source_name"
 ./configure \
@@ -106,7 +78,7 @@ cat << EOF > "shadowsocks.json"
 EOF
 
 cd "$install_dir"
-cat << EOF > "${service_name}.service"
+cat << EOF > "$service_name"
 [Unit]
 Description=Shadowsocks Server
 After=syslog.target
@@ -132,12 +104,13 @@ Restart=on-failure
 PrivateTmp=true
 EOF
 
-cp -f "$install_dir/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
-systemctl enable "${service_name}.service"
+cp -f "$install_dir/$service_name" "$service_file"
+systemctl enable "$service_name"
 systemctl daemon-reload
-systemctl start "${service_name}.service"
-systemctl status -l "${service_name}.service"
+systemctl start "$service_name"
+systemctl status -l "$service_name"
 
 "$install_dir/bin/ss-server" -h | head -n 5
 
+show_disk_usage "$install_dir"
 show_listen

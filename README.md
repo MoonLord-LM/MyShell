@@ -20,8 +20,8 @@ cd '/home/install' && source './My.sh' && my_init && chmod -Rf 777 './'
 set_memory_swap && show
 
 # 安装
-./shadowsocks_2.8.2.sh --install # Shadowsocks 2.8.2
-./shadowsocks_3.3.4.sh --install # Shadowsocks 3.3.4
+./shadowsocks_2.8.2.sh # Shadowsocks 2.8.2
+./shadowsocks_3.3.4.sh # Shadowsocks 3.3.4
 
 ````
 

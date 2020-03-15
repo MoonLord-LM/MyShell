@@ -2,9 +2,8 @@
 source ./My.sh
 
 # Shadowsocks 2.8.2 在线安装
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --install
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --reinstall
-# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh --clean_cache
+# sudo chmod -R 777 ./ && sudo sh ./shadowsocks_2.8.2.sh
+
 
 
 # 参数设置
@@ -14,53 +13,27 @@ ss_server_password='Ecs1312357@SS'
 
 
 
-# 选项解析
-service_name="ssserver$ss_server_port"
+# 卸载清理
+service_name="ssserver$ss_server_port.service"
 source_name="shadowsocks-$ss_version"
 install_dir="/usr/local/shadowsocks/shadowsocks-$ss_version"
 
-if [ "$1" == "--reinstall" ]; then
-    sudo systemctl stop "${service_name}.service"
-    sudo systemctl disable "${service_name}.service"
-    sudo rm -rf "/usr/lib/systemd/system/${service_name}.service"
-    sudo rm -rf "$install_dir"
+service_file="/usr/lib/systemd/system/$service_name"
+if [ -f $service_file ]; then
+    sudo systemctl stop "$service_name"
+    sudo systemctl disable "$service_name"
     sudo systemctl daemon-reload
-elif [ "$1" == "--clean_cache" ]; then
     sudo rm -rf '/root/.cache/pip'
-    show_disk_usage "$install_dir"
-    exit 0
-elif [ "$1" == "--install" ]; then
-    if [ -d "$install_dir" ]; then
-        die '[ Error ] install_dir exists!'
-        exit 1
-    fi
-else
-    echo && \
-    info 'options:' && \
-    echo && \
-    info "    --install      install $source_name" && \
-    info "                   default install dir: $install_dir" && \
-    info '                   if already installed, do nothing' && \
-    echo && \
-    info "    --reinstall    reinstall $source_name" && \
-    info "                   default install dir: $install_dir" && \
-    info '                   delete the existed, and redo installation' && \
-    echo && \
-    info '    --clean_cache  delete cached files' && \
-    info '                   use this to save disk space' && \
-    info '                   it will slow down the future installations' && \
-    echo && \
-    die 'require one option'
-    exit 1
+    sudo rm -rf '/etc/shadowsocks.json'
+    sudo rm -rf '/var/run/shadowsocks.pid'
+    sudo rm -rf '/var/log/shadowsocks.log'
+    sudo rm -rf "$install_dir"
+    sudo rm -rf "$service_file"
 fi
 
 
 
 # 开始安装
-rm -rf '/etc/shadowsocks.json'
-rm -rf '/var/run/shadowsocks.pid'
-rm -rf '/var/log/shadowsocks.log'
-
 install_require 'm2crypto'
 
 tmp=`pip search shadowsocks | grep "shadowsocks ($ss_version)"`
@@ -79,7 +52,7 @@ fi
 set_user_dir 'root' "$install_dir"
 set_user_file 'root' "$install_dir/shadowsocks.json"
 set_user_file 'root' "$install_dir/ssserver.log"
-set_user_file 'root' "$install_dir/${service_name}.service"
+set_user_file 'root' "$install_dir/$service_name"
 
 # https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File
 # https://github.com/shadowsocks/shadowsocks/wiki/Configure-Multiple-Users
@@ -114,7 +87,7 @@ cp -f '/usr/bin/ssserver' "$install_dir/ssserver"
 cp -f '/usr/bin/sslocal' "$install_dir/sslocal"
 
 cd "$install_dir"
-cat << EOF > "${service_name}.service"
+cat << EOF > "$service_name"
 [Unit]
 Description=Shadowsocks Server
 After=syslog.target
@@ -142,12 +115,13 @@ Restart=on-failure
 PrivateTmp=true
 EOF
 
-cp -f "$install_dir/${service_name}.service" "/usr/lib/systemd/system/${service_name}.service"
-systemctl enable "${service_name}.service"
+cp -f "$install_dir/$service_name" "$service_file"
+systemctl enable "$service_name"
 systemctl daemon-reload
-systemctl start "${service_name}.service"
-systemctl status -l "${service_name}.service"
+systemctl start "$service_name"
+systemctl status -l "$service_name"
 
 "$install_dir/ssserver" --version
 
+show_disk_usage "$install_dir"
 show_listen
