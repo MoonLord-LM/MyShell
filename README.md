@@ -22,6 +22,7 @@ set_memory_swap && show
 # 安装
 ./shadowsocks_2.8.2.sh # Shadowsocks 2.8.2
 ./shadowsocks_3.3.4.sh # Shadowsocks 3.3.4
+./v2ray.sh # V2Ray
 
 ````
 

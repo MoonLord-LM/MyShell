@@ -606,6 +606,7 @@ function my_init(){
     prepare_github_source 'install/nginx_1.15.2.sh'
     prepare_github_source 'install/shadowsocks_2.8.2.sh'
     prepare_github_source 'install/shadowsocks_3.3.4.sh'
+    prepare_github_source 'install/v2ray.sh'
 
     show
 }
