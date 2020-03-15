@@ -16,6 +16,10 @@ v2ray_client_user_id="2edb07fc-ad78-4c82-9300-3c2cd13ed375"
 bash <(curl -L -s https://install.direct/go.sh)
 
 v2ray_config_json=`find / -type f -name 'config.json' | grep '/etc/v2ray'`
+if [ "$v2ray_config_json" == "" ]; then
+    die '[ Error ] v2ray_config_json can not be found!'
+    exit 1
+fi
 modify_config_file "$v2ray_config_json" \
  "    \"port\": " \
  "    \"port\": $v2ray_server_port,"
