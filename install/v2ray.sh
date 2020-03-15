@@ -30,4 +30,5 @@ cat "$v2ray_config_json"
 
 systemctl restart v2ray
 
+sleep "10s"
 show_listen
