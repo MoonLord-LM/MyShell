@@ -69,7 +69,7 @@ cat << EOF > "shadowsocks.json"
     "password": "$ss_server_password",
     "timeout": 300,
     "method": "aes-256-gcm",
-    "fast_open": true,
+    "fast_open": false,
     "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`,
     "user": "nobody",
     "reuse_port": true,
@@ -77,6 +77,8 @@ cat << EOF > "shadowsocks.json"
 }
 EOF
 
+# https://github.com/shadowsocks/shadowsocks-libev/issues/1630
+# https://github.com/shadowsocks/shadowsocks-libev/issues/1836
 cd "$install_dir"
 cat << EOF > "$service_name"
 [Unit]
@@ -93,11 +95,11 @@ WantedBy=multi-user.target
 User=root
 Group=root
 
-Type=simple
+Type=forking
 PIDFile=$install_dir/ssserver.pid
 
 ExecStartPre=$install_dir/bin/ss-server -h | head -n 5
-ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" -f "$install_dir/ssserver.pid" >>"$install_dir/ssserver.log" 2>&1
+ExecStart=$install_dir/bin/ss-server -c "$install_dir/shadowsocks.json" -f "$install_dir/ssserver.pid" >"$install_dir/ssserver.log" 2>&1
 
 LimitNOFILE=65535
 Restart=on-failure

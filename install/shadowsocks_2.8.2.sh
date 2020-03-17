@@ -64,7 +64,7 @@ cat << EOF > "shadowsocks.json"
     "password": "$ss_server_password",
     "timeout": 300,
     "method": "aes-256-cfb",
-    "fast_open": true,
+    "fast_open": false,
     "workers": `grep 'processor' '/proc/cpuinfo' | wc -l`,
     "user": "nobody"
 }

@@ -222,9 +222,12 @@ function prepare_source(){
         notice "file already exists: $file_name"
         if [ "$2" != "" ]; then
             file_md5=$2
+            notice "show `md5sum $file_name | grep $file_md5`"
+            md5sum $file_name | grep $file_md5
             tmp=`md5sum $file_name | grep $file_md5`
             if [ "$tmp" == "" ]; then
                 notice "check file md5 error, delete file: $file_name"
+                notice "target md5 is: [ $file_md5 ], but current md5 is: [ $tmp ]"
                 rm -rf "$file_name"
             else
                 notice "check file md5 ok: $file_name"
