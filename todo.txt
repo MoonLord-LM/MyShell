@@ -1,0 +1,2 @@
+check_exist 'git' || install_require 'git'  无法正确安装 git
+yum install 可能会出现：Repodata is over 2 weeks old. Install yum-cron? Or run: yum makecache fast
