@@ -23,7 +23,7 @@ cat '/etc/profile'
 
 # 修改配置
 mkdir -m 777 -p '/usr/local/maven/repo'
-apache_maven_settings_url='https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz'
+apache_maven_settings_url='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/maven/maven.settings-3.6.3.xml'
 wget "$apache_maven_settings_url" -O '/usr/local/maven/apache-maven-3.6.3/conf/settings.xml'
 
 # OpenJDK 1.8 在线安装
