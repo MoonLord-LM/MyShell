@@ -27,7 +27,7 @@ apache_maven_settings_url='https://raw.githubusercontent.com/MoonLord-LM/MyShell
 wget "$apache_maven_settings_url" -O '/usr/local/maven/apache-maven-3.6.3/conf/settings.xml'
 
 # OpenJDK 1.8 在线安装
-yum install -y 'java-1.8.0-openjdk-demo.x86_64'
+yum install -y 'java-1.8.0-openjdk-devel'
 
 source /etc/profile
 mvn -v
