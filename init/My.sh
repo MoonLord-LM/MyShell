@@ -65,7 +65,7 @@ function log_notice(){
 function set_china_timezone(){
     cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    log_info "set_china_timezone ok, current time and timezne: $current_time"
+    log_info "set_china_timezone ok, current time: $current_time"
 }
 
 
