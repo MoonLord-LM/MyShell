@@ -566,7 +566,7 @@ function show(){
     echo
     free -h
     echo
-    df -h | grep -v 'tmpfs'
+    df -h | grep '/dev/' | grep -v 'tmpfs'
     echo
     netstat -atnlp | grep 'LISTEN'
     echo
