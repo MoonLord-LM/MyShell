@@ -189,8 +189,8 @@ function check_system_is_ubuntu(){
 function install_software(){
     check_parameter "$1" || return 1
     software=$1
-    check_system_is_centos && yum list installed "$software"
-    check_system_is_ubuntu && apt list --installed "$software"
+    check_system_is_centos && yum list installed "$software" || \
+    check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         check_system_is_centos && yum install -y "$software"
         if [ $? -ne 0 ]; then
@@ -207,8 +207,8 @@ function install_software(){
 function remove_software(){
     check_parameter "$1" || return 1
     software=$1
-    check_system_is_centos && yum list installed "$software"
-    check_system_is_ubuntu && apt list --installed "$software"
+    check_system_is_centos && yum list installed "$software" || \
+    check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "remove_software: \"$software\" is removed"
     else
