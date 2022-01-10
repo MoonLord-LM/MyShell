@@ -1,168 +1,10 @@
-#!/bin/bash
-
-# MyShell 公共函数库
-# 使用方法：source ./My.sh
-
-
-
-# 参数设置：
-github_repository='https://github.com/MoonLord-LM/MyShell'
-
-
-
-# 输出红色的错误信息（$1）
-function log_error(){
-    if [ "$1" == "" ]; then
-        echo -ne '\e[1;31m' && echo 'log_error: missing parameter!' && echo -ne '\e[0m'
-        return 1
-    fi
-    echo -ne '\e[1;31m' && echo "$1" && echo -ne '\e[0m'
-}
-# 输出绿色的成功信息（$1）
-function log_success(){
-    if [ "$1" == "" ]; then
-        log_error 'log_success: missing parameter!'
-        return 1
-    fi
-    echo -ne '\e[1;32m' && echo "$1" && echo -ne '\e[0m'
-}
-# 输出黄色的警告信息（$1）
-function log_warn(){
-    if [ "$1" == "" ]; then
-        log_error 'log_warn: missing parameter!'
-        return 1
-    fi
-    echo -ne '\e[1;33m' && echo "$1" && echo -ne '\e[0m'
-}
-# 输出深蓝色的提示信息（$1）
-function log_info(){
-    if [ "$1" == "" ]; then
-        log_error 'log_info: missing parameter!'
-        return 1
-    fi
-    echo -ne '\e[1;34m' && echo "$1" && echo -ne '\e[0m'
-}
-# 输出紫色的提示信息（$1）
-function log_attention(){
-    if [ "$1" == "" ]; then
-        log_error 'log_attention: missing parameter!'
-        return 1
-    fi
-    echo -ne '\e[1;35m' && echo "$1" && echo -ne '\e[0m'
-}
-# 输出浅蓝色的提示信息（$1）
-function log_notice(){
-    if [ "$1" == "" ]; then
-        log_error 'log_notice: missing parameter!'
-        return 1
-    fi
-    echo -ne '\e[1;36m' && echo "$1" && echo -ne '\e[0m'
-}
-
-
-
-# 设置系统时区为中国时区（GMT+08:00）
-function set_china_timezone(){
-    cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
-    current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    log_info "set_china_timezone ok, current time: $current_time"
-}
-
-
-
-# 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
-function backup_file(){
-    if [ "$1" == "" ]; then
-        log_error 'backup_file: missing parameter!'
-        return 1
-    fi
-    current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    source_file_name=$1
-    backup_file_name="$source_file_name - $current_time.bak"
-    if [ ! -f "$source_file_name" ]; then
-        log_error "file \"$source_file_name\" is not found!"
-        return 1
-    fi
-    if [ -f "$backup_file_name" ]; then
-        log_error "file \"$backup_file_name\" already exists!"
-        return 1
-    fi
-    if [ ! -f "$backup_file_name" ]; then
-        cp -f "$source_file_name" "$backup_file_name"
-    fi
-    if [ ! -f "$backup_file_name" ]; then
-        log_error "file \"$backup_file_name\" copy failed!"
-        return 1
-    fi
-    log_info "backup_file: \"$source_file_name\" to \"$backup_file_name\""
-}
-
-
-
 ### TODO ###
-
-
-
-# 判断指定名称（$1）的函数或命令是否存在
-function check_exist(){
-    if [ "$1" == "" ]; then
-        log_error 'check_exist: missing parameter!'
-        return 1
-    fi
-    info "check_exist: \"$1\""
-    cmd=$1
-    hash -d "$cmd" > '/dev/null' 2>&1
-    command -v "$cmd" > '/dev/null' 2>&1
-    if [ $? -ne 0 ]; then
-        return 1
-    fi
-}
-# 使用 yum 安装指定名称（$1）的依赖组件
-function install_require(){
-    if [ "$1" == "" ]; then
-        log_error 'install_require: missing parameter!'
-        return 1
-    fi
-    info "install_require: \"$1\""
-    software=$1
-    tmp=`yum list installed | grep "$software"`
-    if [ "$tmp" == "" ]; then
-        yum install "$software" -y
-        if [ $? -ne 0 ]; then
-            log_error "\"$software\" install failed!"
-            return 1
-        fi
-    fi
-}
-# 使用 yum 卸载指定名称（$1）的依赖组件
-function remove_unneeded(){
-    if [ "$1" == "" ]; then
-        log_error 'remove_unneeded: missing parameter!'
-        return 1
-    fi
-    info "remove_unneeded: \"$1\""
-    software=$1
-    systemctl stop "$software"
-    systemctl disable "$software"
-    systemctl daemon-reload
-    tmp=`yum list installed | grep "$software"`
-    if [ "$tmp" != "" ]; then
-        yum remove "$software" -y
-        if [ $? -ne 0 ]; then
-            log_error "\"$software\" remove failed!"
-            return 1
-        fi
-    fi
-}
 
 
 # 设置 yum 的 base_repo 源为指定的链接（$1）
 base_repo_file='/etc/yum.repos.d/CentOS-Base.repo'
 function set_base_repo(){
-    if [ "$1" == "" ]; then
-        log_error 'set_base_repo: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "set_base_repo: \"$1\""
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
@@ -171,10 +13,7 @@ function set_base_repo(){
 # 设置 yum 的 base_repo 源为指定的链接（$1）
 epel_repo_file='/etc/yum.repos.d/CentOS-Epel.repo'
 function set_epel_repo(){
-    if [ "$1" == "" ]; then
-        log_error 'set_epel_repo: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "set_epel_repo: \"$1\""
     repo_url=$1
     check_exist 'wget' || install_require 'wget'
@@ -183,10 +22,7 @@ function set_epel_repo(){
 # 设置 pip 的 pypi 源为指定的链接（$1）
 pip_conf_file='/root/.pip/pip.conf'
 function set_pypi(){
-    if [ "$1" == "" ]; then
-        log_error 'set_pypi: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "set_pypi: \"$1\""
     pypi_url=$1
     tmp="${pypi_url##*//}"
@@ -209,10 +45,7 @@ function set_pypi(){
 
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并检查 MD5 值（$2），然后解压到当前目录下
 function prepare_source(){
-    if [ "$1" == "" ]; then
-        log_error 'prepare_source: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "prepare_source: \"$1\""
     file_url=$1
     file_name="${file_url##*/}"
@@ -256,10 +89,7 @@ function prepare_source(){
 }
 # 从预定义的 GitHub 仓库下载指定路径（$1）的文件，并保存到当前目录下
 function prepare_github_source(){
-    if [ "$1" == "" ]; then
-        log_error 'prepare_github_source: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "prepare_github_source: \"$1\""
     file_url=$1
     tmp="${github_repository/github.com/raw.githubusercontent.com}"
@@ -281,10 +111,7 @@ function prepare_github_source(){
 # 将程序（$1）加入 /etc/rc.d/rc.local 配置文件中，设置开机启动
 rc_local_file='/etc/rc.d/rc.local'
 function set_autorun(){
-    if [ "$1" == "" ]; then
-        log_error 'set_autorun: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "set_autorun: \"$1\""
     run_cmd=$1
     chmod +x "$rc_local_file"
@@ -308,10 +135,7 @@ function set_autorun(){
 }
 # 将程序（$1）从 /etc/rc.d/rc.local 配置文件中移除，取消开机启动
 function unset_autorun(){
-    if [ "$1" == "" ]; then
-        log_error 'unset_autorun: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "unset_autorun: \"$1\""
     run_cmd=$1
     chmod +x "$rc_local_file"
@@ -336,10 +160,7 @@ function unset_autorun(){
 
 # 创建指定名称（$1）的用户和用户组，并设置用户的标注（$2）和主目录（$3）
 function add_user_group(){
-    if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ]; then
-        log_error 'add_user_group: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" || return 1
     info "add_user_group: \"$1\" \"$2\" \"$3\""
     user_group_name=$1
     user_comment=$2
@@ -375,10 +196,7 @@ function add_user_group(){
 }
 # 为指定名称（$1）的用户和用户组，创建目录（$2），并设置 755 权限
 function set_user_dir(){
-    if [ "$1" == "" ] || [ "$2" == "" ]; then
-        log_error 'set_user_dir: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" "$2" || return 1
     info "set_user_dir: \"$1\" \"$2\""
     user_name=$1
     new_dir=$2
@@ -394,10 +212,7 @@ function set_user_dir(){
 }
 # 为指定名称（$1）的用户和用户组，创建文件（$2），并设置 755 权限
 function set_user_file(){
-    if [ "$1" == "" ] || [ "$2" == "" ]; then
-        log_error 'set_user_file: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" "$2" || return 1
     info "set_user_file: \"$1\" \"$2\""
     user_name=$1
     new_file=$2
@@ -416,10 +231,7 @@ function set_user_file(){
 
 # 搜索文件（$1）中的唯一字符串标记（$2），将指定行的内容，修改为字符串（$3）
 function modify_config_file(){
-    if [ "$1" == "" ] || [ "$2" == "" ] || [ "$3" == "" ]; then
-        log_error 'modify_config_file: missing parameter!'
-        return 1
-    fi
+    check_parameter "$1" "$2" "$3" || return 1
     info "modify_config_file: \"$1\" \"$2\" \"$3\""
     file_name=$1
     search_tag=$2
@@ -507,7 +319,7 @@ function unset_memory_swap(){
 
 # 显示指定目录（$1）的磁盘使用情况
 function show_disk_usage(){
-    if [ "$1" == "" ]; then
+    if [ "$1" == '' ]; then
         log_error 'show_disk_usage: missing parameter!'
         return 1
     fi
