@@ -189,11 +189,31 @@ function check_system_is_ubuntu(){
 function install_software(){
     check_parameter "$1" || return 1
     software=$1
-    { check_system_is_centos && yum list installed "$software"; } || \
-    { check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1; }
+    check_system_is_centos
+    if [ $? -eq 0 ]; then
+        yum list installed "$software"
+    else
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
+        else
+            log_error "install_software: unknown system, check failed"
+            return 1
+        fi
+    fi
     if [ $? -ne 0 ]; then
-        { check_system_is_centos && yum install -y "$software"; } || \
-        { check_system_is_ubuntu && apt install -y "$software"; }
+        check_system_is_centos
+        if [ $? -eq 0 ]; then
+            yum install -y "$software"
+        else
+            check_system_is_ubuntu
+            if [ $? -eq 0 ]; then
+                apt install -y "$software"
+            else
+                log_error "install_software: unknown system, install failed"
+                return 1
+            fi
+        fi
         if [ $? -ne 0 ]; then
             log_error "install_software: \"$software\" install failed"
             return 1
@@ -208,19 +228,39 @@ function install_software(){
 function remove_software(){
     check_parameter "$1" || return 1
     software=$1
-    { check_system_is_centos && yum list installed "$software"; } || \
-    { check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1; }
-    if [ $? -ne 0 ]; then
-        log_info "remove_software: \"$software\" is removed"
+    check_system_is_centos
+    if [ $? -eq 0 ]; then
+        yum list installed "$software"
     else
-        { check_system_is_centos && yum remove -y "$software"; } || \
-        { check_system_is_ubuntu && apt remove -y "$software"; }
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
+        else
+            log_error "remove_software: unknown system, check failed"
+            return 1
+        fi
+    fi
+    if [ $? -eq 0 ]; then
+        check_system_is_centos
+        if [ $? -eq 0 ]; then
+            yum remove -y "$software"
+        else
+            check_system_is_ubuntu
+            if [ $? -eq 0 ]; then
+                apt remove -y "$software"
+            else
+                log_error "remove_software: unknown system, install failed"
+                return 1
+            fi
+        fi
         if [ $? -ne 0 ]; then
             log_error "remove_software: \"$software\" remove failed"
             return 1
         else
             log_info "remove_software: \"$software\" remove ok"
         fi
+    else
+        log_info "remove_software: \"$software\" is removed"
     fi
 }
 
