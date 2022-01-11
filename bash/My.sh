@@ -180,7 +180,7 @@ function check_system_is_ubuntu(){
         return 1
     fi
     version=$(get_system_version)
-    log_info "check_system_is_ubuntu: true"
+    log_info "check_system_is_ubuntu: $version"
 }
 
 
@@ -189,10 +189,11 @@ function check_system_is_ubuntu(){
 function install_software(){
     check_parameter "$1" || return 1
     software=$1
-    check_system_is_centos && yum list installed "$software" || \
-    check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
+    { check_system_is_centos && yum list installed "$software"; } || \
+    { check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1; }
     if [ $? -ne 0 ]; then
-        check_system_is_centos && yum install -y "$software"
+        { check_system_is_centos && yum install -y "$software"; } || \
+        { check_system_is_ubuntu && apt install -y "$software"; }
         if [ $? -ne 0 ]; then
             log_error "install_software: \"$software\" install failed"
             return 1
@@ -207,12 +208,13 @@ function install_software(){
 function remove_software(){
     check_parameter "$1" || return 1
     software=$1
-    check_system_is_centos && yum list installed "$software" || \
-    check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
+    { check_system_is_centos && yum list installed "$software"; } || \
+    { check_system_is_ubuntu && apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1; }
     if [ $? -ne 0 ]; then
         log_info "remove_software: \"$software\" is removed"
     else
-        check_system_is_centos && yum remove -y "$software"
+        { check_system_is_centos && yum remove -y "$software"; } || \
+        { check_system_is_ubuntu && apt remove -y "$software"; }
         if [ $? -ne 0 ]; then
             log_error "remove_software: \"$software\" remove failed"
             return 1
