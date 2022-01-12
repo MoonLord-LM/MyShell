@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # MyShell 公共函数库
-# https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh
-# wget -O- "https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh"
-# 使用方法：source ./My.sh
+# 使用方法：source <( wget -O- "https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh" )
 
 
 
