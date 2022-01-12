@@ -189,6 +189,16 @@ function check_system_is_ubuntu(){
 function install_software(){
     check_parameter "$1" || return 1
     software=$1
+
+    # 软件别名处理 begin
+    if [ "$software" == 'g++' ]; then
+        check_system_is_centos
+        if [ $? -eq 0 ]; then
+            software='gcc-c++'
+        fi
+    fi
+    # 软件别名处理 end
+
     check_system_is_centos
     if [ $? -eq 0 ]; then
         yum list installed "$software"
@@ -197,7 +207,7 @@ function install_software(){
         if [ $? -eq 0 ]; then
             apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
         else
-            log_error "install_software: unknown system, install check failed"
+            log_error 'install_software: unknown system, install check failed'
             return 1
         fi
     fi
@@ -210,7 +220,7 @@ function install_software(){
             if [ $? -eq 0 ]; then
                 apt install -y "$software"
             else
-                log_error "install_software: unknown system, install failed"
+                log_error 'install_software: unknown system, install failed'
                 return 1
             fi
         fi
@@ -236,7 +246,7 @@ function remove_software(){
         if [ $? -eq 0 ]; then
             apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
         else
-            log_error "remove_software: unknown system, remove check failed"
+            log_error 'remove_software: unknown system, remove check failed'
             return 1
         fi
     fi
@@ -249,7 +259,7 @@ function remove_software(){
             if [ $? -eq 0 ]; then
                 apt remove -y "$software"
             else
-                log_error "remove_software: unknown system, remove failed"
+                log_error 'remove_software: unknown system, remove failed'
                 return 1
             fi
         fi
@@ -262,6 +272,18 @@ function remove_software(){
     else
         log_info "remove_software: \"$software\" is removed"
     fi
+}
+
+
+
+# 安装常用的命令
+function install_common_command(){
+    check_command_exist 'git' || install_software 'git'
+    check_command_exist 'mvn' || install_software 'maven'
+    check_command_exist 'make' || install_software 'make'
+    check_command_exist 'cmake' || install_software 'cmake'
+    check_command_exist 'gcc' || install_software 'gcc'
+    check_command_exist 'g++' || install_software 'g++'
 }
 
 

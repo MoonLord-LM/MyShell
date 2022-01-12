@@ -1,48 +1,5 @@
 ### TODO ###
 
-
-# 设置 yum 的 base_repo 源为指定的链接（$1）
-base_repo_file='/etc/yum.repos.d/CentOS-Base.repo'
-function set_base_repo(){
-    check_parameter "$1" || return 1
-    info "set_base_repo: \"$1\""
-    repo_url=$1
-    check_exist 'wget' || install_require 'wget'
-    wget "$repo_url" -O "$base_repo_file" --no-verbose
-}
-# 设置 yum 的 base_repo 源为指定的链接（$1）
-epel_repo_file='/etc/yum.repos.d/CentOS-Epel.repo'
-function set_epel_repo(){
-    check_parameter "$1" || return 1
-    info "set_epel_repo: \"$1\""
-    repo_url=$1
-    check_exist 'wget' || install_require 'wget'
-    wget "$repo_url" -O "$epel_repo_file" --no-verbose
-}
-# 设置 pip 的 pypi 源为指定的链接（$1）
-pip_conf_file='/root/.pip/pip.conf'
-function set_pypi(){
-    check_parameter "$1" || return 1
-    info "set_pypi: \"$1\""
-    pypi_url=$1
-    tmp="${pypi_url##*//}"
-    pypi_host="${tmp%%/*}"
-    notice "trust host: $pypi_host"
-    pip_conf_dir="${pip_conf_file%%/pip.conf}"
-    if [ ! -d "$pip_conf_dir" ]; then
-        mkdir -m 755 -p "$pip_conf_dir"
-    fi
-    if [ ! -f "$pip_conf_file" ]; then
-        touch "$pip_conf_file"
-        chmod 755 "$pip_conf_file"
-    fi
-    echo '[global]' > "$pip_conf_file"
-    echo "index-url=$pypi_url" >> "$pip_conf_file"
-    echo '[install]' >> "$pip_conf_file"
-    echo "trusted-host=$pypi_host" >> "$pip_conf_file"
-}
-
-
 # 从指定的链接（$1）下载 .tar.gz 压缩包，并检查 MD5 值（$2），然后解压到当前目录下
 function prepare_source(){
     check_parameter "$1" || return 1
@@ -387,24 +344,11 @@ function show(){
 
 # 初始化（备份重要文件，安装、升级基础组件）
 function my_init(){
-    info 'my_init'
 
-    backup_file "$base_repo_file"
-    backup_file "$epel_repo_file"
-    backup_file "$rc_local_file"
-    backup_file "$fstab_file"
-    backup_file "$sysctl_conf_file"
-
-    set_base_repo "$aliyun_base_repo"
-    set_epel_repo "$aliyun_epel_repo"
     yum clean all
     rm -rf '/var/cache/yum'
     yum makecache
-    check_exist 'ifconfig' || install_require 'net-tools'
-    check_exist 'make' || install_require 'make'
-    check_exist 'cmake' || install_require 'cmake'
-    check_exist 'gcc' || install_require 'gcc'
-    check_exist 'g++' || install_require 'gcc-c++'
+
     check_exist 'python' || install_require 'python'
     check_exist 'easy_install' || install_require 'python-setuptools-devel'
     check_exist 'pip' || install_require 'python2-pip'
