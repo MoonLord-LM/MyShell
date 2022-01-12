@@ -284,6 +284,9 @@ function install_common_command(){
     check_command_exist 'cmake' || install_software 'cmake'
     check_command_exist 'gcc' || install_software 'gcc'
     check_command_exist 'g++' || install_software 'g++'
+    check_command_exist 'python2' || install_software 'python2'
+    check_command_exist 'python3' || install_software 'python3'
+    check_command_exist 'pip3' || install_software 'python3-pip'
 }
 
 

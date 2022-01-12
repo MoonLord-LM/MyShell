@@ -348,15 +348,9 @@ function my_init(){
     yum clean all
     rm -rf '/var/cache/yum'
     yum makecache
-
-    check_exist 'python' || install_require 'python'
-    check_exist 'easy_install' || install_require 'python-setuptools-devel'
-    check_exist 'pip' || install_require 'python2-pip'
-    set_pypi "$aliyun_simple_pypi"
-    pip install --upgrade pip
     yum update -y
 
-    check_exist 'postfix' && remove_unneeded 'postfix'
+    pip install --upgrade pip
 
     prepare_github_source 'install/mysql_5.7.23.sh'
     prepare_github_source 'install/mysql_8.0.12.sh'
