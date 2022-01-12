@@ -197,7 +197,7 @@ function install_software(){
         if [ $? -eq 0 ]; then
             apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
         else
-            log_error "install_software: unknown system, check failed"
+            log_error "install_software: unknown system, install check failed"
             return 1
         fi
     fi
@@ -236,7 +236,7 @@ function remove_software(){
         if [ $? -eq 0 ]; then
             apt list --installed "$software" && apt list --installed "$software" | grep "$software" > '/dev/null' 2>&1
         else
-            log_error "remove_software: unknown system, check failed"
+            log_error "remove_software: unknown system, remove check failed"
             return 1
         fi
     fi
@@ -249,7 +249,7 @@ function remove_software(){
             if [ $? -eq 0 ]; then
                 apt remove -y "$software"
             else
-                log_error "remove_software: unknown system, install failed"
+                log_error "remove_software: unknown system, remove failed"
                 return 1
             fi
         fi
