@@ -36,6 +36,6 @@ install_software 'shadowsocks-libev'
 ss_config > '/etc/shadowsocks-libev/config.json'
 systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'
-systemctl status 'shadowsocks-libev'
+systemctl status --no-pager 'shadowsocks-libev'
 
 
