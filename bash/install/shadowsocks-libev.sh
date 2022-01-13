@@ -2,7 +2,7 @@
 
 # Shadowsocks
 # 开源地址：https://github.com/shadowsocks/shadowsocks-libev
-# 在线安装：$(wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks-libev.sh')
+# 在线安装：wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks-libev.sh' | bash
 
 
 
