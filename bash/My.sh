@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # MyShell 公共函数库
-# 使用方法：source <( wget -O- "https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh" )
+# 使用方法：source <( wget -O- 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 
 
 
@@ -287,6 +287,7 @@ function install_common_command(){
     check_command_exist 'python2' || install_software 'python2'
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'pip3' || install_software 'python3-pip'
+    
 }
 
 
