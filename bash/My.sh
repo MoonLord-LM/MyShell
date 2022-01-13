@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # MyShell 公共函数库
-# 使用方法：source <( wget -O- 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+# 使用方法：source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 
 
 
@@ -278,6 +278,8 @@ function remove_software(){
 
 # 安装常用的命令
 function install_common_command(){
+    check_command_exist 'wget' || install_software 'wget'
+    check_command_exist 'curl' || install_software 'curl'
     check_command_exist 'git' || install_software 'git'
     check_command_exist 'mvn' || install_software 'maven'
     check_command_exist 'make' || install_software 'make'
