@@ -29,19 +29,12 @@ check_system_is_centos
 if [ $? -eq 0 ]; then
     cd '/etc/yum.repos.d/'
     curl -O 'https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo'
-    install_software 'shadowsocks-libev'
-    ss_config > '/etc/shadowsocks-libev/config.json'
-    systemctl enable 'shadowsocks-libev'
-    systemctl restart 'shadowsocks-libev'
-    systemctl status 'shadowsocks-libev'
-else
-    check_system_is_ubuntu
-    if [ $? -eq 0 ]; then
-        echo 'TODO'
-    else
-        log_error 'Shadowsocks: unknown system, install failed'
-        return 1
-    fi
 fi
+
+install_software 'shadowsocks-libev'
+ss_config > '/etc/shadowsocks-libev/config.json'
+systemctl enable 'shadowsocks-libev'
+systemctl restart 'shadowsocks-libev'
+systemctl status 'shadowsocks-libev'
 
 
