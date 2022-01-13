@@ -28,8 +28,9 @@ install_common_command
 
 check_system_is_centos
 if [ $? -eq 0 ]; then
+    yum-config-manager --add-repo 'https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo'
     cd '/etc/yum.repos.d/'
-    curl -O 'https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo'
+    ls -la
 fi
 
 install_software 'shadowsocks-libev'
