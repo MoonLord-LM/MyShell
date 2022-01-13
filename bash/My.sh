@@ -198,6 +198,12 @@ function install_software(){
             software='gcc-c++'
         fi
     fi
+    if [ "$software" == 'docker' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='docker.io'
+        fi
+    fi
     # 软件别名处理 end
 
     check_system_is_centos
