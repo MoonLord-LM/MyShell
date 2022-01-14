@@ -24,7 +24,7 @@ EOF
 
 # 开始安装：
 source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
-install_common_command
+prepare_common_command
 
 check_system_is_centos
 if [ $? -eq 0 ]; then
