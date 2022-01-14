@@ -283,8 +283,8 @@ function remove_software(){
 
 
 
-# 安装常用的命令
-function install_common_command(){
+# 准备常用的命令
+function prepare_common_command(){
     check_command_exist 'wget' || install_software 'wget'
     check_command_exist 'curl' || install_software 'curl'
     check_command_exist 'git' || install_software 'git'
@@ -302,6 +302,6 @@ function install_common_command(){
 
 
 ### TODO ###
-log_attention 'My.sh is loaded'
+log_info 'My.sh is loaded'
 
 
