@@ -302,6 +302,6 @@ function install_common_command(){
 
 
 ### TODO ###
-echo 'My.sh is loaded'
+log_attention 'My.sh is loaded'
 
 
