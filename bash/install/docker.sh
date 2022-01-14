@@ -19,7 +19,7 @@ systemctl enable 'docker'
 systemctl restart 'docker'
 systemctl status --no-pager 'docker'
 
-docker run hello-world
+docker run 'hello-world'
 docker version
 
 
