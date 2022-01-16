@@ -19,6 +19,6 @@ systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'
 
-nginx -version
+nginx -v
 
 
