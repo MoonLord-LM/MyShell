@@ -44,4 +44,6 @@ systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'
 systemctl status --no-pager 'shadowsocks-libev'
 
+set_tcp_congestion_control_bbr
+
 
