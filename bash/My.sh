@@ -101,12 +101,21 @@ function set_timezone_china(){
 }
 # 设置系统的 TCP 拥塞控制算法为 BBR
 function set_tcp_congestion_control_bbr(){
+    log_info 'set_tcp_congestion_control_bbr begin, show current value'
+    sysctl 'net.ipv4.tcp_available_congestion_control'
+    sysctl 'net.ipv4.tcp_congestion_control'
+    sysctl 'net.core.default_qdisc'
+
     sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
     echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
-    sysctl -p > '/dev/null' 2>&1
+
+    log_info 'set_tcp_congestion_control_bbr changed config, now reload'
+    sysctl --load
+
+    log_info 'set_tcp_congestion_control_bbr ok, show current value'
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
