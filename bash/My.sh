@@ -95,7 +95,7 @@ function log_notice(){
 
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
-    cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
+    \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time: \"$current_time\""
 }
@@ -158,7 +158,7 @@ function backup_file(){
         return 1
     fi
     if [ ! -f "$backup_file_name" ]; then
-        cp -f "$source_file_name" "$backup_file_name"
+        \cp -f "$source_file_name" "$backup_file_name"
     fi
     if [ ! -f "$backup_file_name" ]; then
         log_error "file \"$backup_file_name\" copy failed"
