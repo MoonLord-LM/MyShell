@@ -24,7 +24,12 @@ EOF
 
 # 开始安装：
 source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
-prepare_common_command
+if [ $? -eq 0 ]; then
+    prepare_common_command
+else
+    log_error 'My.sh: source failed, quit now'
+    return 1
+fi
 
 check_system_is_centos
 if [ $? -eq 0 ]; then
