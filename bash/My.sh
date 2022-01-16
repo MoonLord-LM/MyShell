@@ -94,10 +94,22 @@ function log_notice(){
 
 
 # 设置系统时区为中国时区（GMT+08:00）
-function set_china_timezone(){
+function set_timezone_china(){
     cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    log_info "set_china_timezone ok, current time: \"$current_time\""
+    log_info "set_timezone_china ok, current time: \"$current_time\""
+}
+# 设置系统的 TCP 拥塞控制算法为 BBR
+function set_tcp_congestion_control_bbr(){
+    sysctl_conf_file='/etc/sysctl.conf'
+    sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
+    sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
+    echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
+    sysctl -p > '/dev/null' 2>&1
+    sysctl 'net.ipv4.tcp_available_congestion_control'
+    sysctl 'net.ipv4.tcp_congestion_control'
+    sysctl 'net.core.default_qdisc'
 }
 
 
