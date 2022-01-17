@@ -23,7 +23,14 @@ fi
 # 开始安装：
 check_command_exist 'docker' || install_software 'docker'
 docker version
+if [ $? -ne 0 ]; then
+    log_error 'docker install failed, quit now'
+    exit 1
+fi
 
+
+
+# 启动服务
 systemctl enable 'docker'
 systemctl restart 'docker'
 systemctl status --no-pager 'docker'

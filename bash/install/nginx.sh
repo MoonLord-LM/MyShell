@@ -23,7 +23,14 @@ fi
 # 开始安装：
 install_software 'nginx'
 nginx -v
+if [ $? -ne 0 ]; then
+    log_error 'nginx install failed, quit now'
+    exit 1
+fi
 
+
+
+# 启动服务
 systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'

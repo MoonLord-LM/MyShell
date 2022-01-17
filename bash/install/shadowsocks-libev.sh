@@ -44,9 +44,16 @@ fi
 set_tcp_congestion_control_bbr
 
 check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
-ss-server -h | grep --color=never 'shadowsocks-libev'
-
 ss_config > '/etc/shadowsocks-libev/config.json'
+ss-server -h | grep --color=never 'shadowsocks-libev'
+if [ $? -ne 0 ]; then
+    log_error 'shadowsocks-libev install failed, quit now'
+    exit 1
+fi
+
+
+
+# 启动服务
 systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'
 systemctl status --no-pager 'shadowsocks-libev'
