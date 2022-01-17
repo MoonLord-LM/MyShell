@@ -14,8 +14,8 @@
 source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
-    log_error 'My.sh: load failed, quit now'
-    return 1
+    echo -ne '\e[1;31m' && echo 'My.sh: load failed, quit now' && echo -ne '\e[0m'
+    exit 1
 fi
 
 check_command_exist 'docker' || install_software 'docker'
