@@ -233,6 +233,9 @@ function install_software(){
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
+            apt update -y
+            apt upgrade -y
+            apt full-upgrade -y
             apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
         else
             log_error 'install_software: unknown system, install check failed'
@@ -272,6 +275,9 @@ function remove_software(){
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
+            apt update -y
+            apt upgrade -y
+            apt full-upgrade -y
             apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
         else
             log_error 'remove_software: unknown system, remove check failed'
