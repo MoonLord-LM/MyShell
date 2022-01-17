@@ -44,7 +44,7 @@ fi
 set_tcp_congestion_control_bbr
 
 check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
-ss-server -h | grep 'shadowsocks-libev'
+ss-server -h | grep --color=never 'shadowsocks-libev'
 
 ss_config > '/etc/shadowsocks-libev/config.json'
 systemctl enable 'shadowsocks-libev'
