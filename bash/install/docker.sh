@@ -12,10 +12,9 @@
 
 # 开始安装：
 source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
-if [ $? -eq 0 ]; then
-    prepare_common_command
-else
-    log_error 'My.sh: source failed, quit now'
+prepare_common_command
+if [ $? -ne 0 ]; then
+    log_error 'My.sh: load failed, quit now'
     return 1
 fi
 
