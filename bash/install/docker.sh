@@ -19,12 +19,13 @@ else
     return 1
 fi
 
-install_software 'docker'
+check_command_exist 'docker' || install_software 'docker'
+docker version
+
 systemctl enable 'docker'
 systemctl restart 'docker'
 systemctl status --no-pager 'docker'
 
 docker run 'hello-world'
-docker version
 
 

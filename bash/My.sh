@@ -369,7 +369,6 @@ function prepare_common_command(){
     check_command_exist 'python2' || install_software 'python2'
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'pip3' || install_software 'python3-pip'
-    
 }
 
 

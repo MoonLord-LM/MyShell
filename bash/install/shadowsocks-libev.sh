@@ -38,7 +38,9 @@ if [ $? -eq 0 ]; then
     ls -la
 fi
 
-install_software 'shadowsocks-libev'
+check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
+ss-server -h | grep 'shadowsocks-libev'
+
 ss_config > '/etc/shadowsocks-libev/config.json'
 systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'

@@ -20,10 +20,10 @@ else
 fi
 
 install_software 'nginx'
+nginx -v
+
 systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'
-
-nginx -v
 
 
