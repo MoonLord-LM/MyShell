@@ -37,22 +37,24 @@ check_system_is_centos
 if [ $? -eq 0 ]; then
     check_command_exist 'yum-config-manager' || install_software 'yum-utils'
     yum-config-manager --add-repo 'https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo'
-    cd '/etc/yum.repos.d/'
-    ls -la
+    ls -la '/etc/yum.repos.d/'
 
     # Fix Bug
     # ss-server: error while loading shared libraries: libmbedcrypto.so.2: cannot open shared object file: No such file or directory
     libmbedcrypto_so_link='/usr/lib64/libmbedcrypto.so.2'
     if [ ! -f "$libmbedcrypto_so_link" ]; then
-        libmbedcrypto_so_source=$(find / | grep '/usr/lib64/libmbedcrypto.so.2.')
+        libmbedcrypto_so_source=$(find / -type f 2> '/dev/null' | grep '/usr/lib64/libmbedcrypto.so.2.')
         if [ "$libmbedcrypto_so_source" != '' ]; then
             log_info "create soft link: from \"$libmbedcrypto_so_source\" to \"$libmbedcrypto_so_link\""
             ln -s "$libmbedcrypto_so_source" "$libmbedcrypto_so_link"
         else
-            log_error "missing file \"$libmbedcrypto_so_link\", quit now"
+            log_error "file can not be created: \"$libmbedcrypto_so_link\", quit now"
             exit 1
         fi
+    else
+        log_info "file exists, no need to fix \"$libmbedcrypto_so_link\""
     fi
+    ls -la "$libmbedcrypto_so_link"
 fi
 
 set_tcp_congestion_control_bbr
