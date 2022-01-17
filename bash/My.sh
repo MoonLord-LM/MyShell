@@ -120,7 +120,7 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
 }
-# 设置防火墙允许所有流量通过
+# 设置 iptables 防火墙允许所有流量通过
 function set_iptables_accept_all(){
     iptables -F
     iptables -X
