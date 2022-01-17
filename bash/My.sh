@@ -120,6 +120,15 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
 }
+# 设置防火墙允许所有流量通过
+function set_iptables_accept_all(){
+    iptables -F
+    iptables -X
+    iptables -P INPUT ACCEPT
+    iptables -P OUTPUT ACCEPT
+    iptables -P FORWARD ACCEPT
+    iptables -L
+}
 
 
 
@@ -376,6 +385,7 @@ function prepare_common_command(){
 #### settings ####
 # set_timezone_china
 # set_tcp_congestion_control_bbr
+# set_iptables_accept_all
 
 #### prepare ####
 # prepare_common_command
