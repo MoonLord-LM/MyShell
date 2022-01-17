@@ -35,6 +35,7 @@ fi
 # 开始安装：
 check_system_is_centos
 if [ $? -eq 0 ]; then
+    check_command_exist 'yum-config-manager' || install_software 'yum-utils'
     yum-config-manager --add-repo 'https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo'
     cd '/etc/yum.repos.d/'
     ls -la
