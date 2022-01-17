@@ -322,9 +322,6 @@ function prepare_common_command(){
 
 
 
-################ init begin ################
-log_info 'My.sh is loading'
-
 #### settings ####
 # set_timezone_china
 # set_tcp_congestion_control_bbr
@@ -332,7 +329,7 @@ log_info 'My.sh is loading'
 #### prepare ####
 # prepare_common_command
 
-################ init end ################
+#### init ####
 log_info 'My.sh is loaded'
 
 
