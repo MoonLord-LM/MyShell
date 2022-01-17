@@ -10,7 +10,7 @@
 
 
 
-# 开始安装：
+# 加载函数：
 source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -18,6 +18,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
+
+# 开始安装：
 install_software 'nginx'
 nginx -v
 
