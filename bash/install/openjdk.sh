@@ -61,11 +61,15 @@ fi
 
 log_info 'java -version:'
 java -version
+
+log_info 'java file apth:'
 find / -type f 2> '/dev/null' | grep '/bin/java$'
 
 log_info 'javac -version:'
-find / -type f 2> '/dev/null' | grep '/bin/javac$'
 javac -version
+
+log_info 'javac file apth:'
+find / -type f 2> '/dev/null' | grep '/bin/javac$'
 
 log_info 'update-alternatives --display java:'
 update-alternatives --display java | grep -v 'slave'
