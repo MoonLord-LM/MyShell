@@ -41,6 +41,12 @@ else
     else
         check_system_is_debian
         if [ $? -eq 0 ]; then
+            # Fix Bug
+            # E: Unable to locate package openjdk-8-jdk
+            check_command_exist 'apt-add-repository' || install_software 'software-properties-common'
+            apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
+            # Fix End
+
             remove_software 'openjdk-8-jdk'
             remove_software 'openjdk-11-jdk'
             remove_software 'openjdk-17-jdk'

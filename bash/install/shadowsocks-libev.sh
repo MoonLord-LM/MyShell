@@ -55,6 +55,7 @@ if [ $? -eq 0 ]; then
         log_info "file exists, no need to fix \"$libmbedcrypto_so_link\""
     fi
     ls -la "$libmbedcrypto_so_link"
+    # Fix End
 fi
 
 set_tcp_congestion_control_bbr
