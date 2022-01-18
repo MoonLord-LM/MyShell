@@ -61,8 +61,10 @@ fi
 
 log_info 'java -version:'
 java -version
+find / -type f 2> '/dev/null' | grep '/bin/java$'
 
 log_info 'javac -version:'
+find / -type f 2> '/dev/null' | grep '/bin/javac$'
 javac -version
 
 log_info 'update-alternatives --display java:'
