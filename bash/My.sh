@@ -248,6 +248,16 @@ function install_software(){
             software='docker.io'
         fi
     fi
+    if [ "$software" == 'java' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='default-jre'
+        fi
+        check_system_is_debian
+        if [ $? -eq 0 ]; then
+            software='default-jre'
+        fi
+    fi
     # 软件别名处理 end
 
     check_system_is_centos
@@ -378,6 +388,7 @@ function prepare_common_command(){
     check_command_exist 'python2' || install_software 'python2'
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'pip3' || install_software 'python3-pip'
+    check_command_exist 'java' || install_software 'java'
 }
 
 
