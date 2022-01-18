@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Nginx
+# OpenJDK
 # 开源地址：https://github.com/openjdk
-# 在线安装：wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/java.sh' | bash
+# 在线安装：wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/openjdk.sh' | bash
 
 
 
