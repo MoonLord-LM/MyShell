@@ -60,10 +60,10 @@ log_info 'javac -version:'
 javac -version
 
 log_info 'update-alternatives --display java:'
-update-alternatives --display java
+update-alternatives --display java | grep -v 'slave'
 
 log_info 'update-alternatives --display javac:'
-update-alternatives --display javac
+update-alternatives --display javac | grep -v 'slave'
 
 
 
