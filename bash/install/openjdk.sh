@@ -23,18 +23,27 @@ fi
 # 开始安装：
 check_system_is_centos
 if [ $? -eq 0 ]; then
+    remove_software 'java-1.8.0-openjdk-devel'
+    remove_software 'java-11-openjdk-devel'
+    remove_software 'java-17-openjdk-devel'
     install_software 'java-1.8.0-openjdk-devel'
     install_software 'java-11-openjdk-devel'
     install_software 'java-17-openjdk-devel'
 else
     check_system_is_ubuntu
     if [ $? -eq 0 ]; then
+        remove_software 'openjdk-8-jdk'
+        remove_software 'openjdk-11-jdk'
+        remove_software 'openjdk-17-jdk'
         install_software 'openjdk-8-jdk'
         install_software 'openjdk-11-jdk'
         install_software 'openjdk-17-jdk'
     else
         check_system_is_debian
         if [ $? -eq 0 ]; then
+            remove_software 'openjdk-8-jdk'
+            remove_software 'openjdk-11-jdk'
+            remove_software 'openjdk-17-jdk'
             install_software 'openjdk-8-jdk'
             install_software 'openjdk-11-jdk'
             install_software 'openjdk-17-jdk'
@@ -49,6 +58,12 @@ java -version
 
 log_info 'javac -version:'
 javac -version
+
+log_info 'update-alternatives --display java:'
+update-alternatives --display java
+
+log_info 'update-alternatives --display javac:'
+update-alternatives --display javac
 
 
 
