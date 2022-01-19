@@ -31,6 +31,7 @@ install_software 'php-curl'
 install_software 'php-json'
 install_software 'php-mbstring'
 install_software 'php-gd'
+install_software 'php-bcmath'
 install_software 'php-zip'
 
 check_system_is_ubuntu
