@@ -54,7 +54,7 @@ else
             install_software 'openjdk-11-jdk'
             install_software 'openjdk-17-jdk'
         else
-            log_error 'java install failed, unknown system'
+            log_error 'openjdk install failed, unknown system'
         fi
     fi
 fi
