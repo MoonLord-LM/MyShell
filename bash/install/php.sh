@@ -24,7 +24,9 @@ fi
 install_software 'php-fpm'
 install_software 'php-mysql'
 install_software 'php-pgsql'
-nginx -v
+install_software 'php-curl'
+install_software 'php-memcached'
+php -v
 if [ $? -ne 0 ]; then
     log_error 'php install failed, quit now'
     exit 1
