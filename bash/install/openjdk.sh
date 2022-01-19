@@ -59,23 +59,14 @@ else
     fi
 fi
 
-log_info 'java -version:'
-java -version
+log_info 'java -version:' && java -version
+log_info 'javac -version:' && javac -version
 
-log_info 'java file apth:'
-find / -type f 2> '/dev/null' | grep '/bin/java$'
+log_info 'java file path list:' && find / -type f 2> '/dev/null' | grep '/bin/java$'
+log_info 'javac file path list:' && find / -type f 2> '/dev/null' | grep '/bin/javac$'
 
-log_info 'javac -version:'
-javac -version
-
-log_info 'javac file apth:'
-find / -type f 2> '/dev/null' | grep '/bin/javac$'
-
-log_info 'update-alternatives --display java:'
-update-alternatives --display java | grep -v 'slave'
-
-log_info 'update-alternatives --display javac:'
-update-alternatives --display javac | grep -v 'slave'
+log_info 'update-alternatives --display java:' && update-alternatives --display java | grep -v 'slave'
+log_info 'update-alternatives --display javac:' && update-alternatives --display javac | grep -v 'slave'
 
 
 

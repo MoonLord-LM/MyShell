@@ -26,9 +26,16 @@ install_software 'php-mysql'
 install_software 'php-pgsql'
 install_software 'php-curl'
 install_software 'php-memcached'
+install_software 'php-gd'
+install_software 'php-mcrypt'
 php -v
 if [ $? -ne 0 ]; then
     log_error 'php install failed, quit now'
+    exit 1
+fi
+php_fpm_service_file=$(find '/usr/lib/systemd/system/' -type f 2> '/dev/null' | grep 'php' | grep 'fpm.service$')
+if [ "$php_fpm_service_file" == '' ]; then
+    log_error 'php-fpm install failed, quit now'
     exit 1
 fi
 
