@@ -352,10 +352,12 @@ function remove_software(){
             check_system_is_ubuntu
             if [ $? -eq 0 ]; then
                 apt remove -y "$software"
+                apt autoremove -y
             else
                 check_system_is_debian
                 if [ $? -eq 0 ]; then
                     apt remove -y "$software"
+                    apt autoremove -y
                 else
                     log_error 'remove_software: unknown system, remove failed'
                     return 1
