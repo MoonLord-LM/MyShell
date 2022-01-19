@@ -372,6 +372,28 @@ function remove_software(){
         log_info "remove_software: \"$software\" is removed"
     fi
 }
+# 查看已安装的指定名称（$1）的软件
+function show_software(){
+    check_parameter "$1" || return 1
+    software=$1
+    check_system_is_centos
+    if [ $? -eq 0 ]; then
+        yum list installed | grep "$software"
+    else
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            apt list --installed | grep "$software"
+        else
+            check_system_is_debian
+            if [ $? -eq 0 ]; then
+                apt list --installed | grep "$software"
+            else
+                log_error 'show_software: unknown system, remove check failed'
+                return 1
+            fi
+        fi
+    fi
+}
 
 
 
