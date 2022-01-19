@@ -265,7 +265,7 @@ function install_software(){
         yum check-update -y
         yum update -y
         yum upgrade -y
-        yum list installed "$software"
+        yum list installed "$software" | grep ''
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
@@ -323,7 +323,7 @@ function remove_software(){
         yum check-update -y
         yum update -y
         yum upgrade -y
-        yum list installed "$software"
+        yum list installed "$software" | grep ''
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
