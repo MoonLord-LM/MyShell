@@ -28,22 +28,33 @@ install_software 'php-curl'
 install_software 'php-memcached'
 install_software 'php-gd'
 install_software 'php-mcrypt'
+
 php -v
 if [ $? -ne 0 ]; then
     log_error 'php install failed, quit now'
     exit 1
 fi
+
 php_fpm_service_file=$(find '/usr/lib/systemd/system/' -type f 2> '/dev/null' | grep 'php' | grep 'fpm.service$')
 if [ "$php_fpm_service_file" == '' ]; then
     log_error 'php-fpm install failed, quit now'
     exit 1
 fi
+log_info "php_fpm_service_file: $php_fpm_service_file"
+
+php_fpm_service=${php_fpm_service_file/#'/usr/lib/systemd/system/'/''}
+php_fpm_service=${php_fpm_service/%'.service'/''}
+if [ "$php_fpm_service" == '' ]; then
+    log_error 'php-fpm install failed, quit now'
+    exit 1
+fi
+log_info "php_fpm_service: $php_fpm_service"
 
 
 
 # 启动服务
-systemctl enable 'php-fpm'
-systemctl restart 'php-fpm'
-systemctl status --no-pager 'php-fpm'
+systemctl enable "$php_fpm_service"
+systemctl restart "$php_fpm_service"
+systemctl status --no-pager "$php_fpm_service"
 
 
