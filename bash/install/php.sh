@@ -21,6 +21,7 @@ fi
 
 
 # 开始安装：
+install_software 'php-cli'
 install_software 'php-fpm'
 install_software 'php-mysql'
 install_software 'php-pgsql'
