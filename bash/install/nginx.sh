@@ -30,7 +30,7 @@ fi
 
 
 
-# 启动服务
+# 启动服务：
 systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'

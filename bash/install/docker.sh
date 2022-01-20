@@ -30,7 +30,7 @@ fi
 
 
 
-# 启动服务
+# 启动服务：
 systemctl enable 'docker'
 systemctl restart 'docker'
 systemctl status --no-pager 'docker'

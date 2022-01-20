@@ -70,6 +70,6 @@ log_info 'update-alternatives --display javac:' && update-alternatives --display
 
 
 
-# 启动服务
+# 启动服务：
 
 

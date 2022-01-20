@@ -71,7 +71,7 @@ log_info "php_fpm_service: $php_fpm_service"
 
 
 
-# 启动服务
+# 启动服务：
 systemctl enable "$php_fpm_service"
 systemctl restart "$php_fpm_service"
 systemctl status --no-pager "$php_fpm_service"

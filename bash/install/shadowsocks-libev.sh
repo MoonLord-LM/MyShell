@@ -70,7 +70,7 @@ fi
 
 
 
-# 启动服务
+# 启动服务：
 systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'
 systemctl status --no-pager 'shadowsocks-libev'
