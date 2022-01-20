@@ -17,19 +17,19 @@ fi
 
 # 配置参数：
 mkdir -p '/etc/nginx/sites-available'
-wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx.conf'
+wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx.conf'
 if [ $? -ne 0 ]; then
     log_error "file can not be created: \"/etc/nginx/sites-available/nginx.conf\", quit now"
     exit 1
 fi
 
 mkdir -p '/etc/nginx/ssl'
-wget -O '/etc/nginx/ssl/server.crt' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.crt'
+wget -O '/etc/nginx/ssl/server.crt' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.crt'
 if [ $? -ne 0 ]; then
     log_error "file can not be created: \"/etc/nginx/ssl/server.crt\", quit now"
     exit 1
 fi
-wget -O '/etc/nginx/ssl/server.key' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.key'
+wget -O '/etc/nginx/ssl/server.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.key'
 if [ $? -ne 0 ]; then
     log_error "file can not be created: \"/etc/nginx/ssl/server.key\", quit now"
     exit 1
