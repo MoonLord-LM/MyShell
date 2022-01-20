@@ -38,10 +38,10 @@ fi
 ln -s '/etc/nginx/sites-available/nginx.conf' '/etc/nginx/sites-enabled/nginx.conf'
 rm -rf '/etc/nginx/sites-enabled/default'
 
-mkdir -p '/var/www/php'
-echo '<?php phpinfo(); ?>' > '/var/www/php/index.php'
+mkdir -p '/var/www/html'
+echo '<?php phpinfo(); ?>' > '/var/www/html/index.php'
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/var/www/php/index.php\", quit now"
+    log_error "file can not be created: \"/var/www/html/index.php\", quit now"
     exit 1
 fi
 
