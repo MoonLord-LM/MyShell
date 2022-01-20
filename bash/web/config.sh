@@ -5,6 +5,16 @@
 
 
 
+# 加载函数：
+source <( wget -O- --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+prepare_common_command
+if [ $? -ne 0 ]; then
+    echo -ne '\e[1;31m' && echo 'My.sh: load failed, quit now' && echo -ne '\e[0m'
+    exit 1
+fi
+
+
+
 # 配置参数：
 mkdir -p '/etc/nginx/sites-available'
 wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx.conf'
