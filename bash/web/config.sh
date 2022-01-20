@@ -5,7 +5,7 @@
 
 
 
-# 配置初始页面
+# 配置参数：
 mkdir -p '/etc/nginx/sites-available'
 wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx.conf'
 
@@ -15,6 +15,9 @@ wget -O '/etc/nginx/ssl/server.key' --timeout=10 'https://raw.githubusercontent.
 
 ln -s '/etc/nginx/sites-available/nginx.conf' '/etc/nginx/sites-enabled/nginx.conf'
 rm -rf '/etc/nginx/sites-enabled/default'
+
+mkdir -p '/var/www/php'
+echo '<?php phpinfo(); ?>' > '/var/www/php/index.php'
 
 
 
