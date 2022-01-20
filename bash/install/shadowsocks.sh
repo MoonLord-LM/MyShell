@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Shadowsocks
-# 开源地址：https://github.com/shadowsocks/shadowsocks-libev
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks-libev.sh' | bash
+# 开源地址：https://github.com/shadowsocks
+# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
 
 
@@ -64,7 +64,7 @@ check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
 ss_config > '/etc/shadowsocks-libev/config.json'
 ss-server -h | grep --color=never 'shadowsocks-libev'
 if [ $? -ne 0 ]; then
-    log_error 'shadowsocks-libev install failed, quit now'
+    log_error 'shadowsocks install failed, quit now'
     exit 1
 fi
 
