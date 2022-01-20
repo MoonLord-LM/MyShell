@@ -6,7 +6,10 @@
 
 
 # 配置初始页面
+mkdir -p '/etc/nginx/sites-available'
 wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx.conf'
+
+mkdir -p '/etc/nginx/ssl'
 wget -O '/etc/nginx/ssl/server.crt' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.crt'
 wget -O '/etc/nginx/ssl/server.key' --timeout=10 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/server.key'
 
