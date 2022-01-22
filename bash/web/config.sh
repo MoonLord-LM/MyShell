@@ -16,46 +16,56 @@ fi
 
 
 # 配置参数：
-mkdir -p '/etc/nginx/sites-available'
-wget -O '/etc/nginx/sites-available/nginx.conf' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/nginx.conf'
+config_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
+
+
+
+site_default_conf='/etc/nginx/sites-enabled/default'
+rm -rf "$site_default_conf"
+
+
+
+site_available_conf='/etc/nginx/sites-available/nginx.conf'
+site_enabled_conf='/etc/nginx/sites-enabled/nginx.conf'
+wget -O "$site_available_conf" --timeout=10 --no-cache "$config_resource/nginx.conf"
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/sites-available/nginx.conf\", quit now"
+    log_error "file can not be created: \"$site_available_conf\", quit now"
+    exit 1
+fi
+ln -s "$site_available_conf" "$site_enabled_conf"
+
+
+
+ssl_cert_path='/etc/nginx/ssl'
+mkdir -p "$ssl_cert_path"
+wget -O "$ssl_cert_path/moonlord.cc.crt" --timeout=10 --no-cache "$config_resource/moonlord.cc.crt"
+if [ $? -ne 0 ]; then
+    log_error "file can not be created: \"$ssl_cert_path/moonlord.cc.crt\", quit now"
+    exit 1
+fi
+wget -O "$ssl_cert_path/moonlord.cc.key" --timeout=10 --no-cache "$config_resource/moonlord.cc.key"
+if [ $? -ne 0 ]; then
+    log_error "file can not be created: \"$ssl_cert_path/moonlord.cc.key\", quit now"
+    exit 1
+fi
+wget -O "$ssl_cert_path/www.moonlord.cc.crt" --timeout=10 --no-cache "$config_resource/www.moonlord.cc.crt"
+if [ $? -ne 0 ]; then
+    log_error "file can not be created: \"$ssl_cert_path/www.moonlord.cc.crt\", quit now"
+    exit 1
+fi
+wget -O "$ssl_cert_path/www.moonlord.cc.key" --timeout=10 --no-cache "$config_resource/www.moonlord.cc.key"
+if [ $? -ne 0 ]; then
+    log_error "file can not be created: \"$ssl_cert_path/www.moonlord.cc.key\", quit now"
     exit 1
 fi
 
 
 
-mkdir -p '/etc/nginx/ssl'
-wget -O '/etc/nginx/ssl/moonlord.cc.crt' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/moonlord.cc.crt'
+web_root_path='/var/www/html'
+mkdir -p "$web_root_path"
+echo '<?php phpinfo(); ?>' > "$web_root_path/index.php"
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/moonlord.cc.crt\", quit now"
-    exit 1
-fi
-wget -O '/etc/nginx/ssl/moonlord.cc.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/moonlord.cc.key'
-if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/moonlord.cc.key\", quit now"
-    exit 1
-fi
-wget -O '/etc/nginx/ssl/www.moonlord.cc.crt' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/www.moonlord.cc.crt'
-if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/www.moonlord.cc.crt\", quit now"
-    exit 1
-fi
-wget -O '/etc/nginx/ssl/www.moonlord.cc.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/www.moonlord.cc.key'
-if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/www.moonlord.cc.key\", quit now"
-    exit 1
-fi
-
-
-
-ln -s '/etc/nginx/sites-available/nginx.conf' '/etc/nginx/sites-enabled/nginx.conf'
-rm -rf '/etc/nginx/sites-enabled/default'
-
-mkdir -p '/var/www/html'
-echo '<?php phpinfo(); ?>' > '/var/www/html/index.php'
-if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/var/www/html/index.php\", quit now"
+    log_error "file can not be created: \"$web_root_path/index.php\", quit now"
     exit 1
 fi
 

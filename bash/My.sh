@@ -6,11 +6,6 @@
 
 
 
-# 参数设置：
-github_repository='https://github.com/MoonLord-LM/MyShell'
-
-
-
 # 检查入参（最多9个）必须全都不为空字符串，否则报错
 function check_parameter(){
     if [ "${FUNCNAME[1]}" != '' ]; then
