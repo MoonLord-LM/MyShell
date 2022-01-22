@@ -25,14 +25,14 @@ rm -rf "$site_default_conf"
 
 
 
-site_available_conf='/etc/nginx/sites-available/nginx.conf'
-site_enabled_conf='/etc/nginx/sites-enabled/nginx.conf'
-wget -O "$site_available_conf" --timeout=10 --no-cache "$config_resource/nginx.conf"
+site_available_path='/etc/nginx/sites-available'
+site_enabled_path='/etc/nginx/sites-enabled'
+wget -O "$site_available_path/nginx.conf" --timeout=10 --no-cache "$config_resource/nginx.conf"
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"$site_available_conf\", quit now"
+    log_error "file can not be created: \"$site_available_path/nginx.conf\", quit now"
     exit 1
 fi
-ln -s "$site_available_conf" "$site_enabled_conf"
+ln -s "$site_available_path/nginx.conf" "$site_enabled_path/nginx.conf"
 
 
 
