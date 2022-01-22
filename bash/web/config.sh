@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 配置 WEB 站点
-# 在线执行：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/config.sh' | bash
+# 执行配置：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/config.sh' | bash
 
 
 
