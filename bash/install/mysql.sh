@@ -21,8 +21,8 @@ fi
 
 
 # 开始安装：
-check_command_exist 'mysql' || install_software 'mysql-server'
-mysql --version
+check_command_exist 'mysqld' || install_software 'mysql-server'
+mysqld --version
 if [ $? -ne 0 ]; then
     log_error 'mysql-server install failed, quit now'
     exit 1
