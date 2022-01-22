@@ -1,30 +1,7 @@
 
 # MyShell
 A function library for the Linux Shell.  
-
-## [简介]
-Linux Shell 常用脚本函数收集整理  
-
-## [说明]
-- 字符编码：UFT-8  
-- 测试环境：CentOS 7
-
-## [使用]
-````Shell
-# 初始化
-yum install 'wget' -y && mkdir -m 777 -p '/home/install' &&  \
-wget 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/install/My.sh' -O '/home/install/My.sh' &&  \
-cd '/home/install' && source './My.sh' && my_init && chmod -Rf 777 './'
-
-# 设置虚拟内存
-set_memory_swap && show
-
-# 安装
-./shadowsocks_2.8.2.sh # Shadowsocks 2.8.2
-./shadowsocks_3.3.4.sh # Shadowsocks 3.3.4
-./v2ray.sh # V2Ray
-
-````
+Linux Shell 常用脚本和函数.  
 
 ## [笔记]
 01. 报错 Permission denied 是因为权限不足，需要使用 chmod 命令增加权限  
