@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Nginx
+# PHP
 # 开源地址：https://github.com/php
 # 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
 
