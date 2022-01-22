@@ -26,8 +26,9 @@ if [ $? -eq 0 ]; then
     # Fix Bug
     # E: Package 'mysql-server' has no installation candidate
     # http://repo.mysql.com/
-    wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache 'http://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb'
-    apt install -y '/tmp/mysql-apt-config_0.8.22-1_all.deb'
+    remove_software 'mysql-apt-config'
+    wget -O '/tmp/mysql-apt-config_0.8.20-1_all.deb' --timeout=10 --no-cache 'http://repo.mysql.com/mysql-apt-config_0.8.20-1_all.deb'
+    apt install -y '/tmp/mysql-apt-config_0.8.20-1_all.deb'
     # Fix End
 fi
 
