@@ -20,19 +20,17 @@ config_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/ba
 
 
 
-site_default_conf='/etc/nginx/sites-enabled/default'
-rm -rf "$site_default_conf"
-
-
-
 site_available_path='/etc/nginx/sites-available'
 site_enabled_path='/etc/nginx/sites-enabled'
+mkdir -p "$site_available_path"
+mkdir -p "$site_enabled_path"
 wget -O "$site_available_path/nginx.conf" --timeout=10 --no-cache "$config_resource/nginx.conf"
 if [ $? -ne 0 ]; then
     log_error "file can not be created: \"$site_available_path/nginx.conf\", quit now"
     exit 1
 fi
 ln -s "$site_available_path/nginx.conf" "$site_enabled_path/nginx.conf"
+rm -rf '/etc/nginx/sites-enabled/default'
 
 
 
