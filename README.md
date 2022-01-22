@@ -8,8 +8,7 @@ Ubuntu 20.04 / Debian 11 / CentOS 8.2
 ## [使用说明]
 
     # 加载函数
-    source <( wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+    source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 
     # 安装 Docker
     wget -O- --timeout=10 --no-cache \
