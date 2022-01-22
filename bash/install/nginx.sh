@@ -21,7 +21,7 @@ fi
 
 
 # 开始安装：
-install_software 'nginx'
+check_command_exist 'nginx' || install_software 'nginx'
 nginx -v
 if [ $? -ne 0 ]; then
     log_error 'nginx install failed, quit now'
