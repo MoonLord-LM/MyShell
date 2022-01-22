@@ -261,7 +261,7 @@ function install_software(){
             fi
         fi
     fi
-    if [ "$software" == 'mysql' ]; then
+    if [ "$software" == 'mysql-server' ]; then
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
             software='default-mysql-server'
@@ -368,7 +368,7 @@ function remove_software(){
             fi
         fi
     fi
-    if [ "$software" == 'mysql' ]; then
+    if [ "$software" == 'mysql-server' ]; then
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
             software='default-mysql-server'
