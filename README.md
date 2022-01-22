@@ -15,13 +15,17 @@ Ubuntu 20.04 / Debian 11 / CentOS 8.2
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
 
-    # 安装 OpenJDK
+    # 安装 MySQL
     wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/openjdk.sh' | bash
+    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
     # 安装 Nginx
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
+
+    # 安装 OpenJDK
+    wget -O- --timeout=10 --no-cache \
+    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/openjdk.sh' | bash
 
     # 安装 PHP
     wget -O- --timeout=10 --no-cache \
