@@ -436,6 +436,10 @@ function prepare_common_command(){
 #### prepare ####
 # prepare_common_command
 
+#### show ####
+# show_software $1
+# show_tcp_listening
+
 #### init ####
 log_info 'My.sh is loaded'
 
