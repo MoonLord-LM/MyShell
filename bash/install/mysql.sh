@@ -25,10 +25,9 @@ check_system_is_debian
 if [ $? -eq 0 ]; then
     # Fix Bug
     # E: Package 'mysql-server' has no installation candidate
-    # http://repo.mysql.com/
-    remove_software 'mysql-apt-config'
-    wget -O '/tmp/mysql-apt-config_0.8.20-1_all.deb' --timeout=10 --no-cache 'http://repo.mysql.com/mysql-apt-config_0.8.20-1_all.deb'
-    apt install -y '/tmp/mysql-apt-config_0.8.20-1_all.deb'
+    # http://repo.mysql.com/apt/debian/pool/
+    wget -O '/tmp/mysql-server_8.0.28-1debian10_amd64.deb' --timeout=10 --no-cache 'http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/mysql-server_8.0.28-1debian10_amd64.deb'
+    apt install -y '/tmp/mysql-server_8.0.28-1debian10_amd64.deb'
     # Fix End
 fi
 
