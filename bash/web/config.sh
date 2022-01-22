@@ -28,22 +28,22 @@ fi
 mkdir -p '/etc/nginx/ssl'
 wget -O '/etc/nginx/ssl/moonlord.cc.crt' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/moonlord.cc.crt'
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/server.crt\", quit now"
+    log_error "file can not be created: \"/etc/nginx/ssl/moonlord.cc.crt\", quit now"
     exit 1
 fi
 wget -O '/etc/nginx/ssl/moonlord.cc.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/moonlord.cc.key'
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/server.key\", quit now"
+    log_error "file can not be created: \"/etc/nginx/ssl/moonlord.cc.key\", quit now"
+    exit 1
+fi
+wget -O '/etc/nginx/ssl/www.moonlord.cc.crt' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/www.moonlord.cc.crt'
+if [ $? -ne 0 ]; then
+    log_error "file can not be created: \"/etc/nginx/ssl/www.moonlord.cc.crt\", quit now"
     exit 1
 fi
 wget -O '/etc/nginx/ssl/www.moonlord.cc.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/www.moonlord.cc.key'
 if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/server.key\", quit now"
-    exit 1
-fi
-wget -O '/etc/nginx/ssl/www.moonlord.cc.key' --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/www.moonlord.cc.key'
-if [ $? -ne 0 ]; then
-    log_error "file can not be created: \"/etc/nginx/ssl/server.key\", quit now"
+    log_error "file can not be created: \"/etc/nginx/ssl/www.moonlord.cc.key\", quit now"
     exit 1
 fi
 
