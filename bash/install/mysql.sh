@@ -28,6 +28,7 @@ if [ $? -eq 0 ]; then
     # http://repo.mysql.com/
     remove_software 'mysql-apt-config'
     wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache 'http://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb'
+    dpkg --configure -a
     apt install -y '/tmp/mysql-apt-config_0.8.22-1_all.deb'
     # Fix End
 fi
