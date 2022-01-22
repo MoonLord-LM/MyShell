@@ -31,8 +31,22 @@ fi
 
 
 # 启动服务：
-systemctl enable 'mysql'
-systemctl restart 'mysql'
-systemctl status --no-pager 'mysql'
+mysql_service_file=$(find '/usr/lib/systemd/system/' -type f 2> '/dev/null' | grep 'mysql' | grep -v '@')
+if [ "$mysql_service_file" == '' ]; then
+    log_error 'mysql install failed, quit now'
+    exit 1
+fi
+log_info "mysql_service_file: $mysql_service_file"
+
+mysql_service=${mysql_service_file/#'/usr/lib/systemd/system/'/''}
+if [ "$mysql_service" == '' ]; then
+    log_error 'mysql install failed, quit now'
+    exit 1
+fi
+log_info "mysql_service: $mysql_service"
+
+systemctl enable "$mysql_service"
+systemctl restart "$mysql_service"
+systemctl status --no-pager "$mysql_service"
 
 
