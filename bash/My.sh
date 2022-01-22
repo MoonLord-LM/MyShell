@@ -332,6 +332,55 @@ function install_software(){
 function remove_software(){
     check_parameter "$1" || return 1
     software=$1
+
+    # 软件别名处理 begin
+    if [ "$software" == 'g++' ]; then
+        check_system_is_centos
+        if [ $? -eq 0 ]; then
+            software='gcc-c++'
+        fi
+    fi
+    if [ "$software" == 'php-mysql' ]; then
+        check_system_is_centos
+        if [ $? -eq 0 ]; then
+            software='php-mysqlnd'
+        fi
+    fi
+    if [ "$software" == 'docker' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='docker.io'
+        else
+            check_system_is_debian
+            if [ $? -eq 0 ]; then
+                software='docker.io'
+            fi
+        fi
+    fi
+    if [ "$software" == 'java' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='default-jre'
+        else
+            check_system_is_debian
+            if [ $? -eq 0 ]; then
+                software='default-jre'
+            fi
+        fi
+    fi
+    if [ "$software" == 'mysql' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='default-mysql-server'
+        else
+            check_system_is_debian
+            if [ $? -eq 0 ]; then
+                software='default-mysql-server'
+            fi
+        fi
+    fi
+    # 软件别名处理 end
+
     check_system_is_centos
     if [ $? -eq 0 ]; then
         yum check-update -y
