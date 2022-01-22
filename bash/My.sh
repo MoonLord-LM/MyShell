@@ -261,6 +261,17 @@ function install_software(){
             fi
         fi
     fi
+    if [ "$software" == 'mysql' ]; then
+        check_system_is_ubuntu
+        if [ $? -eq 0 ]; then
+            software='default-mysql-server'
+        else
+            check_system_is_debian
+            if [ $? -eq 0 ]; then
+                software='default-mysql-server'
+            fi
+        fi
+    fi
     # 软件别名处理 end
 
     check_system_is_centos
