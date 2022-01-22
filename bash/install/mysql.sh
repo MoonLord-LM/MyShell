@@ -22,7 +22,7 @@ fi
 
 # 开始安装：
 install_software 'mysql-server'
-nginx -v
+mysql --version
 if [ $? -ne 0 ]; then
     log_error 'mysql-server install failed, quit now'
     exit 1
@@ -31,8 +31,8 @@ fi
 
 
 # 启动服务：
-systemctl enable 'mysql-server'
-systemctl restart 'mysql-server'
-systemctl status --no-pager 'mysql-server'
+systemctl enable 'mysql'
+systemctl restart 'mysql'
+systemctl status --no-pager 'mysql'
 
 
