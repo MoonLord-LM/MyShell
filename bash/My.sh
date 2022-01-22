@@ -273,6 +273,7 @@ function install_software(){
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
+            dpkg --configure -a
             apt update -y
             apt upgrade -y
             apt full-upgrade -y
@@ -280,6 +281,7 @@ function install_software(){
         else
             check_system_is_debian
             if [ $? -eq 0 ]; then
+                dpkg --configure -a
                 apt update -y
                 apt upgrade -y
                 apt full-upgrade -y
@@ -297,12 +299,10 @@ function install_software(){
         else
             check_system_is_ubuntu
             if [ $? -eq 0 ]; then
-                dpkg --configure -a
                 apt install -y "$software"
             else
                 check_system_is_debian
                 if [ $? -eq 0 ]; then
-                    dpkg --configure -a
                     apt install -y "$software"
                 else
                     log_error 'install_software: unknown system, install failed'
@@ -371,6 +371,7 @@ function remove_software(){
     else
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
+            dpkg --configure -a
             apt update -y
             apt upgrade -y
             apt full-upgrade -y
@@ -378,6 +379,7 @@ function remove_software(){
         else
             check_system_is_debian
             if [ $? -eq 0 ]; then
+                dpkg --configure -a
                 apt update -y
                 apt upgrade -y
                 apt full-upgrade -y
