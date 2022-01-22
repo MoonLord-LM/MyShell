@@ -404,7 +404,7 @@ function show_software(){
 }
 # 获取系统正在监听的 TCP 端口
 function show_tcp_listening(){
-    log_info 'show `netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"'`:'
+    log_info 'netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"''
     netstat -atlnp | grep 'LISTEN'
 }
 
