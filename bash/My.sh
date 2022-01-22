@@ -377,6 +377,9 @@ function remove_software(){
         log_info "remove_software: \"$software\" is removed"
     fi
 }
+
+
+
 # 查看已安装的指定名称（$1）的软件
 function show_software(){
     check_parameter "$1" || return 1
@@ -398,6 +401,11 @@ function show_software(){
             fi
         fi
     fi
+}
+# 获取系统正在监听的 TCP 端口
+function show_tcp_listening(){
+    log_info 'show `netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"'`:'
+    netstat -atlnp | grep 'LISTEN'
 }
 
 

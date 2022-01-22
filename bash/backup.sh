@@ -48,77 +48,6 @@ function unset_autorun(){
 }
 
 
-# 创建指定名称（$1）的用户和用户组，并设置用户的标注（$2）和主目录（$3）
-function add_user_group(){
-    check_parameter "$1" || return 1
-    info "add_user_group: \"$1\" \"$2\" \"$3\""
-    user_group_name=$1
-    user_comment=$2
-    home_dir=$3
-    tmp=`cat '/etc/group' | grep $user_group_name`
-    if [ "$tmp" == "" ]; then
-        groupadd $user_group_name
-    fi
-    tmp=`cat '/etc/group' | grep $user_group_name`
-    if [ "$tmp" == "" ]; then
-        log_error "add group \"$user_group_name\" failed!"
-        return 1
-    fi
-    tmp=`cat '/etc/passwd' | grep $user_group_name`
-    if [ "$tmp" == "" ]; then
-        useradd $user_group_name -g $user_group_name -s /bin/false
-    fi
-    tmp=`cat '/etc/passwd' | grep $user_group_name`
-    if [ "$tmp" == "" ]; then
-        log_error "add user \"$user_group_name\" failed!"
-        return 1
-    fi
-    if [ ! -d "$home_dir" ]; then
-        mkdir -m 755 -v -p "$home_dir"
-    fi
-    if [ ! -d "$home_dir" ]; then
-        log_error "create home directory \"$home_dir\" failed!"
-        return 1
-    fi
-    usermod -c "$user_comment" -d "$home_dir" $user_group_name
-    chgrp -R $user_group_name "$home_dir"
-    chown -R $user_group_name "$home_dir"
-}
-# 为指定名称（$1）的用户和用户组，创建目录（$2），并设置 755 权限
-function set_user_dir(){
-    check_parameter "$1" "$2" || return 1
-    info "set_user_dir: \"$1\" \"$2\""
-    user_name=$1
-    new_dir=$2
-    if [ ! -d "$new_dir" ]; then
-        mkdir -m 755 -v -p "$new_dir"
-    fi
-    if [ ! -d "$new_dir" ]; then
-        log_error "create directory \"$new_dir\" failed!"
-        return 1
-    fi
-    chgrp -R $user_name "$new_dir"
-    chown -R $user_name "$new_dir"
-}
-# 为指定名称（$1）的用户和用户组，创建文件（$2），并设置 755 权限
-function set_user_file(){
-    check_parameter "$1" "$2" || return 1
-    info "set_user_file: \"$1\" \"$2\""
-    user_name=$1
-    new_file=$2
-    if [ ! -f "$new_file" ]; then
-        touch "$new_file"
-        chmod 755 "$new_file"
-    fi
-    if [ ! -f "$new_file" ]; then
-        log_error "create file \"new_file\" failed!"
-        return 1
-    fi
-    chgrp $user_name "$new_file"
-    chown $user_name "$new_file"
-}
-
-
 # 搜索文件（$1）中的唯一字符串标记（$2），将指定行的内容，修改为字符串（$3）
 function modify_config_file(){
     check_parameter "$1" "$2" "$3" || return 1
@@ -228,33 +157,6 @@ function show_disk_usage(){
 }
 
 
-# 显示服务器的 TCP 连接信息
-function show_tcp(){
-    info 'show_tcp'
-    notice 'show `netstat -atnlp`:'
-    netstat -atnlp
-}
-# 显示服务器的 UDP 连接信息
-function show_udp(){
-    info 'show_udp'
-    notice 'show `netstat -aunlp`:'
-    netstat -aunlp
-}
-# 显示服务器正在监听的 TCP 端口号
-function show_listen(){
-    info 'show_listen'
-    notice 'show `netstat -atnlp | grep '"'"'LISTEN'"'"'`:'
-    netstat -atnlp | grep 'LISTEN'
-}
-# 显示服务器的网络连接信息
-function show_netstat(){
-    info 'show_netstat'
-    show_tcp
-    show_udp
-    show_listen
-}
-
-
 # 显示系统运行状态
 function show(){
     info 'show'
@@ -272,26 +174,4 @@ function show(){
     echo
     netstat -atnlp | grep 'LISTEN'
     echo
-}
-
-
-# 初始化（备份重要文件，安装、升级基础组件）
-function my_init(){
-
-    yum clean all
-    rm -rf '/var/cache/yum'
-    yum makecache
-    yum update -y
-
-    pip install --upgrade pip
-
-    prepare_github_source 'install/mysql_5.7.23.sh'
-    prepare_github_source 'install/mysql_8.0.12.sh'
-    prepare_github_source 'install/php_5.6.37.sh'
-    prepare_github_source 'install/nginx_1.15.2.sh'
-    prepare_github_source 'install/shadowsocks_2.8.2.sh'
-    prepare_github_source 'install/shadowsocks_3.3.4.sh'
-    prepare_github_source 'install/v2ray.sh'
-
-    show
 }
