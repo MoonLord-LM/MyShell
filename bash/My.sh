@@ -177,6 +177,7 @@ function backup_file(){
 function check_command_exist(){
     check_parameter "$1" || return 1
     cmd=$1
+    hash -d "$cmd" > '/dev/null' 2>&1
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "check_command_exist: \"$cmd\" does not exist"
@@ -258,17 +259,6 @@ function install_software(){
             check_system_is_debian
             if [ $? -eq 0 ]; then
                 software='default-jre'
-            fi
-        fi
-    fi
-    if [ "$software" == 'mysql-server' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='default-mysql-server'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='default-mysql-server'
             fi
         fi
     fi
@@ -365,17 +355,6 @@ function remove_software(){
             check_system_is_debian
             if [ $? -eq 0 ]; then
                 software='default-jre'
-            fi
-        fi
-    fi
-    if [ "$software" == 'mysql-server' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='default-mysql-server'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='default-mysql-server'
             fi
         fi
     fi

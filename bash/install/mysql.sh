@@ -21,6 +21,16 @@ fi
 
 
 # 开始安装：
+check_system_is_debian
+if [ $? -eq 0 ]; then
+    # Fix Bug
+    # E: Package 'mysql-server' has no installation candidate
+    # http://repo.mysql.com/
+    wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache 'http://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb'
+    apt install -y '/tmp/mysql-apt-config_0.8.22-1_all.deb'
+    # Fix End
+fi
+
 check_command_exist 'mysqld' || install_software 'mysql-server'
 mysqld --version
 if [ $? -ne 0 ]; then
