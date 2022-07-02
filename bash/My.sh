@@ -209,12 +209,6 @@ function remove_software(){
         fi
     fi
 
-    # 软件别名处理 begin
-    if [ "$software" == 'docker' ]; then
-        software='docker.io'
-    fi
-    # 软件别名处理 end
-
     update_software
     if [ $? -eq 0 ]; then
         apt remove -y "$software"
