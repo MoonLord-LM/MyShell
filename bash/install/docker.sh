@@ -21,7 +21,7 @@ fi
 
 
 # 开始安装：
-check_command_exist 'docker' || install_software 'docker'
+check_command_exist 'docker' || install_software 'docker.io'
 docker version
 if [ $? -ne 0 ]; then
     log_error 'docker install failed, quit now'

@@ -152,6 +152,22 @@ function update_software(){
     apt full-upgrade -y
     apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
 }
+# 查看已安装的指定名称（$1）的软件
+function show_software(){
+    check_parameter "$1" || return 1
+    software=$1
+
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error "show_software failed, unknown system"
+            return 1
+        fi
+    fi
+
+    apt list --installed | grep "$software"
+}
 # 安装指定名称（$1）的软件
 function install_software(){
     check_parameter "$1" || return 1
@@ -161,15 +177,10 @@ function install_software(){
     if [ $? -ne 0 ]; then
         check_system_is_debian
         if [ $? -ne 0 ]; then
-            log_info "install_software failed, unknown system"
+            log_error "install_software failed, unknown system"
+            return 1
         fi
     fi
-
-    # 软件别名处理 begin
-    if [ "$software" == 'docker' ]; then
-        software='docker.io'
-    fi
-    # 软件别名处理 end
 
     update_software
     if [ $? -ne 0 ]; then
@@ -193,7 +204,8 @@ function remove_software(){
     if [ $? -ne 0 ]; then
         check_system_is_debian
         if [ $? -ne 0 ]; then
-            log_info "remove_software failed, unknown system"
+            log_error "remove_software failed, unknown system"
+            return 1
         fi
     fi
 
@@ -216,27 +228,6 @@ function remove_software(){
     else
         log_info "remove_software: \"$software\" is removed"
     fi
-}
-# 查看已安装的指定名称（$1）的软件
-function show_software(){
-    check_parameter "$1" || return 1
-    software=$1
-
-    check_system_is_ubuntu
-    if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_info "remove_software failed, unknown system"
-        fi
-    fi
-
-    # 软件别名处理 begin
-    if [ "$software" == 'docker' ]; then
-        software='docker.io'
-    fi
-    # 软件别名处理 end
-
-    apt list --installed | grep "$software"
 }
 
 
@@ -328,7 +319,8 @@ function prepare_common_command(){
     check_command_exist 'python2' || install_software 'python2'
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'pip3' || install_software 'python3-pip'
-    check_command_exist 'java' || install_software 'default-jdk'
+    check_command_exist 'java' || install_software 'default-jre'
+    check_command_exist 'javac' || install_software 'default-jdk'
 }
 
 
