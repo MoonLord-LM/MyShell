@@ -124,12 +124,12 @@ function set_tcp_congestion_control_bbr(){
 }
 # 设置 iptables 防火墙允许所有流量通过
 function set_iptables_accept_all(){
-    iptables -F
-    iptables -X
-    iptables -P INPUT ACCEPT
-    iptables -P OUTPUT ACCEPT
-    iptables -P FORWARD ACCEPT
-    iptables -L
+    iptables --flush
+    iptables --delete-chain
+    iptables --policy INPUT ACCEPT
+    iptables --policy OUTPUT ACCEPT
+    iptables --policy FORWARD ACCEPT
+    iptables --list
 }
 
 
