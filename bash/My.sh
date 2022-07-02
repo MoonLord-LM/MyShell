@@ -88,6 +88,62 @@ function log_notice(){
 
 
 
+# 获取系统的版本信息
+function get_system_version(){
+    centos_version_file='/etc/redhat-release'
+    ubuntu_version_file='/etc/issue'
+    if [ -f "$centos_version_file" ]; then
+        version=$(cat "$centos_version_file")
+        echo "$version"
+        return 0
+    fi
+    if [ -f "$ubuntu_version_file" ]; then
+        version=$(cat "$ubuntu_version_file")
+        echo "$version"
+        return 0
+    fi
+    log_error 'get_system_version failed, unknown system'
+    return 1
+}
+# 判断系统是否是 Ubuntu
+function check_system_is_ubuntu(){
+    get_system_version | grep 'Ubuntu' > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_info 'check_system_is_ubuntu: false'
+        return 1
+    fi
+    version=$(get_system_version)
+    log_info "check_system_is_ubuntu: $version"
+}
+# 判断系统是否是 Debian
+function check_system_is_debian(){
+    get_system_version | grep 'Debian' > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_info 'check_system_is_debian: false'
+        return 1
+    fi
+    version=$(get_system_version)
+    log_info "check_system_is_debian: $version"
+}
+
+
+
+# 判断指定命令（$1）是否存在
+function check_command_exist(){
+    check_parameter "$1" || return 1
+    cmd=$1
+    hash -d "$cmd" > '/dev/null' 2>&1
+    command -v "$cmd" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_info "check_command_exist: \"$cmd\" does not exist"
+        return 1
+    fi
+    cmd_file_path=$(command -v "$cmd")
+    log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
+}
+
+
+
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
     old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
@@ -129,26 +185,6 @@ function set_iptables_accept_all(){
 
 
 
-# 获取系统的版本信息
-function get_system_version(){
-    centos_version_file='/etc/redhat-release'
-    ubuntu_version_file='/etc/issue'
-    if [ -f "$centos_version_file" ]; then
-        version=$(cat $centos_version_file)
-        echo "$version"
-        return 0
-    fi
-    if [ -f "$ubuntu_version_file" ]; then
-        version=$(cat $ubuntu_version_file)
-        echo "$version"
-        return 0
-    fi
-    log_error 'get_system_version failed'
-    return 1
-}
-
-
-
 # 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
 function backup_file(){
     check_parameter "$1" || return 1
@@ -171,45 +207,6 @@ function backup_file(){
         return 1
     fi
     log_info "backup_file ok, from \"$source_file_name\" to \"$backup_file_name\""
-}
-
-
-
-# 判断指定命令（$1）是否存在
-function check_command_exist(){
-    check_parameter "$1" || return 1
-    cmd=$1
-    hash -d "$cmd" > '/dev/null' 2>&1
-    command -v "$cmd" > '/dev/null' 2>&1
-    if [ $? -ne 0 ]; then
-        log_info "check_command_exist: \"$cmd\" does not exist"
-        return 1
-    fi
-    cmd_file_path=$(command -v "$cmd")
-    log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
-}
-
-
-
-# 判断系统是否是 Ubuntu
-function check_system_is_ubuntu(){
-    get_system_version | grep 'Ubuntu' > '/dev/null' 2>&1
-    if [ $? -ne 0 ]; then
-        log_info 'check_system_is_ubuntu: false'
-        return 1
-    fi
-    version=$(get_system_version)
-    log_info "check_system_is_ubuntu: $version"
-}
-# 判断系统是否是 Debian
-function check_system_is_debian(){
-    get_system_version | grep 'Debian' > '/dev/null' 2>&1
-    if [ $? -ne 0 ]; then
-        log_info 'check_system_is_debian: false'
-        return 1
-    fi
-    version=$(get_system_version)
-    log_info "check_system_is_debian: $version"
 }
 
 
