@@ -144,6 +144,114 @@ function check_command_exist(){
 
 
 
+# 安装指定名称（$1）的软件
+function install_software(){
+    check_parameter "$1" || return 1
+    software=$1
+
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_info "install_software failed, unknown system"
+        fi
+    fi
+
+    # 软件别名处理 begin
+    if [ "$software" == 'docker' ]; then
+        software='docker.io'
+    fi
+    if [ "$software" == 'java' ]; then
+        software='default-jre'
+    fi
+    # 软件别名处理 end
+
+    dpkg --configure -a
+    apt update -y
+    apt upgrade -y
+    apt full-upgrade -y
+    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
+
+    if [ $? -ne 0 ]; then
+        apt install -y "$software"
+        if [ $? -ne 0 ]; then
+            log_error "install_software: \"$software\" install failed"
+            return 1
+        else
+            log_info "install_software: \"$software\" install ok"
+        fi
+    else
+        log_info "install_software: \"$software\" is intalled"
+    fi
+}
+# 卸载指定名称（$1）的软件
+function remove_software(){
+    check_parameter "$1" || return 1
+    software=$1
+
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_info "remove_software failed, unknown system"
+        fi
+    fi
+
+    # 软件别名处理 begin
+    if [ "$software" == 'docker' ]; then
+        software='docker.io'
+    fi
+    if [ "$software" == 'java' ]; then
+        software='default-jre'
+    fi
+    # 软件别名处理 end
+
+    dpkg --configure -a
+    apt update -y
+    apt upgrade -y
+    apt full-upgrade -y
+    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
+
+    if [ $? -eq 0 ]; then
+        apt remove -y "$software"
+        apt autoremove -y
+        if [ $? -ne 0 ]; then
+            log_error "remove_software: \"$software\" remove failed"
+            return 1
+        else
+            log_info "remove_software: \"$software\" remove ok"
+        fi
+    else
+        log_info "remove_software: \"$software\" is removed"
+    fi
+}
+# 查看已安装的指定名称（$1）的软件
+function show_software(){
+    check_parameter "$1" || return 1
+    software=$1
+
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_info "remove_software failed, unknown system"
+        fi
+    fi
+
+    # 软件别名处理 begin
+    if [ "$software" == 'docker' ]; then
+        software='docker.io'
+    fi
+    if [ "$software" == 'java' ]; then
+        software='default-jre'
+    fi
+    # 软件别名处理 end
+
+    apt list --installed | grep "$software"
+}
+
+
+
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
     old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
@@ -209,177 +317,6 @@ function backup_file(){
     log_info "backup_file ok, from \"$source_file_name\" to \"$backup_file_name\""
 }
 
-
-
-# 安装指定名称（$1）的软件
-function install_software(){
-    check_parameter "$1" || return 1
-    software=$1
-
-    # 软件别名处理 begin
-    if [ "$software" == 'docker' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='docker.io'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='docker.io'
-            fi
-        fi
-    fi
-    if [ "$software" == 'java' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='default-jre'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='default-jre'
-            fi
-        fi
-    fi
-    # 软件别名处理 end
-
-    check_system_is_ubuntu
-    if [ $? -eq 0 ]; then
-        dpkg --configure -a
-        apt update -y
-        apt upgrade -y
-        apt full-upgrade -y
-        apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-    else
-        check_system_is_debian
-        if [ $? -eq 0 ]; then
-            dpkg --configure -a
-            apt update -y
-            apt upgrade -y
-            apt full-upgrade -y
-            apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-        else
-            log_error 'install_software: unknown system, install check failed'
-            return 1
-        fi
-    fi
-
-    if [ $? -ne 0 ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            apt install -y "$software"
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                apt install -y "$software"
-            else
-                log_error 'install_software: unknown system, install failed'
-                return 1
-            fi
-        fi
-        if [ $? -ne 0 ]; then
-            log_error "install_software: \"$software\" install failed"
-            return 1
-        else
-            log_info "install_software: \"$software\" install ok"
-        fi
-    else
-        log_info "install_software: \"$software\" is intalled"
-    fi
-}
-# 卸载指定名称（$1）的软件
-function remove_software(){
-    check_parameter "$1" || return 1
-    software=$1
-
-    # 软件别名处理 begin
-    if [ "$software" == 'docker' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='docker.io'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='docker.io'
-            fi
-        fi
-    fi
-    if [ "$software" == 'java' ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            software='default-jre'
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                software='default-jre'
-            fi
-        fi
-    fi
-    # 软件别名处理 end
-
-    check_system_is_ubuntu
-    if [ $? -eq 0 ]; then
-        dpkg --configure -a
-        apt update -y
-        apt upgrade -y
-        apt full-upgrade -y
-        apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-    else
-        check_system_is_debian
-        if [ $? -eq 0 ]; then
-            dpkg --configure -a
-            apt update -y
-            apt upgrade -y
-            apt full-upgrade -y
-            apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-        else
-            log_error 'remove_software: unknown system, remove check failed'
-            return 1
-        fi
-    fi
-    if [ $? -eq 0 ]; then
-        check_system_is_ubuntu
-        if [ $? -eq 0 ]; then
-            apt remove -y "$software"
-            apt autoremove -y
-        else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                apt remove -y "$software"
-                apt autoremove -y
-            else
-                log_error 'remove_software: unknown system, remove failed'
-                return 1
-            fi
-        fi
-        if [ $? -ne 0 ]; then
-            log_error "remove_software: \"$software\" remove failed"
-            return 1
-        else
-            log_info "remove_software: \"$software\" remove ok"
-        fi
-    else
-        log_info "remove_software: \"$software\" is removed"
-    fi
-}
-
-
-
-# 查看已安装的指定名称（$1）的软件
-function show_software(){
-    check_parameter "$1" || return 1
-    software=$1
-    check_system_is_ubuntu
-    if [ $? -eq 0 ]; then
-        apt list --installed | grep "$software"
-    else
-        check_system_is_debian
-        if [ $? -eq 0 ]; then
-            apt list --installed | grep "$software"
-        else
-            log_error 'show_software: unknown system'
-            return 1
-        fi
-    fi
-}
 # 获取系统正在监听的 TCP 端口
 function show_tcp_listening(){
     log_info 'netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"''
