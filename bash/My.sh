@@ -161,9 +161,6 @@ function install_software(){
     if [ "$software" == 'docker' ]; then
         software='docker.io'
     fi
-    if [ "$software" == 'java' ]; then
-        software='default-jre'
-    fi
     # 软件别名处理 end
 
     dpkg --configure -a
@@ -200,9 +197,6 @@ function remove_software(){
     # 软件别名处理 begin
     if [ "$software" == 'docker' ]; then
         software='docker.io'
-    fi
-    if [ "$software" == 'java' ]; then
-        software='default-jre'
     fi
     # 软件别名处理 end
 
@@ -241,9 +235,6 @@ function show_software(){
     # 软件别名处理 begin
     if [ "$software" == 'docker' ]; then
         software='docker.io'
-    fi
-    if [ "$software" == 'java' ]; then
-        software='default-jre'
     fi
     # 软件别名处理 end
 
@@ -339,7 +330,7 @@ function prepare_common_command(){
     check_command_exist 'python2' || install_software 'python2'
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'pip3' || install_software 'python3-pip'
-    check_command_exist 'java' || install_software 'java'
+    check_command_exist 'java' || install_software 'default-jre'
 }
 
 
