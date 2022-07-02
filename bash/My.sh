@@ -150,7 +150,6 @@ function update_software(){
     apt update -y
     apt upgrade -y
     apt full-upgrade -y
-    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
 }
 # 查看已安装的指定名称（$1）的软件
 function show_software(){
@@ -166,7 +165,11 @@ function show_software(){
         fi
     fi
 
+    log_info 'apt list --installed | grep "'"$software"'"'
     apt list --installed | grep "$software"
+
+    log_info 'apt search "'"$software"'"'
+    apt search "$software"
 }
 # 安装指定名称（$1）的软件
 function install_software(){
@@ -183,6 +186,9 @@ function install_software(){
     fi
 
     update_software
+
+    apt list --installed "$software" | grep '\[installed\]' | grep "$software"
+    apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         apt install -y "$software"
         if [ $? -ne 0 ]; then
@@ -210,6 +216,9 @@ function remove_software(){
     fi
 
     update_software
+
+    apt list --installed "$software" | grep '\[installed\]' | grep "$software"
+    apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -eq 0 ]; then
         apt remove -y "$software"
         apt autoremove -y
