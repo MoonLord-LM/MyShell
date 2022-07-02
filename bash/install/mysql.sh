@@ -28,7 +28,7 @@ if [ $? -eq 0 ]; then
     # E: Package 'mysql-server' has no installation candidate
     # http://repo.mysql.com/apt/debian/pool/
 
-    wget -O '/tmp/mysql-server_8.0.29-1debian10_amd64.deb' --timeout=10 --no-cache 'http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/mysql-server_8.0.29-1debian10_amd64.deb'
+    wget -O '/tmp/mysql-server_8.0.29-1debian10_amd64.deb' --timeout=10 --no-cache 'https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-server_8.0.29-1debian10_amd64.deb'
     apt install -y '/tmp/mysql-server_8.0.29-1debian10_amd64.deb'
     # Fix End
 fi
