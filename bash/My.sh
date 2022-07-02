@@ -189,16 +189,6 @@ function check_command_exist(){
 
 
 
-# 判断系统是否是 CentOS
-function check_system_is_centos(){
-    get_system_version | grep 'CentOS' > '/dev/null' 2>&1
-    if [ $? -ne 0 ]; then
-        log_info 'check_system_is_centos: false'
-        return 1
-    fi
-    version=$(get_system_version)
-    log_info "check_system_is_centos: $version"
-}
 # 判断系统是否是 Ubuntu
 function check_system_is_ubuntu(){
     get_system_version | grep 'Ubuntu' > '/dev/null' 2>&1
@@ -228,18 +218,6 @@ function install_software(){
     software=$1
 
     # 软件别名处理 begin
-    if [ "$software" == 'g++' ]; then
-        check_system_is_centos
-        if [ $? -eq 0 ]; then
-            software='gcc-c++'
-        fi
-    fi
-    if [ "$software" == 'php-mysql' ]; then
-        check_system_is_centos
-        if [ $? -eq 0 ]; then
-            software='php-mysqlnd'
-        fi
-    fi
     if [ "$software" == 'docker' ]; then
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
@@ -264,14 +242,15 @@ function install_software(){
     fi
     # 软件别名处理 end
 
-    check_system_is_centos
+    check_system_is_ubuntu
     if [ $? -eq 0 ]; then
-        yum check-update -y
-        yum update -y
-        yum upgrade -y
-        yum list installed "$software" | grep ''
+        dpkg --configure -a
+        apt update -y
+        apt upgrade -y
+        apt full-upgrade -y
+        apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     else
-        check_system_is_ubuntu
+        check_system_is_debian
         if [ $? -eq 0 ]; then
             dpkg --configure -a
             apt update -y
@@ -279,35 +258,22 @@ function install_software(){
             apt full-upgrade -y
             apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
         else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                dpkg --configure -a
-                apt update -y
-                apt upgrade -y
-                apt full-upgrade -y
-                apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-            else
-                log_error 'install_software: unknown system, install check failed'
-                return 1
-            fi
+            log_error 'install_software: unknown system, install check failed'
+            return 1
         fi
     fi
+
     if [ $? -ne 0 ]; then
-        check_system_is_centos
+        check_system_is_ubuntu
         if [ $? -eq 0 ]; then
-            yum install -y "$software"
+            apt install -y "$software"
         else
-            check_system_is_ubuntu
+            check_system_is_debian
             if [ $? -eq 0 ]; then
                 apt install -y "$software"
             else
-                check_system_is_debian
-                if [ $? -eq 0 ]; then
-                    apt install -y "$software"
-                else
-                    log_error 'install_software: unknown system, install failed'
-                    return 1
-                fi
+                log_error 'install_software: unknown system, install failed'
+                return 1
             fi
         fi
         if [ $? -ne 0 ]; then
@@ -326,18 +292,6 @@ function remove_software(){
     software=$1
 
     # 软件别名处理 begin
-    if [ "$software" == 'g++' ]; then
-        check_system_is_centos
-        if [ $? -eq 0 ]; then
-            software='gcc-c++'
-        fi
-    fi
-    if [ "$software" == 'php-mysql' ]; then
-        check_system_is_centos
-        if [ $? -eq 0 ]; then
-            software='php-mysqlnd'
-        fi
-    fi
     if [ "$software" == 'docker' ]; then
         check_system_is_ubuntu
         if [ $? -eq 0 ]; then
@@ -362,14 +316,15 @@ function remove_software(){
     fi
     # 软件别名处理 end
 
-    check_system_is_centos
+    check_system_is_ubuntu
     if [ $? -eq 0 ]; then
-        yum check-update -y
-        yum update -y
-        yum upgrade -y
-        yum list installed "$software" | grep ''
+        dpkg --configure -a
+        apt update -y
+        apt upgrade -y
+        apt full-upgrade -y
+        apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     else
-        check_system_is_ubuntu
+        check_system_is_debian
         if [ $? -eq 0 ]; then
             dpkg --configure -a
             apt update -y
@@ -377,37 +332,23 @@ function remove_software(){
             apt full-upgrade -y
             apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
         else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                dpkg --configure -a
-                apt update -y
-                apt upgrade -y
-                apt full-upgrade -y
-                apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-            else
-                log_error 'remove_software: unknown system, remove check failed'
-                return 1
-            fi
+            log_error 'remove_software: unknown system, remove check failed'
+            return 1
         fi
     fi
     if [ $? -eq 0 ]; then
-        check_system_is_centos
+        check_system_is_ubuntu
         if [ $? -eq 0 ]; then
-            yum remove -y "$software"
+            apt remove -y "$software"
+            apt autoremove -y
         else
-            check_system_is_ubuntu
+            check_system_is_debian
             if [ $? -eq 0 ]; then
                 apt remove -y "$software"
                 apt autoremove -y
             else
-                check_system_is_debian
-                if [ $? -eq 0 ]; then
-                    apt remove -y "$software"
-                    apt autoremove -y
-                else
-                    log_error 'remove_software: unknown system, remove failed'
-                    return 1
-                fi
+                log_error 'remove_software: unknown system, remove failed'
+                return 1
             fi
         fi
         if [ $? -ne 0 ]; then
@@ -427,21 +368,16 @@ function remove_software(){
 function show_software(){
     check_parameter "$1" || return 1
     software=$1
-    check_system_is_centos
+    check_system_is_ubuntu
     if [ $? -eq 0 ]; then
-        yum list installed | grep "$software"
+        apt list --installed | grep "$software"
     else
-        check_system_is_ubuntu
+        check_system_is_debian
         if [ $? -eq 0 ]; then
             apt list --installed | grep "$software"
         else
-            check_system_is_debian
-            if [ $? -eq 0 ]; then
-                apt list --installed | grep "$software"
-            else
-                log_error 'show_software: unknown system, remove check failed'
-                return 1
-            fi
+            log_error 'show_software: unknown system'
+            return 1
         fi
     fi
 }

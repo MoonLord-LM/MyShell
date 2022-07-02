@@ -21,17 +21,23 @@ fi
 
 
 # 开始安装：
-check_system_is_centos
+check_system_is_ubuntu
 if [ $? -eq 0 ]; then
-    remove_software 'java-1.8.0-openjdk-devel'
-    remove_software 'java-11-openjdk-devel'
-    remove_software 'java-17-openjdk-devel'
-    install_software 'java-1.8.0-openjdk-devel'
-    install_software 'java-11-openjdk-devel'
-    install_software 'java-17-openjdk-devel'
+    remove_software 'openjdk-8-jdk'
+    remove_software 'openjdk-11-jdk'
+    remove_software 'openjdk-17-jdk'
+    install_software 'openjdk-8-jdk'
+    install_software 'openjdk-11-jdk'
+    install_software 'openjdk-17-jdk'
 else
-    check_system_is_ubuntu
+    check_system_is_debian
     if [ $? -eq 0 ]; then
+        # Fix Bug
+        # E: Unable to locate package openjdk-8-jdk
+        check_command_exist 'apt-add-repository' || install_software 'software-properties-common'
+        apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
+        # Fix End
+
         remove_software 'openjdk-8-jdk'
         remove_software 'openjdk-11-jdk'
         remove_software 'openjdk-17-jdk'
@@ -39,23 +45,7 @@ else
         install_software 'openjdk-11-jdk'
         install_software 'openjdk-17-jdk'
     else
-        check_system_is_debian
-        if [ $? -eq 0 ]; then
-            # Fix Bug
-            # E: Unable to locate package openjdk-8-jdk
-            check_command_exist 'apt-add-repository' || install_software 'software-properties-common'
-            apt-add-repository 'deb http://security.debian.org/debian-security stretch/updates main'
-            # Fix End
-
-            remove_software 'openjdk-8-jdk'
-            remove_software 'openjdk-11-jdk'
-            remove_software 'openjdk-17-jdk'
-            install_software 'openjdk-8-jdk'
-            install_software 'openjdk-11-jdk'
-            install_software 'openjdk-17-jdk'
-        else
-            log_error 'openjdk install failed, unknown system'
-        fi
+        log_error 'openjdk install failed, unknown system'
     fi
 fi
 

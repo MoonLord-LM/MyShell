@@ -1,9 +1,9 @@
 # MyShell
 A function library for the Linux Shell.  
-Linux Shell 常用脚本和函数.  
+Linux Shell 常用脚本和函数库.  
 
-## [测试环境]
-Ubuntu 20.04 / Debian 11 / CentOS 8.2  
+## [支持系统]
+Ubuntu 20.04 / Debian 11  
 
 ## [使用说明]
 
