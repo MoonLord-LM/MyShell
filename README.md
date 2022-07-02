@@ -11,6 +11,15 @@ Ubuntu 20.04 / Debian 11
     source <( wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 
+    # 常用函数
+    set_timezone_china
+    set_tcp_congestion_control_bbr
+    set_iptables_accept_all
+    update_software
+    prepare_common_command
+    get_system_version
+    show_tcp_listening
+
     # 安装 Docker
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
@@ -22,10 +31,6 @@ Ubuntu 20.04 / Debian 11
     # 安装 Nginx
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
-
-    # 安装 OpenJDK
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/openjdk.sh' | bash
 
     # 安装 PHP
     wget -O- --timeout=10 --no-cache \
