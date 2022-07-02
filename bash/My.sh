@@ -144,6 +144,14 @@ function check_command_exist(){
 
 
 
+# 更新软件
+function update_software(){
+    dpkg --configure -a
+    apt update -y
+    apt upgrade -y
+    apt full-upgrade -y
+    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
+}
 # 安装指定名称（$1）的软件
 function install_software(){
     check_parameter "$1" || return 1
@@ -163,12 +171,7 @@ function install_software(){
     fi
     # 软件别名处理 end
 
-    dpkg --configure -a
-    apt update -y
-    apt upgrade -y
-    apt full-upgrade -y
-    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-
+    update_software
     if [ $? -ne 0 ]; then
         apt install -y "$software"
         if [ $? -ne 0 ]; then
@@ -200,12 +203,7 @@ function remove_software(){
     fi
     # 软件别名处理 end
 
-    dpkg --configure -a
-    apt update -y
-    apt upgrade -y
-    apt full-upgrade -y
-    apt list --installed "$software" && apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
-
+    update_software
     if [ $? -eq 0 ]; then
         apt remove -y "$software"
         apt autoremove -y
