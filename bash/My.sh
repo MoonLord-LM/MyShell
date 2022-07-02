@@ -283,6 +283,7 @@ function set_tcp_congestion_control_bbr(){
 }
 # 设置 iptables 防火墙允许所有流量通过
 function set_iptables_accept_all(){
+    check_command_exist 'iptables' || install_software 'iptables'
     iptables --flush
     iptables --delete-chain
     iptables --policy INPUT ACCEPT
