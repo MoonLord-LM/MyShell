@@ -165,11 +165,8 @@ function show_software(){
         fi
     fi
 
-    log_info 'apt list --installed | grep "'"$software"'"'
-    apt list --installed | grep "$software"
-
-    log_info 'apt search "'"$software"'"'
-    apt search "$software"
+    log_info 'apt list --installed | grep '"'"'\[installed\]'"'"' | grep "'"$software"'"'
+    apt list --installed | grep '\[installed\]' | grep "$software"
 }
 # 安装指定名称（$1）的软件
 function install_software(){
