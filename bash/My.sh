@@ -271,26 +271,30 @@ function set_iptables_accept_all(){
 # 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
 function backup_file(){
     check_parameter "$1" || return 1
+    source_file=$1
+
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    source_file_name=$1
-    backup_file_name="$source_file_name - $current_time.bak"
-    if [ ! -f "$source_file_name" ]; then
-        log_error "file \"$source_file_name\" is not found"
+    backup_new_file="$source_file - $current_time.bak"
+
+    if [ ! -f "$source_file" ]; then
+        log_error "file \"$source_file\" is not found"
         return 1
     fi
-    if [ -f "$backup_file_name" ]; then
-        log_error "file \"$backup_file_name\" already exists"
+    if [ -f "$backup_new_file" ]; then
+        log_error "file \"$backup_new_file\" already exists"
         return 1
     fi
-    if [ ! -f "$backup_file_name" ]; then
-        \cp -f "$source_file_name" "$backup_file_name"
-    fi
-    if [ ! -f "$backup_file_name" ]; then
-        log_error "file \"$backup_file_name\" copy failed"
+
+    \cp -f "$source_file" "$backup_new_file"
+    if [ ! -f "$backup_new_file" ]; then
+        log_error "file \"$backup_new_file\" copy failed"
         return 1
     fi
-    log_info "backup_file ok, from \"$source_file_name\" to \"$backup_file_name\""
+
+    log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
+
+
 
 # 获取系统正在监听的 TCP 端口
 function show_tcp_listening(){
@@ -325,11 +329,14 @@ function prepare_common_command(){
 # set_iptables_accept_all
 
 #### prepare ####
+# update_software
 # prepare_common_command
 
 #### show ####
 # show_software $1
 # show_tcp_listening
+
+
 
 #### init ####
 log_info 'My.sh is loaded'
