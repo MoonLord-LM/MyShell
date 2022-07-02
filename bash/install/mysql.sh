@@ -7,6 +7,7 @@
 
 
 # 参数设置：
+set_tcp_congestion_control_bbr
 
 
 
@@ -23,11 +24,13 @@ fi
 # 开始安装：
 check_system_is_debian
 if [ $? -eq 0 ]; then
-    # Fix Bug
+    # Fix Begin
     # E: Package 'mysql-server' has no installation candidate
     # http://repo.mysql.com/apt/debian/pool/
-    wget -O '/tmp/mysql-server_8.0.28-1debian10_amd64.deb' --timeout=10 --no-cache 'http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/mysql-server_8.0.28-1debian10_amd64.deb'
-    apt install -y '/tmp/mysql-server_8.0.28-1debian10_amd64.deb'
+
+    cd '/tmp'
+    wget --timeout=10 --no-cache 'http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/mysql-server_8.0.29-1debian10_amd64.deb'
+    apt install -y '/tmp/mysql-server_8.0.29-1debian10_amd64.deb'
     # Fix End
 fi
 
@@ -41,22 +44,9 @@ fi
 
 
 # 启动服务：
-mysql_service_file=$(find '/usr/lib/systemd/system/' -type f 2> '/dev/null' | grep 'mysql' | grep -v '@')
-if [ "$mysql_service_file" == '' ]; then
-    log_error 'mysql install failed, quit now'
-    exit 1
-fi
-log_info "mysql_service_file: $mysql_service_file"
-
-mysql_service=${mysql_service_file/#'/usr/lib/systemd/system/'/''}
-if [ "$mysql_service" == '' ]; then
-    log_error 'mysql install failed, quit now'
-    exit 1
-fi
-log_info "mysql_service: $mysql_service"
-
-systemctl enable "$mysql_service"
-systemctl restart "$mysql_service"
-systemctl status --no-pager "$mysql_service"
+systemctl enable 'mysql'
+systemctl restart 'mysql'
+systemctl status --no-pager 'mysql'
+show_tcp_listening
 
 
