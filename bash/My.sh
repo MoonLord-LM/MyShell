@@ -55,6 +55,11 @@ function check_parameter(){
 
 
 
+# 输出普通的信息（$1）
+function log_debug(){
+    check_parameter "$1" || return 1
+    echo "$1"
+}
 # 输出红色的错误信息（$1）
 function log_error(){
     check_parameter "$1" || return 1
@@ -90,6 +95,8 @@ function log_notice(){
 
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
+    old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    log_debug "set_timezone_china begin, old time: \"$old_time\""
     \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time: \"$current_time\""
