@@ -10,11 +10,9 @@
 function ss_config_json(){
 cat <<EOF
 {
-    "server":"0.0.0.0",
     "server_port":10000,
     "local_port":10001,
     "password":"Shadowsocks@10000",
-    "timeout":30,
     "method":"chacha20-ietf-poly1305"
 }
 EOF
