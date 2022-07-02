@@ -333,7 +333,7 @@ function prepare_common_command(){
 # prepare_common_command
 
 #### show ####
-# show_software $1
+# get_system_version
 # show_tcp_listening
 
 
