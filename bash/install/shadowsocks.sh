@@ -7,6 +7,8 @@
 
 
 # 参数设置：
+set_tcp_congestion_control_bbr
+
 function ss_config_json(){
 cat <<EOF
 {
@@ -31,8 +33,6 @@ fi
 
 
 # 开始安装：
-set_tcp_congestion_control_bbr
-
 check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
 ss_config_json > '/etc/shadowsocks-libev/config.json'
 ss-server -h | grep --color=never 'shadowsocks-libev'

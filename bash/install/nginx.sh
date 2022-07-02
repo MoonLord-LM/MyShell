@@ -7,6 +7,7 @@
 
 
 # 参数设置：
+set_tcp_congestion_control_bbr
 
 
 
@@ -21,8 +22,6 @@ fi
 
 
 # 开始安装：
-set_tcp_congestion_control_bbr
-
 check_command_exist 'nginx' || install_software 'nginx'
 nginx -v
 if [ $? -ne 0 ]; then
