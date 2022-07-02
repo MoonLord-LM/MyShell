@@ -21,6 +21,8 @@ fi
 
 
 # 开始安装：
+set_tcp_congestion_control_bbr
+
 check_command_exist 'nginx' || install_software 'nginx'
 nginx -v
 if [ $? -ne 0 ]; then
@@ -34,5 +36,6 @@ fi
 systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'
+show_tcp_listening
 
 

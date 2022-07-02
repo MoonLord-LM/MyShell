@@ -33,20 +33,9 @@ install_software 'php-mbstring'
 install_software 'php-gd'
 install_software 'php-bcmath'
 install_software 'php-zip'
-
-check_system_is_ubuntu
-if [ $? -eq 0 ]; then
-    install_software 'php-redis'
-    install_software 'php-memcached'
-    install_software 'php-yaml'
-else
-    check_system_is_debian
-    if [ $? -eq 0 ]; then
-        install_software 'php-redis'
-        install_software 'php-memcached'
-        install_software 'php-yaml'
-    fi
-fi
+install_software 'php-redis'
+install_software 'php-memcached'
+install_software 'php-yaml'
 
 php -v
 if [ $? -ne 0 ]; then
