@@ -7,7 +7,7 @@
 
 
 # 参数设置：
-function ss_config(){
+function ss_config_json(){
 cat <<EOF
 {
     "server":"0.0.0.0",
@@ -36,7 +36,7 @@ fi
 set_tcp_congestion_control_bbr
 
 check_command_exist 'ss-server' || install_software 'shadowsocks-libev'
-ss_config > '/etc/shadowsocks-libev/config.json'
+ss_config_json > '/etc/shadowsocks-libev/config.json'
 ss-server -h | grep --color=never 'shadowsocks-libev'
 if [ $? -ne 0 ]; then
     log_error 'shadowsocks install failed, quit now'
