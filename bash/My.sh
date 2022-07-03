@@ -208,7 +208,7 @@ function install_software(){
             log_info "install_software end, \"$software\" install ok"
         fi
     else
-        log_info "install_software skip, \"$software\" is intalled"
+        log_info "install_software skip, \"$software\" is already intalled"
     fi
 }
 # 卸载指定名称（$1）的软件
@@ -243,7 +243,7 @@ function remove_software(){
             log_info "remove_software end, \"$software\" remove ok"
         fi
     else
-        log_info "remove_software skip, \"$software\" is removed"
+        log_info "remove_software skip, \"$software\" is already removed"
     fi
 }
 
