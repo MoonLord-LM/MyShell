@@ -28,9 +28,9 @@ if [ $? -eq 0 ]; then
     # E: Package 'mysql-server' has no installation candidate
     # http://repo.mysql.com/apt/debian/pool/
 
-    wget -O '/tmp/mysql-server_8.0.29-1debian11_amd64.deb' --timeout=10 --no-cache \
-    'https://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/mysql-server_8.0.29-1debian11_amd64.deb'
-    apt install -y '/tmp/mysql-server_8.0.29-1debian11_amd64.deb'
+    wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
+    'https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.22-1_all.deb'
+    apt install -y '/tmp/mysql-apt-config_0.8.22-1_all.deb'
 
     if [ $? -ne 0 ]; then
         log_error 'mysql-server install failed, quit now'
