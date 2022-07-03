@@ -146,6 +146,15 @@ function check_command_exist(){
 
 # 更新软件
 function update_software(){
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error 'update_software failed, unknown system'
+            return 1
+        fi
+    fi
+
     dpkg --configure -a
     apt update -y
     apt upgrade -y
@@ -183,19 +192,23 @@ function install_software(){
     fi
 
     update_software
+    if [ $? -ne 0 ]; then
+        log_error "install_software failed, update_software error"
+        return 1
+    fi
 
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
     apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         apt install -y "$software"
         if [ $? -ne 0 ]; then
-            log_error "install_software: \"$software\" install failed"
+            log_error "install_software failed, \"$software\" install error"
             return 1
         else
-            log_info "install_software: \"$software\" install ok"
+            log_info "install_software end, \"$software\" install ok"
         fi
     else
-        log_info "install_software: \"$software\" is intalled"
+        log_info "install_software skip, \"$software\" is intalled"
     fi
 }
 # 卸载指定名称（$1）的软件
@@ -213,6 +226,10 @@ function remove_software(){
     fi
 
     update_software
+    if [ $? -ne 0 ]; then
+        log_error "remove_software failed, update_software error"
+        return 1
+    fi
 
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
     apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
@@ -220,13 +237,13 @@ function remove_software(){
         apt remove -y "$software"
         apt autoremove -y
         if [ $? -ne 0 ]; then
-            log_error "remove_software: \"$software\" remove failed"
+            log_error "remove_software failed, \"$software\" remove error"
             return 1
         else
-            log_info "remove_software: \"$software\" remove ok"
+            log_info "remove_software end, \"$software\" remove ok"
         fi
     else
-        log_info "remove_software: \"$software\" is removed"
+        log_info "remove_software skip, \"$software\" is removed"
     fi
 }
 
@@ -235,10 +252,10 @@ function remove_software(){
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
     old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    log_info "set_timezone_china begin, old time: \"$old_time\""
+    log_info "set_timezone_china begin, old time is \"$old_time\""
     \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    log_info "set_timezone_china ok, current time: \"$current_time\""
+    log_info "set_timezone_china ok, current time is \"$current_time\""
 }
 # 设置系统的 TCP 拥塞控制算法为 BBR
 function set_tcp_congestion_control_bbr(){
