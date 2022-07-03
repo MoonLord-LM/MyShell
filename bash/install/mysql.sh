@@ -30,6 +30,7 @@ if [ $? -eq 0 ]; then
 
     show_software 'mysql-apt-config'
     if [ $? -ne 0 ]; then
+        remove_software 'mysql-apt-config'
         wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
         'https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.22-1_all.deb'
         dpkg --configure -a
