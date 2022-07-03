@@ -26,8 +26,6 @@ check_system_is_debian
 if [ $? -eq 0 ]; then
     # Fix Begin
     # E: Package 'mysql-server' has no installation candidate
-    # http://repo.mysql.com/apt/debian/pool/
-
     show_software 'mysql-apt-config'
     if [ $? -ne 0 ]; then
         wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
