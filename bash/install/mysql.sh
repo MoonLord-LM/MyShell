@@ -26,6 +26,8 @@ check_system_is_debian
 if [ $? -eq 0 ]; then
     # Fix Begin
     # E: Package 'mysql-server' has no installation candidate
+    log_info 'mysql-apt-config install begin'
+
     show_software 'mysql-apt-config'
     if [ $? -ne 0 ]; then
         wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
@@ -38,6 +40,8 @@ if [ $? -eq 0 ]; then
         log_error 'mysql-server install failed, quit now'
         exit 1
     fi
+
+    log_info 'mysql-apt-config install end'
     # Fix End
 fi
 
