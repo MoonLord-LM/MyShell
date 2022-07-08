@@ -36,11 +36,11 @@ if [ $? -eq 0 ]; then
         # 图形界面操作，每步操作完都需要等待30秒
         remove_software 'mysql-apt-config'
         show_software 'mysql-apt-config'
-        log_info 'mysql-apt-config wait 30s begin' && sleep 30 && log_info 'mysql-apt-config wait 30s end'
+        log_info 'mysql-apt-config wait begin' && sleep 60 && log_info 'mysql-apt-config wait end'
 
         apt install '/tmp/mysql-apt-config_0.8.22-1_all.deb'
         show_software 'mysql-apt-config'
-        log_info 'mysql-apt-config wait 30s begin' && sleep 30 && log_info 'mysql-apt-config wait 30s end'
+        log_info 'mysql-apt-config wait begin' && sleep 50 && log_info 'mysql-apt-config wait end'
     fi
 
     show_software 'mysql-apt-config'
