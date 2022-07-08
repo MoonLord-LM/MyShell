@@ -33,14 +33,14 @@ if [ $? -eq 0 ]; then
         wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
         'https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.22-1_all.deb'
 
-        # 图形界面操作
+        # 图形界面操作，每步操作完都需要等待30秒
         remove_software 'mysql-apt-config'
+        show_software 'mysql-apt-config'
+        log_info 'mysql-apt-config wait 30s begin' && sleep 30 && log_info 'mysql-apt-config wait 30s end'
+
         apt install '/tmp/mysql-apt-config_0.8.22-1_all.deb'
         show_software 'mysql-apt-config'
-
-        log_info 'mysql-apt-config wait begin'
-        sleep 30
-        log_info 'mysql-apt-config wait end'
+        log_info 'mysql-apt-config wait 30s begin' && sleep 30 && log_info 'mysql-apt-config wait 30s end'
     fi
 
     show_software 'mysql-apt-config'
