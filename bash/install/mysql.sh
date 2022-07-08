@@ -36,13 +36,7 @@ if [ $? -eq 0 ]; then
         # 图形界面操作
         dpkg --configure -a
         dpkg --install '/tmp/mysql-apt-config_0.8.22-1_all.deb'
-
-        log_info 'mysql-apt-config wait begin'
-        for i in {1…120}
-        do
-            show_software 'mysql-apt-config' || sleep 1
-        done
-        log_info 'mysql-apt-config wait end'
+        update_software
     fi
 
     show_software 'mysql-apt-config'
