@@ -34,9 +34,10 @@ if [ $? -eq 0 ]; then
         'https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.22-1_all.deb'
 
         # 图形界面操作
+        remove_software 'mysql-apt-config'
         apt install '/tmp/mysql-apt-config_0.8.22-1_all.deb'
-
         show_software 'mysql-apt-config'
+
         log_info 'mysql-apt-config wait begin'
         sleep 30
         log_info 'mysql-apt-config wait end'
