@@ -176,8 +176,10 @@ function show_software(){
 
     log_info 'apt list --installed | grep '"'"'\[installed\]'"'"' | grep "'"$software"'"'
     apt list --installed | grep '\[installed\]' | grep "$software"
-    if [ $? -ne 0 ]; then
-        log_error "show_software failed, \"$software\" is not intalled"
+    if [ $? -eq 0 ]; then
+        log_info "show_software: \"$software\" is already intalled"
+    else
+        log_info "show_software: \"$software\" is not intalled"
     fi
 }
 # 安装指定名称（$1）的软件
