@@ -55,6 +55,7 @@ if [ $? -ne 0 ]; then
     log_error 'mysql-server install failed, quit now'
     exit 1
 fi
+mysql_secure_installation
 
 
 
