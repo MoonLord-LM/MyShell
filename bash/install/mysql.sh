@@ -43,7 +43,6 @@ EOF
     log_info "allow_remote_access ok"
 }
 
-cat '/etc/mysql/mysql.conf.d/mysqld.cnf' | grep -e '#'
 
 
 # 加载函数：
