@@ -10,7 +10,7 @@
 set_tcp_congestion_control_bbr
 
 function ss_config_json(){
-cat <<EOF
+    cat <<EOF
 {
     "server_port":10000,
     "local_port":10001,

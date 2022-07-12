@@ -9,6 +9,41 @@
 # 参数设置：
 set_tcp_congestion_control_bbr
 
+function mysql_config_cnf(){
+    cat <<EOF
+#
+# The MySQL  Server configuration file.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+[mysqld]
+EOF
+}
+
+function set_root_password(){
+    mysql -h 'localhost' -u 'root' -e 'exit' | grep "Access denied for user 'root'@'localhost' (using password: NO)" > '/dev/null' 2>&1
+    if [ $? -eq 0 ]; then
+        mysql_secure_installation
+        exit 1
+    fi
+    log_info "set_root_password ok"
+    # password='MySQL@33060'
+    # mysql -h 'localhost' -u 'root' "-p$password"
+}
+
+function allow_remote_access(){
+    password='MySQL@33060'
+    mysql -h 'localhost' -u 'root' "-p$password" --batch <<EOF
+        use mysql;
+        update user set host = '%' where user = 'root';
+        select user, host from user;
+        flush privileges;
+EOF
+    log_info "allow_remote_access ok"
+}
+
+cat '/etc/mysql/mysql.conf.d/mysqld.cnf' | grep -e '#'
 
 
 # 加载函数：
@@ -55,7 +90,10 @@ if [ $? -ne 0 ]; then
     log_error 'mysql-server install failed, quit now'
     exit 1
 fi
-mysql_secure_installation
+
+set_root_password
+allow_remote_access
+mysql_config_cnf > '/etc/mysql/mysql.conf.d/mysqld.cnf'
 
 
 

@@ -368,3 +368,5 @@ function prepare_common_command(){
 
 #### init ####
 log_info 'My.sh is loaded'
+
+
