@@ -37,7 +37,7 @@ function allow_remote_access(){
     mysql -h 'localhost' -u 'root' "-p$password" --batch <<EOF
         use mysql;
         update user set host = '%' where user = 'root';
-        select user, host from user;
+        select user, host, authentication_string from user;
         flush privileges;
 EOF
     log_info "allow_remote_access ok"
