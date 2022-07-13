@@ -22,13 +22,14 @@ EOF
 }
 
 function set_root_password(){
+    password='MySQL@33060'
+    mysqladmin -u 'root' password "$password"
     mysql -h 'localhost' -u 'root' -e 'exit' | grep "Access denied for user 'root'@'localhost' (using password: NO)" > '/dev/null' 2>&1
     if [ $? -eq 0 ]; then
         mysql_secure_installation
         exit 1
     fi
     log_info "set_root_password ok"
-    # password='MySQL@33060'
     # mysql -h 'localhost' -u 'root' "-p$password"
 }
 
@@ -36,6 +37,7 @@ function allow_remote_access(){
     password='MySQL@33060'
     mysql -h 'localhost' -u 'root' "-p$password" --batch <<EOF
         use mysql;
+        alter user 'root' identified with mysql_native_password by 'MySQL@33060';
         update user set host = '%' where user = 'root';
         select user, host, authentication_string from user;
         flush privileges;
