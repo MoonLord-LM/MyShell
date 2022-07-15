@@ -268,12 +268,16 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
+    sysctl 'net.ipv4.tcp_fastopen'
 
     sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
+
     echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_congestion_control_bbr changed config, now reload'
     sysctl --load
@@ -282,6 +286,7 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
+    sysctl 'net.ipv4.tcp_fastopen'
 }
 # 设置 iptables 防火墙允许所有流量通过
 function set_iptables_accept_all(){

@@ -15,7 +15,8 @@ function ss_config_json(){
     "server_port":10000,
     "local_port":10001,
     "password":"Shadowsocks@10000",
-    "method":"xchacha20-ietf-poly1305"
+    "method":"xchacha20-ietf-poly1305",
+    "fast_open": true
 }
 EOF
 }
