@@ -38,6 +38,7 @@ if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/default.conf\", quit now"
     exit 1
 fi
+rm -rf "$site_enabled_path/default.conf"
 ln -s "$site_available_path/default.conf" "$site_enabled_path/default.conf"
 
 # 【moonlord.cc】
@@ -46,6 +47,7 @@ if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/moonlord.cc.conf\", quit now"
     exit 1
 fi
+rm -rf "$site_enabled_path/moonlord.cc.conf"
 ln -s "$site_available_path/moonlord.cc.conf" "$site_enabled_path/moonlord.cc.conf"
 
 # 【www.moonlord.cc】
@@ -54,6 +56,7 @@ if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/www.moonlord.cc.conf\", quit now"
     exit 1
 fi
+rm -rf "$site_enabled_path/www.moonlord.cc.conf"
 ln -s "$site_available_path/www.moonlord.cc.conf" "$site_enabled_path/www.moonlord.cc.conf"
 
 # 【ssl】
