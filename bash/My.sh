@@ -353,6 +353,8 @@ function prepare_common_command(){
     check_command_exist 'pip3' || install_software 'python3-pip'
     check_command_exist 'java' || install_software 'default-jre'
     check_command_exist 'javac' || install_software 'default-jdk'
+    # node/npm
+    check_command_exist 'node' || ( curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt-get install -y nodejs )
 }
 
 
