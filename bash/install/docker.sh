@@ -40,6 +40,4 @@ docker run 'hello-world'
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
 
-show_tcp_listening
-
 
