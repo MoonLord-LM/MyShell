@@ -30,7 +30,6 @@ site_enabled_path='/etc/nginx/sites-enabled'
 rm -rf "$site_default_path"
 mkdir -p "$site_available_path"
 mkdir -p "$site_enabled_path"
-mkdir -p "$ssl_cert_path"
 
 # 【default】
 wget -O "$site_available_path/default.conf" --timeout=10 --no-cache "$conf_resource/default.conf"
@@ -61,6 +60,8 @@ ln -s "$site_available_path/www.moonlord.cc.conf" "$site_enabled_path/www.moonlo
 
 # 【ssl】
 ssl_cert_path='/etc/nginx/ssl'
+mkdir -p "$ssl_cert_path"
+
 wget -O "$ssl_cert_path/moonlord.cc.crt" --timeout=10 --no-cache "$ssl_resource/moonlord.cc.crt"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$ssl_cert_path/moonlord.cc.crt\", quit now"
@@ -71,6 +72,7 @@ if [ $? -ne 0 ]; then
     log_error "file create failed: \"$ssl_cert_path/moonlord.cc.key\", quit now"
     exit 1
 fi
+
 wget -O "$ssl_cert_path/www.moonlord.cc.crt" --timeout=10 --no-cache "$ssl_resource/www.moonlord.cc.crt"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$ssl_cert_path/www.moonlord.cc.crt\", quit now"
