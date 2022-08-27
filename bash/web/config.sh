@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 自定义配置
-# 配置 WEB 站点支持 PHP
+# 配置 WEB 站点，配置 Nginx 支持 PHP
 # 执行配置：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/config.sh' | bash
 
 
@@ -49,7 +49,7 @@ fi
 ln -s "$site_available_path/moonlord.cc.conf" "$site_enabled_path/moonlord.cc.conf"
 
 # 【www.moonlord.cc】
-wget -O "$site_available_path/defwww.moonlord.ccault.conf" --timeout=10 --no-cache "$conf_resource/www.moonlord.cc.conf"
+wget -O "$site_available_path/www.moonlord.cc.conf" --timeout=10 --no-cache "$conf_resource/www.moonlord.cc.conf"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/www.moonlord.cc.conf\", quit now"
     exit 1
