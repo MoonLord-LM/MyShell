@@ -35,6 +35,7 @@ fi
 systemctl enable 'nginx'
 systemctl restart 'nginx'
 systemctl status --no-pager 'nginx'
+
 show_tcp_listening
 
 

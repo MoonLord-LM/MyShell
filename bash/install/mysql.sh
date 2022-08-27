@@ -100,6 +100,7 @@ mysql_config_cnf > '/etc/mysql/mysql.conf.d/mysqld.cnf'
 systemctl enable 'mysql'
 systemctl restart 'mysql'
 systemctl status --no-pager 'mysql'
+
 show_tcp_listening
 
 
