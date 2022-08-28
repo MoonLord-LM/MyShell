@@ -58,6 +58,11 @@ if [ "$php_fpm_service" == '' ]; then
 fi
 log_info "php_fpm_service: $php_fpm_service"
 
+# Composer
+php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');"
+php 'composer-setup.php' --install-dir=/usr/local/bin --filename=composer
+php -r "unlink('composer-setup.php');"
+
 
 
 # 启动服务：
