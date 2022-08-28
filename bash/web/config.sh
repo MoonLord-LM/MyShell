@@ -9,7 +9,7 @@
 # 参数设置：
 conf_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
 ssl_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/ssl'
-tinyfilemanager_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/tinyfilemanager'
+tinyfilemanager_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/tfm'
 
 
 
@@ -96,7 +96,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # [ tinyfilemanager ]
-tinyfilemanager_path='/var/www/html/tinyfilemanager'
+tinyfilemanager_path='/var/www/html/tfm'
 mkdir -p "$tinyfilemanager_path"
 wget -O "$tinyfilemanager_path/index.php" --timeout=10 --no-cache "$tinyfilemanager_resource/tinyfilemanager.config.php"
 if [ $? -ne 0 ]; then
