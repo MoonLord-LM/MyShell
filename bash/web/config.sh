@@ -88,6 +88,7 @@ fi
 # [ php ]
 web_root_path='/var/www/html'
 mkdir -p "$web_root_path"
+chmod -R 777 "$web_root_path"
 echo '<?php phpinfo(); ?>' > "$web_root_path/index.php"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$web_root_path/index.php\", quit now"
