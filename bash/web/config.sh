@@ -9,6 +9,7 @@
 # 参数设置：
 conf_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
 ssl_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/ssl'
+tinyfilemanager_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/tinyfilemanager'
 
 
 
@@ -31,7 +32,7 @@ rm -rf "$site_default_path"
 mkdir -p "$site_available_path"
 mkdir -p "$site_enabled_path"
 
-# 【default】
+# [ default ]
 wget -O "$site_available_path/default.conf" --timeout=10 --no-cache "$conf_resource/default.conf"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/default.conf\", quit now"
@@ -40,7 +41,7 @@ fi
 rm -rf "$site_enabled_path/default.conf"
 ln -s "$site_available_path/default.conf" "$site_enabled_path/default.conf"
 
-# 【moonlord.cc】
+# [ moonlord.cc ]
 wget -O "$site_available_path/moonlord.cc.conf" --timeout=10 --no-cache "$conf_resource/moonlord.cc.conf"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/moonlord.cc.conf\", quit now"
@@ -49,7 +50,7 @@ fi
 rm -rf "$site_enabled_path/moonlord.cc.conf"
 ln -s "$site_available_path/moonlord.cc.conf" "$site_enabled_path/moonlord.cc.conf"
 
-# 【www.moonlord.cc】
+# [ www.moonlord.cc ]
 wget -O "$site_available_path/www.moonlord.cc.conf" --timeout=10 --no-cache "$conf_resource/www.moonlord.cc.conf"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$site_available_path/www.moonlord.cc.conf\", quit now"
@@ -58,7 +59,7 @@ fi
 rm -rf "$site_enabled_path/www.moonlord.cc.conf"
 ln -s "$site_available_path/www.moonlord.cc.conf" "$site_enabled_path/www.moonlord.cc.conf"
 
-# 【ssl】
+# [ ssl ]
 ssl_cert_path='/etc/nginx/ssl'
 mkdir -p "$ssl_cert_path"
 
@@ -84,12 +85,21 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 【php】
+# [ php ]
 web_root_path='/var/www/html'
 mkdir -p "$web_root_path"
 echo '<?php phpinfo(); ?>' > "$web_root_path/index.php"
 if [ $? -ne 0 ]; then
     log_error "file create failed: \"$web_root_path/index.php\", quit now"
+    exit 1
+fi
+
+# [ tinyfilemanager ]
+tinyfilemanager_path='/var/www/html/tinyfilemanager'
+mkdir -p "$tinyfilemanager_path"
+wget -O "$tinyfilemanager_path/index.php" --timeout=10 --no-cache "$tinyfilemanager_resource/tinyfilemanager.config.php"
+if [ $? -ne 0 ]; then
+    log_error "file create failed: \"$tinyfilemanager_path/index.php\", quit now"
     exit 1
 fi
 
