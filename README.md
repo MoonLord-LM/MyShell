@@ -15,6 +15,7 @@ Ubuntu 20.04 / Debian 11
     set_timezone_china
     set_tcp_congestion_control_bbr
     set_iptables_accept_all
+    set_memory_swap_to_4GB
     update_software
     prepare_common_command
     get_system_version
