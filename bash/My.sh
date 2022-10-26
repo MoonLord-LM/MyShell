@@ -298,6 +298,44 @@ function set_iptables_accept_all(){
     iptables --policy FORWARD ACCEPT
     iptables --list
 }
+# 设置 /usr/memory_swap 文件为虚拟内存，保证物理内存和虚拟内存的总量在 4GB 或以上
+function set_memory_swap_to_4GB(){
+    mem_size=`free -m | grep 'Mem:' | awk -F' ' '{print $2}'`
+    swap_size=`free -m | grep 'Swap:' | awk -F' ' '{print $2}'`
+    log_info "set_memory_swap begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
+
+    need_size=$(( 1024 * 4 - $mem_size ))
+    if [ $(( $need_size - $swap_size - 1 )) -le 0 ]; then
+        log_info 'set_memory_swap end, memory is enough'
+        return 0
+    fi
+
+    log_info "set_memory_swap need to add swap memory: $need_size MB"
+
+    swap_file='/usr/memory_swap'
+    swapoff --all
+    rm -rf "$swap_file"
+    dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 1024 * 4 - $mem_size ))
+    chmod 600 "$swap_file"
+    mkswap "$swap_file"
+    swapon "$swap_file"
+
+    fstab_file='/etc/fstab'
+    cat "$fstab_file" | grep "$swap_file"
+    if [ $? -ne 0 ]; then
+        echo "$swap_file swap swap default 0 0" >> "$fstab_file"
+        cat "$fstab_file" | grep "$swap_file"
+    fi
+    mount -a
+
+    sysctl_conf_file='/etc/sysctl.conf'
+    sed -i '/vm.swappiness/d' "$sysctl_conf_file"
+    echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
+    sysctl --load
+
+    log_info 'set_memory_swap end, show current value'
+    free -m
+}
 
 
 
