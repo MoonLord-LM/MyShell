@@ -2,8 +2,8 @@
 A function library for the Linux Shell.  
 Linux Shell 常用脚本和函数库.  
 
-## [支持系统]
-Ubuntu 20.04 / Debian 11  
+## [测试系统]
+Ubuntu 22.04  
 
 ## [使用说明]
 
