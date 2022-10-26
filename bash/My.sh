@@ -313,7 +313,6 @@ function set_memory_swap_to_4GB(){
     log_info "set_memory_swap need to add swap memory: $need_size MB"
 
     swap_file='/usr/memory_swap'
-    swapoff --all
     rm -rf "$swap_file"
     dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 1024 * 4 - $mem_size ))
     chmod 600 "$swap_file"
@@ -323,7 +322,7 @@ function set_memory_swap_to_4GB(){
     fstab_file='/etc/fstab'
     cat "$fstab_file" | grep "$swap_file"
     if [ $? -ne 0 ]; then
-        echo "$swap_file swap swap default 0 0" >> "$fstab_file"
+        echo "$swap_file swap swap defaults 0 0" >> "$fstab_file"
         cat "$fstab_file" | grep "$swap_file"
     fi
     mount -a
