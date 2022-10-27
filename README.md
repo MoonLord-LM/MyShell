@@ -3,7 +3,7 @@ A function library for the Linux Shell.
 Linux Shell 常用脚本和函数库.  
 
 ## [测试系统]
-Ubuntu 22.04  
+Ubuntu 22.04 / Debian 11  
 
 ## [使用说明]
 
