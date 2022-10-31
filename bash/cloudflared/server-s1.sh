@@ -38,7 +38,7 @@ fi
 
 
 # 启动服务：
-cloudflared service uninstall
+cloudflared service uninstall > '/dev/null' 2>&1
 cloudflared service install "$s1_access"
 
 show_tcp_listening
