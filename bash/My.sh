@@ -392,7 +392,9 @@ function show_tcp_listening(){
 
 # 准备常用的命令
 function prepare_common_command(){
+    # common
     check_command_exist 'virt-what' || install_software 'virt-what'
+    check_command_exist 'sshpass' || install_software 'sshpass'
     check_command_exist 'wget' || install_software 'wget'
     check_command_exist 'curl' || install_software 'curl'
     check_command_exist 'git' || install_software 'git'
