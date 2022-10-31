@@ -2,7 +2,7 @@
 
 # Cloudflare Tunnel client
 # 开源地址：https://github.com/cloudflare/cloudflared
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/cloudflared/server-s1.sh' | bash
+# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/cloudflared/server-s4.sh' | bash
 
 
 
