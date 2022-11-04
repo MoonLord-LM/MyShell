@@ -64,7 +64,7 @@ server {
 
     location /ws/10010 {
         proxy_redirect off;
-        proxy_pass http://127.0.0.1:10010
+        proxy_pass http://127.0.0.1:10010;
         proxy_http_version 1.1;
         proxy_set_header Host $http_host;
         proxy_set_header Connection "upgrade";
@@ -103,11 +103,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-site_available_path='/etc/nginx/sites-available'
-site_enabled_path='/etc/nginx/sites-enabled'
-v2ray_nginx_config > "$site_available_path/v2ray.conf"
-rm -rf "$site_enabled_path/v2ray.conf"
-ln -s "$site_available_path/v2ray.conf" "$site_enabled_path/v2ray.conf"
+check_command_exist 'nginx'
+if [ $? -eq 0 ]; then
+    site_available_path='/etc/nginx/sites-available'
+    site_enabled_path='/etc/nginx/sites-enabled'
+    v2ray_nginx_config > "$site_available_path/v2ray.conf"
+    rm -rf "$site_enabled_path/v2ray.conf"
+    ln -s "$site_available_path/v2ray.conf" "$site_enabled_path/v2ray.conf"
+    systemctl restart 'nginx'
+fi
 
 
 
