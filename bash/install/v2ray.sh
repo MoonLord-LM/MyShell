@@ -7,8 +7,6 @@
 
 
 # 参数设置：
-conf_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
-
 function v2ray_config_json(){
     cat <<EOF
 {
@@ -65,26 +63,6 @@ v2ray -version
 if [ $? -ne 0 ]; then
     log_error 'v2ray install failed, quit now'
     exit 1
-fi
-
-check_command_exist 'nginx'
-if [ $? -eq 0 ]; then
-    site_available_path='/etc/nginx/sites-available'
-    site_enabled_path='/etc/nginx/sites-enabled'
-    wget -O "$site_available_path/v2ray.conf" --timeout=10 --no-cache "$conf_resource/v2ray.conf"
-    if [ $? -ne 0 ]; then
-        log_error "file create failed: \"$site_available_path/v2ray.conf\", quit now"
-        exit 1
-    fi
-
-    rm -rf "$site_enabled_path/v2ray.conf"
-    ln -s "$site_available_path/v2ray.conf" "$site_enabled_path/v2ray.conf"
-    systemctl restart 'nginx'
-    if [ $? -ne 0 ]; then
-        systemctl status nginx.service
-        log_error 'v2ray nginx config failed, quit now'
-        exit 1
-    fi
 fi
 
 
