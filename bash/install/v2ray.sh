@@ -7,6 +7,8 @@
 
 
 # 参数设置：
+conf_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
+
 function v2ray_config_json(){
     cat <<EOF
 {
