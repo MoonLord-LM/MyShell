@@ -109,6 +109,11 @@ if [ $? -eq 0 ]; then
     rm -rf "$site_enabled_path/v2ray.conf"
     ln -s "$site_available_path/v2ray.conf" "$site_enabled_path/v2ray.conf"
     systemctl restart 'nginx'
+    if [ $? -ne 0 ]; then
+        systemctl status nginx.service
+        log_error 'v2ray nginx config failed, quit now'
+        exit 1
+    fi
 fi
 
 
