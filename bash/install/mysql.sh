@@ -7,8 +7,6 @@
 
 
 # 参数设置：
-set_tcp_congestion_control_bbr
-
 function mysql_config_cnf(){
     cat <<EOF
 #
