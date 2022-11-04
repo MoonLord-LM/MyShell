@@ -66,8 +66,8 @@ php -r "unlink('composer-setup.php');"
 
 
 # 启动服务：
-systemctl enable "$php_fpm_service"
 systemctl restart "$php_fpm_service"
+systemctl enable "$php_fpm_service"
 systemctl status --no-pager "$php_fpm_service"
 
 

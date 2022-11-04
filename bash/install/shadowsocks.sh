@@ -43,8 +43,8 @@ fi
 
 
 # 启动服务：
-systemctl enable 'shadowsocks-libev'
 systemctl restart 'shadowsocks-libev'
+systemctl enable 'shadowsocks-libev'
 systemctl status --no-pager 'shadowsocks-libev'
 
 show_tcp_listening

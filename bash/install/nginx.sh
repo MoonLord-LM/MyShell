@@ -31,8 +31,8 @@ fi
 
 
 # 启动服务：
-systemctl enable 'nginx'
 systemctl restart 'nginx'
+systemctl enable 'nginx'
 systemctl status --no-pager 'nginx'
 
 show_tcp_listening

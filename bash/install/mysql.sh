@@ -95,8 +95,8 @@ mysql_config_cnf > '/etc/mysql/mysql.conf.d/mysqld.cnf'
 
 
 # 启动服务：
-systemctl enable 'mysql'
 systemctl restart 'mysql'
+systemctl enable 'mysql'
 systemctl status --no-pager 'mysql'
 
 show_tcp_listening
