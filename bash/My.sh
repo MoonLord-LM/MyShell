@@ -196,15 +196,14 @@ function install_software(){
         fi
     fi
 
-    update_software
-    if [ $? -ne 0 ]; then
-        log_error "install_software failed, update_software error"
-        return 1
-    fi
-
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
     apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
+        update_software
+        if [ $? -ne 0 ]; then
+            log_error "install_software failed, update_software error"
+            return 1
+        fi
         apt install -y "$software"
         if [ $? -ne 0 ]; then
             log_error "install_software failed, \"$software\" install error"
@@ -230,15 +229,14 @@ function remove_software(){
         fi
     fi
 
-    update_software
-    if [ $? -ne 0 ]; then
-        log_error "remove_software failed, update_software error"
-        return 1
-    fi
-
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
     apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -eq 0 ]; then
+        update_software
+        if [ $? -ne 0 ]; then
+            log_error "remove_software failed, update_software error"
+            return 1
+        fi
         apt remove -y "$software"
         apt autoremove -y
         if [ $? -ne 0 ]; then
