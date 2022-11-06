@@ -32,7 +32,7 @@ check_command_exist 'cloudflared'
 if [ $? -ne 0 ]; then
     cd '/tmp' &&
     curl -L --output 'cloudflared.deb' 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb' && \
-    dpkg -i 'cloudflared.deb'
+    dpkg --install 'cloudflared.deb'
 fi
 
 
