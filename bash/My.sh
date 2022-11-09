@@ -248,6 +248,7 @@ function remove_software(){
         fi
         apt remove -y "$software"
         apt autoremove -y
+        dpkg --purge "$software"
         if [ $? -ne 0 ]; then
             log_error "remove_software failed, \"$software\" remove error"
             return 1
