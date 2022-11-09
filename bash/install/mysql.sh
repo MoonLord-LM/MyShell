@@ -20,9 +20,10 @@ EOF
 }
 
 function set_root_password(){
+    log_info "set_root_password begin"
     mysql -h 'localhost' -u 'root' -e 'exit' | grep "Access denied for user 'root'@'localhost' (using password: NO)"
     if [ $? -eq 0 ]; then
-        log_info "set_root_password begin"
+        log_info "set_root_password by mysql_secure_installation"
         mysql_secure_installation
         exit 1
     fi
@@ -30,6 +31,7 @@ function set_root_password(){
 }
 
 function allow_remote_access(){
+    log_info "allow_remote_access begin"
     password='MySQL@33060'
     mysql -h 'localhost' -u 'root' "-p$password" --batch <<EOF
         use mysql;
