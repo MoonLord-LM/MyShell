@@ -9,12 +9,12 @@
 # 检查入参（最多9个）必须全都不为空字符串，否则报错
 function check_parameter(){
     if [ "${FUNCNAME[1]}" != '' ]; then
-        current_function="${FUNCNAME[1]}"
+        local current_function="${FUNCNAME[1]}"
     else
-        current_function="${FUNCNAME[0]}"
+        local current_function="${FUNCNAME[0]}"
     fi
-    red_color='\e[1;31m'
-    color_end='\e[0m'
+    local red_color='\e[1;31m'
+    local color_end='\e[0m'
     if [ "$#" -ge '1' ] && [ "$1" == '' ]; then
         echo -ne "$red_color" && echo "$current_function"': parameter [ $1 ] is empty' && echo -ne "$color_end"
         return 1
@@ -90,15 +90,15 @@ function log_notice(){
 
 # 获取系统的版本信息
 function get_system_version(){
-    centos_version_file='/etc/redhat-release'
-    ubuntu_version_file='/etc/issue'
+    local centos_version_file='/etc/redhat-release'
+    local ubuntu_version_file='/etc/issue'
     if [ -f "$centos_version_file" ]; then
-        version=$(cat "$centos_version_file")
+        local version=$(cat "$centos_version_file")
         echo "$version"
         return 0
     fi
     if [ -f "$ubuntu_version_file" ]; then
-        version=$(cat "$ubuntu_version_file")
+        local version=$(cat "$ubuntu_version_file")
         echo "$version"
         return 0
     fi
@@ -112,7 +112,7 @@ function check_system_is_ubuntu(){
         log_info 'check_system_is_ubuntu: false'
         return 1
     fi
-    version=$(get_system_version)
+    local version=$(get_system_version)
     log_info "check_system_is_ubuntu: $version"
 }
 # 判断系统是否是 Debian
@@ -122,7 +122,7 @@ function check_system_is_debian(){
         log_info 'check_system_is_debian: false'
         return 1
     fi
-    version=$(get_system_version)
+    local version=$(get_system_version)
     log_info "check_system_is_debian: $version"
 }
 
@@ -131,14 +131,14 @@ function check_system_is_debian(){
 # 判断指定命令（$1）是否存在
 function check_command_exist(){
     check_parameter "$1" || return 1
-    cmd=$1
+    local cmd=$1
     hash -d "$cmd" > '/dev/null' 2>&1
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "check_command_exist: \"$cmd\" does not exist"
         return 1
     fi
-    cmd_file_path=$(command -v "$cmd")
+    local cmd_file_path=$(command -v "$cmd")
     log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
 }
 
@@ -163,7 +163,7 @@ function update_software(){
 # 查看已安装的指定名称（$1）的软件
 function show_software(){
     check_parameter "$1" || return 1
-    software=$1
+    local software=$1
 
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
@@ -194,7 +194,7 @@ function show_software(){
 # 安装指定名称（$1）的软件
 function install_software(){
     check_parameter "$1" || return 1
-    software=$1
+    local software=$1
 
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
@@ -227,7 +227,7 @@ function install_software(){
 # 卸载指定名称（$1）的软件
 function remove_software(){
     check_parameter "$1" || return 1
-    software=$1
+    local software=$1
 
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
@@ -264,10 +264,10 @@ function remove_software(){
 
 # 设置系统时区为中国时区（GMT+08:00）
 function set_timezone_china(){
-    old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china begin, old time is \"$old_time\""
     \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
-    current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time is \"$current_time\""
 }
 # 设置系统的 TCP 拥塞控制算法为 BBR
@@ -278,7 +278,7 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
 
-    sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
     sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
@@ -308,11 +308,11 @@ function set_iptables_accept_all(){
 }
 # 设置 /usr/memory_swap 文件为虚拟内存，保证物理内存和虚拟内存的总量在 4GB 或以上
 function set_memory_swap_to_4GB(){
-    mem_size=`free -m | grep 'Mem:' | awk -F' ' '{print $2}'`
-    swap_size=`free -m | grep 'Swap:' | awk -F' ' '{print $2}'`
+    local mem_size=`free -m | grep 'Mem:' | awk -F' ' '{print $2}'`
+    local swap_size=`free -m | grep 'Swap:' | awk -F' ' '{print $2}'`
     log_info "set_memory_swap begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
 
-    need_size=$(( 1024 * 4 - $mem_size ))
+    local need_size=$(( 1024 * 4 - $mem_size ))
     if [ $(( $need_size - $swap_size - 1 )) -le 0 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
@@ -320,14 +320,14 @@ function set_memory_swap_to_4GB(){
 
     log_info "set_memory_swap need to add swap memory: $need_size MB"
 
-    swap_file='/usr/memory_swap'
+    local swap_file='/usr/memory_swap'
     rm -rf "$swap_file"
     dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 1024 * 4 - $mem_size ))
     chmod 600 "$swap_file"
     mkswap "$swap_file"
     swapon "$swap_file"
 
-    fstab_file='/etc/fstab'
+    local fstab_file='/etc/fstab'
     cat "$fstab_file" | grep "$swap_file"
     if [ $? -ne 0 ]; then
         echo "$swap_file swap swap defaults 0 0" >> "$fstab_file"
@@ -335,7 +335,7 @@ function set_memory_swap_to_4GB(){
     fi
     mount -a
 
-    sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/vm.swappiness/d' "$sysctl_conf_file"
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
     sysctl --load
@@ -348,7 +348,7 @@ function set_ipv6_disable(){
     log_info 'set_ipv6_disable begin, show current value'
     sysctl 'net.ipv6.conf.all.disable_ipv6'
 
-    sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/net.ipv6.conf.all.disable_ipv6/d' "$sysctl_conf_file"
 
     echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> "$sysctl_conf_file"
@@ -365,10 +365,10 @@ function set_ipv6_disable(){
 # 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
 function backup_file(){
     check_parameter "$1" || return 1
-    source_file=$1
+    local source_file=$1
 
-    current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    backup_new_file="$source_file - $current_time.bak"
+    local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    local backup_new_file="$source_file - $current_time.bak"
 
     if [ ! -f "$source_file" ]; then
         log_error "file \"$source_file\" is not found"
