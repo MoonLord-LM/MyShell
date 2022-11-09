@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
 fi
 
 sed -i '/bind 127.0.0.1/d' "$redis_conf_file"
-sed -i '/requirepass/d'    "$redis_conf_file" && echo "$redis_password" >> "$redis_conf_file"
+sed -i '/requirepass/d'    "$redis_conf_file" && echo "requirepass $redis_password" >> "$redis_conf_file"
 sed -i '/protected-mode/d' "$redis_conf_file" && echo 'protected-mode no' >> "$redis_conf_file"
 
 cat "$redis_conf_file" | grep 'bind 127.0.0.1'
