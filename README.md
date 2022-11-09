@@ -32,6 +32,10 @@ Ubuntu 22.04 / Debian 11
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
+    # 安装 Redis
+    wget -O- --timeout=10 --no-cache \
+    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
+
     # 安装 Nginx
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
