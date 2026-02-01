@@ -84,6 +84,6 @@ function show(){
     echo
     df -h | grep '/dev/' | grep -v 'tmpfs'
     echo
-    netstat -atnlp | grep 'LISTEN'
+    ss -tlnp
     echo
 }

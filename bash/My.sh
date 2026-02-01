@@ -392,8 +392,16 @@ function backup_file(){
 
 # 获取系统正在监听的 TCP 端口
 function show_tcp_listening(){
-    log_info 'netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"''
-    netstat -atlnp | grep 'LISTEN'
+    if command -v 'ss' &> '/dev/null'; then
+        log_info 'ss --tcp --listening --numeric --processes'
+        ss -tlnp
+    elif command -v 'netstat' &> '/dev/null'; then
+        log_info 'netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"''
+        netstat -atlnp | grep 'LISTEN'
+    else
+        log_error 'No available command found: netstat / ss'
+        return 1
+    fi
 }
 
 
@@ -415,6 +423,7 @@ function prepare_common_command(){
     check_command_exist 'pip3' || install_software 'python3-pip'
     check_command_exist 'java' || install_software 'default-jre'
     check_command_exist 'javac' || install_software 'default-jdk'
+    check_command_exist 'netstat' || install_software 'net-tools'
     # node/npm/yarn
     check_command_exist 'node' || ( curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt-get install -y nodejs )
     check_command_exist 'yarn' || ( npm install --global 'yarn' && yarn --version )
