@@ -62,11 +62,11 @@ if [ $? -eq 0 ]; then
     show_software 'v2ray'
     if [ $? -ne 0 ]; then
         # https://pkgs.org/download/v2ray
-        wget -O '/tmp/v2ray_4.34.0-7_amd64.deb' --timeout=10 --no-cache \
-        'http://ftp.us.debian.org/debian/pool/main/g/golang-v2ray-core/v2ray_4.34.0-7_amd64.deb'
+        wget -O '/tmp/v2ray_4.34.0+ds-5_amd64.deb' --timeout=10 --no-cache \
+        'http://ftp.us.debian.org/debian/pool/main/g/golang-v2ray-core/v2ray_4.34.0+ds-5_amd64.deb'
 
         dpkg --configure -a
-        dpkg --install '/tmp/v2ray_4.34.0-7_amd64.deb'
+        dpkg --install '/tmp/v2ray_4.34.0+ds-5_amd64.deb'
         update_software
     fi
 
