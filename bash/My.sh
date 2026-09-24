@@ -98,7 +98,8 @@ function get_system_version(){
         return 0
     fi
     if [ -f "$ubuntu_version_file" ]; then
-        local version=$(cat "$ubuntu_version_file")
+        # 截掉反斜杠及之后的内容，再去掉首尾空白字符
+        local version=$(cat "$ubuntu_version_file" | sed -e 's/\\.*$//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
         echo "$version"
         return 0
     fi
@@ -238,6 +239,7 @@ function remove_software(){
     dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
     if [ $? -ne 0 ]; then
         log_info "remove_software skip, \"$software\" is already removed"
+        return 0
     fi
 
     apt remove -y "$software"
@@ -320,11 +322,22 @@ function show_software(){
 
 
 
-# 设置系统时区为中国时区（GMT+08:00）
+# 设置系统时区为中国时区（Asia/Shanghai GMT+08:00）
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china begin, old time is \"$old_time\""
-    ln -sfn '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
+
+    check_command_exist 'timedatectl'
+    if [ $? -ne 0 ]; then
+        log_error 'set_timezone_china failed, timedatectl does not exist'
+        return 1
+    fi
+    timedatectl set-timezone 'Asia/Shanghai'
+    if [ $? -ne 0 ]; then
+        log_error 'set_timezone_china failed, timedatectl set-timezone error'
+        return 1
+    fi
+
     local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time is \"$current_time\""
     timedatectl
