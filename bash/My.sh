@@ -375,7 +375,7 @@ function set_memory_swap_to_4GB(){
         return 0
     fi
 
-    local need_size=$(( 4096 - mem_size + 1 ))
+    local need_size=$(( 4096 - mem_size ))
     if [ "$need_size" -le 0 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
@@ -385,7 +385,7 @@ function set_memory_swap_to_4GB(){
     # 先创建新 swap 文件并启用；若 /usr/memory_swap 已启用，需先停用
     local swap_file='/usr/memory_swap'
     swapoff "$swap_file" > '/dev/null' 2>&1
-    dd if='/dev/zero' of="$swap_file" bs='1M' count="$need_size"
+    dd if='/dev/zero' of="$swap_file" bs='1M' count="$(( need_size + 1 ))"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, dd error'
         return 1
