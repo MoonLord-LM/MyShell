@@ -370,6 +370,10 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
+    sysctl 'net.core.rmem_max'
+    sysctl 'net.core.wmem_max'
+    sysctl 'net.ipv4.tcp_rmem'
+    sysctl 'net.ipv4.tcp_wmem'
 
     # 尝试加载 bbr 模块，并试探当前内核是否支持 bbr（不支持时直接报错返回，不修改配置文件）
     modprobe 'tcp_bbr' > '/dev/null' 2>&1
@@ -378,6 +382,10 @@ function set_tcp_congestion_control_bbr(){
         log_error 'set_tcp_congestion_control_bbr failed, kernel does not support bbr'
         return 1
     fi
+    sysctl -w 'net.core.rmem_max=16777216' > '/dev/null' 2>&1
+    sysctl -w 'net.core.wmem_max=16777216' > '/dev/null' 2>&1
+    sysctl -w 'net.ipv4.tcp_rmem=4096 131072 16777216' > '/dev/null' 2>&1
+    sysctl -w 'net.ipv4.tcp_wmem=4096 16384 16777216' > '/dev/null' 2>&1
 
     # 修改配置前先备份
     local sysctl_conf_file='/etc/sysctl.conf'
@@ -390,10 +398,18 @@ function set_tcp_congestion_control_bbr(){
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
     sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
+    sed -i '/net.core.rmem_max/d' "$sysctl_conf_file"
+    sed -i '/net.core.wmem_max/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_rmem/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_wmem/d' "$sysctl_conf_file"
 
     echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
     echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
+    echo 'net.core.rmem_max = 16777216' >> "$sysctl_conf_file"
+    echo 'net.core.wmem_max = 16777216' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_rmem = 4096 131072 16777216' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_wmem = 4096 16384 16777216' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_congestion_control_bbr changed config, now reload'
     sysctl --load
@@ -407,6 +423,10 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
+    sysctl 'net.core.rmem_max'
+    sysctl 'net.core.wmem_max'
+    sysctl 'net.ipv4.tcp_rmem'
+    sysctl 'net.ipv4.tcp_wmem'
 }
 # 尝试设置 /swapfile 文件为虚拟内存，以保证物理内存和虚拟内存的总量在 4GB 以上
 function set_memory_swap_to_4GB(){
