@@ -263,6 +263,9 @@ function prepare_common_command(){
     check_command_exist 'cmake' || install_software 'cmake'
     check_command_exist 'gcc' || install_software 'gcc'
     check_command_exist 'g++' || install_software 'g++'
+
+    check_command_exist 'python3' || install_software 'python3'
+    check_command_exist 'java' || install_software 'openjdk'
 }
 # 查看系统已安装的程序和版本
 function show_software_list(){
