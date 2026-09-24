@@ -323,7 +323,7 @@ function backup_file(){
     check_parameter "$1" || return 1
     local source_file=$1
 
-    local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    local current_time=$(date "+%Y%m%d%H%M%S%z")
     local backup_new_file="$source_file - $current_time.bak"
 
     if [ ! -f "$source_file" ]; then
