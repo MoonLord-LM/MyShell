@@ -29,7 +29,7 @@ function v2ray_config_json(){
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "${v2ray_path}"
+          "path": "${v2ray_ws_path}"
         }
       }
     }
