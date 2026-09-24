@@ -236,19 +236,26 @@ function remove_software(){
     fi
 
     dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
-    if [ $? -eq 0 ]; then
-        apt remove -y "$software"
-        apt autoremove -y
-        dpkg --purge "$software"
-        if [ $? -ne 0 ]; then
-            log_error "remove_software failed, \"$software\" remove error"
-            return 1
-        else
-            log_info "remove_software end, \"$software\" remove ok"
-        fi
-    else
+    if [ $? -ne 0 ]; then
         log_info "remove_software skip, \"$software\" is already removed"
     fi
+
+    apt remove -y "$software"
+    if [ $? -ne 0 ]; then
+        log_error "remove_software failed, \"$software\" apt remove error"
+        return 1
+    fi
+    apt autoremove -y
+    if [ $? -ne 0 ]; then
+        log_error "remove_software failed, \"$software\" apt autoremove error"
+        return 1
+    fi
+    dpkg --purge "$software"
+    if [ $? -ne 0 ]; then
+        log_error "remove_software failed, \"$software\" dpkg purge error"
+        return 1
+    fi
+    log_info "remove_software end, \"$software\" remove ok"
 }
 # 准备常用的命令
 function prepare_common_command(){
@@ -429,26 +436,6 @@ function set_memory_swap_to_4GB(){
     log_info 'set_memory_swap end, show current value'
     free -m
 }
-# 设置 iptables 防火墙允许所有流量通过（临时测试使用，重启后恢复默认）
-function set_iptables_accept_all(){
-    check_command_exist 'iptables' || install_software 'iptables'
-    if [ $? -ne 0 ]; then
-        log_error "set_iptables_accept_all failed, iptables not found"
-        return 1
-    fi
-
-    # 清空所有表（filter / nat / mangle / raw / security）的规则和自定义链
-    local table
-    for table in 'filter' 'nat' 'mangle' 'raw' 'security'; do
-        iptables -t "$table" --flush > '/dev/null' 2>&1
-        iptables -t "$table" --delete-chain > '/dev/null' 2>&1
-    done
-
-    iptables --policy INPUT ACCEPT
-    iptables --policy OUTPUT ACCEPT
-    iptables --policy FORWARD ACCEPT
-    iptables --list
-}
 
 
 
@@ -507,7 +494,6 @@ function show_tcp_listening(){
 # set_timezone_china
 # set_tcp_congestion_control_bbr
 # set_memory_swap_to_4GB
-# set_iptables_accept_all
 
 #### 查看信息 ####
 # get_system_version
