@@ -235,13 +235,7 @@ function install_software(){
     fi
 
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
-    apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
-        update_software
-        if [ $? -ne 0 ]; then
-            log_error "install_software failed, update_software error"
-            return 1
-        fi
         apt install -y "$software"
         if [ $? -ne 0 ]; then
             log_error "install_software failed, \"$software\" install error"
@@ -268,13 +262,7 @@ function remove_software(){
     fi
 
     apt list --installed "$software" | grep '\[installed\]' | grep "$software"
-    apt list --installed "$software" | grep '\[installed\]' | grep "$software" > '/dev/null' 2>&1
     if [ $? -eq 0 ]; then
-        update_software
-        if [ $? -ne 0 ]; then
-            log_error "remove_software failed, update_software error"
-            return 1
-        fi
         apt remove -y "$software"
         apt autoremove -y
         dpkg --purge "$software"
@@ -309,7 +297,8 @@ function prepare_common_command(){
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china begin, old time is \"$old_time\""
-    \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
+    rm -rf '/etc/localtime'
+    ln -s '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time is \"$current_time\""
     timedatectl
@@ -343,6 +332,10 @@ function set_tcp_congestion_control_bbr(){
 # 设置 iptables 防火墙允许所有流量通过
 function set_iptables_accept_all(){
     check_command_exist 'iptables' || install_software 'iptables'
+    if [ $? -ne 0 ]; then
+        log_error "set_iptables_accept_all failed, iptables not found"
+        return 1
+    fi
     iptables --flush
     iptables --delete-chain
     iptables --policy INPUT ACCEPT
