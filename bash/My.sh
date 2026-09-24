@@ -330,7 +330,18 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
 
+    # 尝试加载 bbr 模块，并试探当前内核是否支持 bbr（不支持时直接报错返回，不修改配置文件）
+    modprobe 'tcp_bbr' > '/dev/null' 2>&1
+    sysctl -w 'net.ipv4.tcp_congestion_control=bbr' > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_congestion_control_bbr failed, kernel does not support bbr'
+        return 1
+    fi
+
+    # 修改配置前先备份
     local sysctl_conf_file='/etc/sysctl.conf'
+    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
     sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
@@ -341,26 +352,16 @@ function set_tcp_congestion_control_bbr(){
 
     log_info 'set_tcp_congestion_control_bbr changed config, now reload'
     sysctl --load
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_congestion_control_bbr failed, sysctl --load error'
+        return 1
+    fi
 
     log_info 'set_tcp_congestion_control_bbr ok, show current value'
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
-}
-# 设置 iptables 防火墙允许所有流量通过
-function set_iptables_accept_all(){
-    check_command_exist 'iptables' || install_software 'iptables'
-    if [ $? -ne 0 ]; then
-        log_error "set_iptables_accept_all failed, iptables not found"
-        return 1
-    fi
-    iptables --flush
-    iptables --delete-chain
-    iptables --policy INPUT ACCEPT
-    iptables --policy OUTPUT ACCEPT
-    iptables --policy FORWARD ACCEPT
-    iptables --list
 }
 # 设置 /usr/memory_swap 文件为虚拟内存（替换现有的 swap 文件），保证物理内存和虚拟内存的总量在 4GB 或以上
 function set_memory_swap_to_4GB(){
@@ -374,39 +375,15 @@ function set_memory_swap_to_4GB(){
         return 0
     fi
 
-    # 停用现有的 swap 文件（swap 分区不动）
-    local swap_path
-    while read -r swap_path; do
-        if [ -f "$swap_path" ]; then
-            log_info "set_memory_swap disable old swap file: \"$swap_path\""
-            swapoff "$swap_path"
-            if [ $? -ne 0 ]; then
-                log_error "set_memory_swap failed, swapoff \"$swap_path\" error"
-                return 1
-            fi
-        fi
-    done < <(awk '$2=="file"{print $1}' '/proc/swaps')
-
-    # 从 /etc/fstab 中移除对应的 swap 文件条目，并删除文件
-    local fstab_file='/etc/fstab'
-    while read -r swap_path; do
-        if [ -f "$swap_path" ]; then
-            log_info "set_memory_swap remove old swap file: \"$swap_path\""
-            sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
-            rm -f "$swap_path"
-        fi
-    done < <(awk '$3=="swap"{print $1}' "$fstab_file" 2> '/dev/null')
-
     local need_size=$(( 4096 - mem_size ))
     if [ "$need_size" -le 0 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
     fi
-
     log_info "set_memory_swap need swap memory: $need_size MB"
 
+    # 先创建新 swap 文件并启用（此时尚未对现有 swap 做任何修改）
     local swap_file='/usr/memory_swap'
-    rm -rf "$swap_file"
     dd if='/dev/zero' of="$swap_file" bs='1M' count="$need_size"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, dd error'
@@ -424,11 +401,22 @@ function set_memory_swap_to_4GB(){
         return 1
     fi
 
+    # 新 swap 已生效，停用并删除旧的 swap 文件，同时从 /etc/fstab 中移除对应条目（swap 分区不动）
     local fstab_file='/etc/fstab'
-    cat "$fstab_file" | grep "$swap_file"
+    local swap_path
+    while read -r swap_path; do
+        if [ "$swap_path" != "$swap_file" ] && [ -f "$swap_path" ]; then
+            log_info "set_memory_swap remove old swap file: \"$swap_path\""
+            swapoff "$swap_path" > '/dev/null' 2>&1
+            sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
+            rm -f "$swap_path"
+        fi
+    done < <(awk '$2=="file"{print $1}' '/proc/swaps')
+
+    # 写入 /etc/fstab 以便重启后自动挂载
+    grep -q "$swap_file" "$fstab_file"
     if [ $? -ne 0 ]; then
         echo "$swap_file swap swap defaults 0 0" >> "$fstab_file"
-        cat "$fstab_file" | grep "$swap_file"
     fi
     mount -a
 
@@ -439,6 +427,26 @@ function set_memory_swap_to_4GB(){
 
     log_info 'set_memory_swap end, show current value'
     free -m
+}
+# 设置 iptables 防火墙允许所有流量通过（临时测试使用，重启后恢复默认）
+function set_iptables_accept_all(){
+    check_command_exist 'iptables' || install_software 'iptables'
+    if [ $? -ne 0 ]; then
+        log_error "set_iptables_accept_all failed, iptables not found"
+        return 1
+    fi
+
+    # 清空所有表（filter / nat / mangle / raw / security）的规则和自定义链
+    local table
+    for table in 'filter' 'nat' 'mangle' 'raw' 'security'; do
+        iptables -t "$table" --flush > '/dev/null' 2>&1
+        iptables -t "$table" --delete-chain > '/dev/null' 2>&1
+    done
+
+    iptables --policy INPUT ACCEPT
+    iptables --policy OUTPUT ACCEPT
+    iptables --policy FORWARD ACCEPT
+    iptables --list
 }
 
 
@@ -497,8 +505,8 @@ function show_tcp_listening(){
 #### 系统设置 ####
 # set_timezone_china
 # set_tcp_congestion_control_bbr
-# set_iptables_accept_all
 # set_memory_swap_to_4GB
+# set_iptables_accept_all
 
 #### 查看信息 ####
 # get_system_version
