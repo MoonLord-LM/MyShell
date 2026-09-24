@@ -92,8 +92,8 @@ function log_notice(){
 function get_system_version(){
     local os_release_file='/etc/os-release'
     if [ -f "$os_release_file" ]; then
-        # 读取 NAME 的值，并去掉可能存在的首尾双引号
-        local version=$(grep '^NAME=' "$os_release_file" | head -n 1 | sed -e 's/^NAME=//' -e 's/^"//' -e 's/"$//')
+        # 读取 PRETTY_NAME 的值，并去掉可能存在的首尾双引号
+        local version=$(grep '^PRETTY_NAME=' "$os_release_file" | head -n 1 | sed -e 's/^PRETTY_NAME=//' -e 's/^"//' -e 's/"$//')
         if [ "$version" != '' ]; then
             echo "$version"
             return 0
