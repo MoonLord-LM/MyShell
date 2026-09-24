@@ -132,7 +132,6 @@ function check_system_is_debian(){
 function check_command_exist(){
     check_parameter "$1" || return 1
     local cmd=$1
-    hash -d "$cmd" > '/dev/null' 2>&1
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "check_command_exist: \"$cmd\" does not exist"
@@ -141,10 +140,7 @@ function check_command_exist(){
     local cmd_file_path=$(command -v "$cmd")
     log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
 }
-
-
-
-# 更新软件
+# 更新软件（保守，允许安装新依赖，不删除已安装的软件）
 function update_software(){
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
@@ -156,9 +152,42 @@ function update_software(){
     fi
 
     dpkg --configure -a
+    if [ $? -ne 0 ]; then
+        log_error 'dpkg configure failed'
+        return 1
+    fi
     apt update -y
+    if [ $? -ne 0 ]; then
+        log_error 'apt update failed'
+        return 1
+    fi
     apt upgrade -y
+    if [ $? -ne 0 ]; then
+        log_error 'apt upgrade failed'
+        return 1
+    fi
+}
+# 更新软件（激进，允许安装新依赖，允许删除已安装的软件）
+function update_software_aggressive(){
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error 'update_software_aggressive failed, unknown system'
+            return 1
+        fi
+    fi
+
+    update_software
+    if [ $? -ne 0 ]; then
+        log_error 'update_software_aggressive - update_software failed'
+        return 1
+    fi
     apt full-upgrade -y
+    if [ $? -ne 0 ]; then
+        log_error 'apt full-upgrade failed'
+        return 1
+    fi
 }
 # 查看已安装的指定名称（$1）的软件
 function show_software(){
@@ -259,6 +288,20 @@ function remove_software(){
         log_info "remove_software skip, \"$software\" is already removed"
     fi
 }
+# 准备常用的命令
+function prepare_common_command(){
+    check_command_exist 'netstat' || install_software 'net-tools'
+    check_command_exist 'wget' || install_software 'wget'
+    check_command_exist 'curl' || install_software 'curl'
+
+    check_command_exist 'git' || install_software 'git'
+    check_command_exist 'mvn' || install_software 'maven'
+
+    check_command_exist 'make' || install_software 'make'
+    check_command_exist 'cmake' || install_software 'cmake'
+    check_command_exist 'gcc' || install_software 'gcc'
+    check_command_exist 'g++' || install_software 'g++'
+}
 
 
 
@@ -269,6 +312,7 @@ function set_timezone_china(){
     \cp -f '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time is \"$current_time\""
+    timedatectl
 }
 # 设置系统的 TCP 拥塞控制算法为 BBR
 function set_tcp_congestion_control_bbr(){
@@ -312,7 +356,7 @@ function set_memory_swap_to_4GB(){
     local swap_size=`free -m | grep 'Swap:' | awk -F' ' '{print $2}'`
     log_info "set_memory_swap begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
 
-    local need_size=$(( 1024 * 4 - $mem_size ))
+    local need_size=$(( 4096 - $mem_size ))
     if [ $(( $need_size - $swap_size - 1 )) -le 0 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
@@ -322,7 +366,7 @@ function set_memory_swap_to_4GB(){
 
     local swap_file='/usr/memory_swap'
     rm -rf "$swap_file"
-    dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 1024 * 4 - $mem_size ))
+    dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 4096 - $mem_size ))
     chmod 600 "$swap_file"
     mkswap "$swap_file"
     swapon "$swap_file"
@@ -406,47 +450,22 @@ function show_tcp_listening(){
 
 
 
-# 准备常用的命令
-function prepare_common_command(){
-    # common
-    check_command_exist 'virt-what' || install_software 'virt-what'
-    check_command_exist 'wget' || install_software 'wget'
-    check_command_exist 'curl' || install_software 'curl'
-    check_command_exist 'git' || install_software 'git'
-    check_command_exist 'mvn' || install_software 'maven'
-    check_command_exist 'make' || install_software 'make'
-    check_command_exist 'cmake' || install_software 'cmake'
-    check_command_exist 'gcc' || install_software 'gcc'
-    check_command_exist 'g++' || install_software 'g++'
-    check_command_exist 'python2' || install_software 'python2'
-    check_command_exist 'python3' || install_software 'python3'
-    check_command_exist 'pip3' || install_software 'python3-pip'
-    check_command_exist 'java' || install_software 'default-jre'
-    check_command_exist 'javac' || install_software 'default-jdk'
-    check_command_exist 'netstat' || install_software 'net-tools'
-    # node/npm/yarn
-    check_command_exist 'node' || ( curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt-get install -y nodejs )
-    check_command_exist 'yarn' || ( npm install --global 'yarn' && yarn --version )
-}
 
 
+#### 环境准备 ####
+# update_software
+# update_software_aggressive
+# prepare_common_command
 
-#### settings ####
+#### 系统设置 ####
 # set_timezone_china
 # set_tcp_congestion_control_bbr
 # set_iptables_accept_all
+# set_memory_swap_to_4GB
+# set_ipv6_disable
 
-#### prepare ####
-# update_software
-# prepare_common_command
-
-#### show ####
+#### 查看信息 ####
 # get_system_version
 # show_tcp_listening
 
-
-
-#### init ####
 log_info 'My.sh is loaded'
-
-
