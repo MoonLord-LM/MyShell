@@ -140,20 +140,6 @@ function check_command_exist(){
     local cmd_file_path=$(command -v "$cmd")
     log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
 }
-# 查看系统已安装的程序和版本
-function show_software_list(){
-    check_system_is_ubuntu
-    if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "show_software_list failed, unknown system"
-            return 1
-        fi
-    fi
-
-    log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
-    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
-}
 # 更新软件（保守，允许安装新依赖，不删除已安装的软件）
 function update_software(){
     check_system_is_ubuntu
@@ -202,30 +188,6 @@ function update_software_aggressive(){
         log_error 'apt full-upgrade failed'
         return 1
     fi
-}
-# 查看已安装的指定名称（$1）的软件
-function show_software(){
-    check_parameter "$1" || return 1
-    local software=$1
-
-    check_system_is_ubuntu
-    if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "show_software failed, unknown system"
-            return 1
-        fi
-    fi
-
-    log_info "dpkg-query -W -f='\${Status}' \"$software\" | grep 'install ok installed'"
-    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep 'install ok installed'
-    if [ $? -eq 0 ]; then
-        log_info "show_software: \"$software\" is already installed"
-        return 0
-    fi
-
-    log_info "show_software: \"$software\" is not installed"
-    return 1
 }
 # 安装指定名称（$1）的软件
 function install_software(){
@@ -301,6 +263,49 @@ function prepare_common_command(){
     check_command_exist 'cmake' || install_software 'cmake'
     check_command_exist 'gcc' || install_software 'gcc'
     check_command_exist 'g++' || install_software 'g++'
+}
+# 查看系统已安装的程序和版本
+function show_software_list(){
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error "show_software_list failed, unknown system"
+            return 1
+        fi
+    fi
+
+    log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
+    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
+}
+# 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述），显示名称和版本
+function show_software(){
+    check_parameter "$1" || return 1
+    local keyword=$1
+
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error "show_software failed, unknown system"
+            return 1
+        fi
+    fi
+
+    local result
+    result=$(dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' \
+        | grep 'install ok installed' | awk '{print $1" "$2}' | grep -i "$keyword")
+    if [ "$result" == '' ]; then
+        # 包名没匹配到时，再按软件描述搜索
+        result=$(dpkg-query -W -f='${binary:Package}|${Version}|${Status}|${Description}\n' 2> '/dev/null' \
+            | grep 'install ok installed' | grep -i "$keyword" | awk -F'|' '{print $1" "$2}')
+    fi
+    if [ "$result" == '' ]; then
+        log_info "show_software: no software found by keyword \"$keyword\""
+        return 1
+    fi
+    log_info "show_software: search \"$keyword\""
+    echo "$result"
 }
 
 
