@@ -427,7 +427,6 @@ function set_memory_swap_to_4GB(){
     fi
     log_info "set_memory_swap need swap memory: $need_size MB"
 
-    # 先创建新 swap 文件并启用；若 /usr/memory_swap 已启用，需先停用
     local swap_file='/usr/memory_swap'
     if awk '$2=="file"{print $1}' '/proc/swaps' | grep -q -F "$swap_file"; then
         log_info "set_memory_swap: \"$swap_file\" is active, try to swapoff it first"
@@ -437,12 +436,23 @@ function set_memory_swap_to_4GB(){
             return 1
         fi
     fi
+    rm -f "$swap_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, remove old swap file error'
+        return 1
+    fi
+
+    # 额外多分配 1MB
     dd if='/dev/zero' of="$swap_file" bs='1M' count="$(( need_size + 1 ))"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, dd error'
         return 1
     fi
     chmod 600 "$swap_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, chmod error'
+        return 1
+    fi
     mkswap "$swap_file"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, mkswap error'
@@ -454,7 +464,7 @@ function set_memory_swap_to_4GB(){
         return 1
     fi
 
-    # 新 swap 已生效，停用并删除旧的 swap 文件，同时从 /etc/fstab 中移除对应条目（swap 分区不动）
+    # 新 swap 已生效，停用并删除旧的 swap 文件
     local fstab_file='/etc/fstab'
     backup_file "$fstab_file" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
@@ -467,7 +477,6 @@ function set_memory_swap_to_4GB(){
             log_info "set_memory_swap remove old swap file: \"$swap_path\""
             swapoff "$swap_path" > '/dev/null' 2>&1
             if [ $? -ne 0 ]; then
-                # 停用失败则保留该 swap 文件及 fstab 条目，避免删除仍在使用的 swap 文件
                 log_warn "set_memory_swap skip, swapoff \"$swap_path\" error, keep it"
                 continue
             fi
