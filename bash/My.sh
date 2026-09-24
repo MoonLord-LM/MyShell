@@ -369,25 +369,15 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
-    sysctl 'net.ipv4.tcp_fastopen'
-    sysctl 'net.core.rmem_max'
-    sysctl 'net.core.wmem_max'
-    sysctl 'net.ipv4.tcp_rmem'
-    sysctl 'net.ipv4.tcp_wmem'
 
-    # 尝试加载 bbr 模块，并试探当前内核是否支持 bbr（不支持时直接报错返回，不修改配置文件）
+    # 尝试加载 bbr 模块，并试探当前内核是否支持 bbr
     modprobe 'tcp_bbr' > '/dev/null' 2>&1
     sysctl -w 'net.ipv4.tcp_congestion_control=bbr' > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_error 'set_tcp_congestion_control_bbr failed, kernel does not support bbr'
         return 1
     fi
-    sysctl -w 'net.core.rmem_max=16777216' > '/dev/null' 2>&1
-    sysctl -w 'net.core.wmem_max=16777216' > '/dev/null' 2>&1
-    sysctl -w 'net.ipv4.tcp_rmem=4096 131072 16777216' > '/dev/null' 2>&1
-    sysctl -w 'net.ipv4.tcp_wmem=4096 16384 16777216' > '/dev/null' 2>&1
 
-    # 修改配置前先备份
     local sysctl_conf_file='/etc/sysctl.conf'
     backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
@@ -397,19 +387,9 @@ function set_tcp_congestion_control_bbr(){
 
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
-    sed -i '/net.core.rmem_max/d' "$sysctl_conf_file"
-    sed -i '/net.core.wmem_max/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_rmem/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_wmem/d' "$sysctl_conf_file"
 
     echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
-    echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
-    echo 'net.core.rmem_max = 16777216' >> "$sysctl_conf_file"
-    echo 'net.core.wmem_max = 16777216' >> "$sysctl_conf_file"
-    echo 'net.ipv4.tcp_rmem = 4096 131072 16777216' >> "$sysctl_conf_file"
-    echo 'net.ipv4.tcp_wmem = 4096 16384 16777216' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_congestion_control_bbr changed config, now reload'
     sysctl --load
@@ -422,11 +402,70 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.ipv4.tcp_available_congestion_control'
     sysctl 'net.ipv4.tcp_congestion_control'
     sysctl 'net.core.default_qdisc'
-    sysctl 'net.ipv4.tcp_fastopen'
+}
+# 设置系统的 TCP 收发缓冲区上限为 16MB
+function set_tcp_network_buffer(){
+    log_info 'set_tcp_network_buffer begin, show current value'
     sysctl 'net.core.rmem_max'
     sysctl 'net.core.wmem_max'
     sysctl 'net.ipv4.tcp_rmem'
     sysctl 'net.ipv4.tcp_wmem'
+
+    local sysctl_conf_file='/etc/sysctl.conf'
+    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_network_buffer failed, backup sysctl.conf error'
+        return 1
+    fi
+
+    sed -i '/net.core.rmem_max/d' "$sysctl_conf_file"
+    sed -i '/net.core.wmem_max/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_rmem/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_wmem/d' "$sysctl_conf_file"
+
+    echo 'net.core.rmem_max = 16777216' >> "$sysctl_conf_file"
+    echo 'net.core.wmem_max = 16777216' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_rmem = 4096 131072 16777216' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_wmem = 4096 16384 16777216' >> "$sysctl_conf_file"
+
+    log_info 'set_tcp_network_buffer changed config, now reload'
+    sysctl --load
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_network_buffer failed, sysctl --load error'
+        return 1
+    fi
+
+    log_info 'set_tcp_network_buffer ok, show current value'
+    sysctl 'net.core.rmem_max'
+    sysctl 'net.core.wmem_max'
+    sysctl 'net.ipv4.tcp_rmem'
+    sysctl 'net.ipv4.tcp_wmem'
+}
+# 设置系统的 TCP Fast Open 为 3（客户端+服务端）
+function set_tcp_fastopen(){
+    log_info 'set_tcp_fastopen begin, show current value'
+    sysctl 'net.ipv4.tcp_fastopen'
+
+    local sysctl_conf_file='/etc/sysctl.conf'
+    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_fastopen failed, backup sysctl.conf error'
+        return 1
+    fi
+
+    sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
+
+    echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
+
+    log_info 'set_tcp_fastopen changed config, now reload'
+    sysctl --load
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_fastopen failed, sysctl --load error'
+        return 1
+    fi
+
+    log_info 'set_tcp_fastopen ok, show current value'
+    sysctl 'net.ipv4.tcp_fastopen'
 }
 # 尝试设置 /swapfile 文件为虚拟内存，以保证物理内存和虚拟内存的总量在 4GB 以上
 function set_memory_swap_to_4GB(){
@@ -567,6 +606,8 @@ function show_tcp_listening(){
 #### 系统设置 ####
 # set_timezone_china
 # set_tcp_congestion_control_bbr
+# set_tcp_network_buffer
+# set_tcp_fastopen
 # set_memory_swap_to_4GB
 
 #### 查看信息 ####
