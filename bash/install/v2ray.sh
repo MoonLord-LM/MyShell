@@ -6,10 +6,10 @@
 
 
 
-# 参数设置
-v2ray_uuid=$(cat '/proc/sys/kernel/random/uuid')
+# 参数设置（随机生成 v2ray_client_id / v2ray_ws_path ）
 v2ray_port=10010
-v2ray_path='/ws/10010'
+v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
+v2ray_ws_path='/ws/'$(cat '/proc/sys/kernel/random/uuid')
 
 function v2ray_config_json(){
     cat <<EOF
@@ -21,7 +21,7 @@ function v2ray_config_json(){
       "settings": {
         "clients": [
           {
-            "id": "${v2ray_uuid}",
+            "id": "${v2ray_client_id}",
             "alterId": 0
           }
         ]
@@ -85,8 +85,8 @@ if [ $? -ne 0 ]; then
 fi
 
 log_attention "v2ray port: ${v2ray_port}"
-log_attention "v2ray path: ${v2ray_path}"
-log_attention "v2ray uuid: ${v2ray_uuid}"
+log_attention "v2ray client id: ${v2ray_client_id}"
+log_attention "v2ray ws path: ${v2ray_ws_path}"
 cat '/usr/local/etc/v2ray/config.json'
 
 
