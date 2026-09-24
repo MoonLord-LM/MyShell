@@ -140,6 +140,20 @@ function check_command_exist(){
     local cmd_file_path=$(command -v "$cmd")
     log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
 }
+# 查看系统已安装的程序和版本
+function show_software_list(){
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        check_system_is_debian
+        if [ $? -ne 0 ]; then
+            log_error "show_software_list failed, unknown system"
+            return 1
+        fi
+    fi
+
+    log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
+    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
+}
 # 更新软件（保守，允许安装新依赖，不删除已安装的软件）
 function update_software(){
     check_system_is_ubuntu
@@ -497,6 +511,7 @@ function show_tcp_listening(){
 
 #### 查看信息 ####
 # get_system_version
+# show_software_list
 # show_tcp_listening
 
 log_info 'My.sh is loaded'
