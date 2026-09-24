@@ -14,24 +14,26 @@ v2ray_path='/ws/10010'
 function v2ray_config_json(){
     cat <<EOF
 {
-  "inbounds": [{
-    "port": ${v2ray_port},
-    "protocol": "vmess",
-    "settings": {
-      "clients": [
-        {
-          "id": "${v2ray_uuid}",
-          "alterId": 0
+  "inbounds": [
+    {
+      "port": ${v2ray_port},
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "${v2ray_uuid}",
+            "alterId": 0
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "${v2ray_path}"
         }
-      ]
-    },
-    "streamSettings": {
-      "network": "ws",
-      "wsSettings": {
-        "path": "${v2ray_path}"
       }
     }
-  }],
+  ],
   "outbounds": [
     {
       "protocol": "freedom",
