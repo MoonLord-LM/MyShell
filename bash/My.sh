@@ -408,7 +408,7 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.core.default_qdisc'
     sysctl 'net.ipv4.tcp_fastopen'
 }
-# 设置 /usr/memory_swap 文件为唯一的虚拟内存，并保证物理内存和虚拟内存的总量在 4GB 或以上
+# 尝试设置 /usr/memory_swap 文件为虚拟内存，以保证物理内存和虚拟内存的总量在 4GB 以上
 function set_memory_swap_to_4GB(){
     local mem_size=$(free -m | awk '/^Mem:/{print $2}')
     local swap_size=$(free -m | awk '/^Swap:/{print $2}')
