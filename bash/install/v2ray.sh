@@ -6,26 +6,30 @@
 
 
 
-# 参数设置：
+# 参数设置
+v2ray_uuid=$(cat '/proc/sys/kernel/random/uuid')
+v2ray_port=10010
+v2ray_path='/ws/10010'
+
 function v2ray_config_json(){
     cat <<EOF
 {
   "inbounds": [{
-    "port": 10010,
+    "port": ${v2ray_port},
     "protocol": "vmess",
     "settings": {
       "clients": [
         {
-          "id": "4c92f93c-2ca9-4c81-ad76-41b1043f8e98",
-          "level": 1,
-          "alterId": 64
+          "id": "${v2ray_uuid}",
+          "level": 0,
+          "alterId": 0
         }
       ]
     },
     "streamSettings": {
       "network": "ws",
       "wsSettings": {
-        "path": "/ws/10010"
+        "path": "${v2ray_path}"
       }
     }
   }],
@@ -57,33 +61,37 @@ fi
 
 
 # 开始安装：
-check_system_is_ubuntu
-if [ $? -eq 0 ]; then
-    show_software 'v2ray'
-    if [ $? -ne 0 ]; then
-        # https://pkgs.org/download/v2ray
-        wget -O '/tmp/v2ray_4.34.0+ds-5_amd64.deb' --timeout=10 --no-cache \
-        'http://ftp.us.debian.org/debian/pool/main/g/golang-v2ray-core/v2ray_4.34.0+ds-5_amd64.deb'
-
-        dpkg --configure -a
-        dpkg --install '/tmp/v2ray_4.34.0+ds-5_amd64.deb'
-        update_software
-    fi
-
-    show_software 'v2ray'
-    if [ $? -ne 0 ]; then
-        log_error 'v2ray install failed, quit now'
-        exit 1
-    fi
-fi
-
-check_command_exist 'v2ray' || install_software 'v2ray'
-v2ray_config_json > '/etc/v2ray/config.json'
-v2ray -version
+bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' )
 if [ $? -ne 0 ]; then
     log_error 'v2ray install failed, quit now'
     exit 1
 fi
+
+check_command_exist 'v2ray'
+if [ $? -ne 0 ]; then
+    log_error 'v2ray install failed, quit now'
+    exit 1
+fi
+
+v2ray version
+if [ $? -ne 0 ]; then
+    log_error 'v2ray install failed, quit now'
+    exit 1
+fi
+
+
+
+# 写入配置（uuid 随机生成，并在日志中展示）：
+v2ray_config_json > '/usr/local/etc/v2ray/config.json'
+if [ $? -ne 0 ]; then
+    log_error 'v2ray write config failed, quit now'
+    exit 1
+fi
+
+log_attention "v2ray port: ${v2ray_port}"
+log_attention "v2ray path: ${v2ray_path}"
+log_attention "v2ray uuid: ${v2ray_uuid}"
+cat '/usr/local/etc/v2ray/config.json'
 
 
 

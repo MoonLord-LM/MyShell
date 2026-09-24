@@ -258,8 +258,10 @@ function remove_software(){
 # 准备常用的命令
 function prepare_common_command(){
     check_command_exist 'netstat' || install_software 'net-tools'
-    check_command_exist 'wget' || install_software 'wget'
     check_command_exist 'curl' || install_software 'curl'
+
+    check_command_exist 'python3' || install_software 'python3'
+    check_command_exist 'java' || install_software 'openjdk'
 
     check_command_exist 'git' || install_software 'git'
     check_command_exist 'mvn' || install_software 'maven'
@@ -268,9 +270,6 @@ function prepare_common_command(){
     check_command_exist 'cmake' || install_software 'cmake'
     check_command_exist 'gcc' || install_software 'gcc'
     check_command_exist 'g++' || install_software 'g++'
-
-    check_command_exist 'python3' || install_software 'python3'
-    check_command_exist 'java' || install_software 'openjdk'
 }
 # 查看系统已安装的程序和版本
 function show_software_list(){
