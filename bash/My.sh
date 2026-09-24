@@ -375,7 +375,7 @@ function set_memory_swap_to_4GB(){
         return 0
     fi
 
-    local need_size=$(( 4096 - mem_size ))
+    local need_size=$(( 4096 - mem_size + 1 ))
     if [ "$need_size" -le 0 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
