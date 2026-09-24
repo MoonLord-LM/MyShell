@@ -382,8 +382,9 @@ function set_memory_swap_to_4GB(){
     fi
     log_info "set_memory_swap need swap memory: $need_size MB"
 
-    # 先创建新 swap 文件并启用（此时尚未对现有 swap 做任何修改）
+    # 先创建新 swap 文件并启用；若 /usr/memory_swap 已启用，需先停用
     local swap_file='/usr/memory_swap'
+    swapoff "$swap_file" > '/dev/null' 2>&1
     dd if='/dev/zero' of="$swap_file" bs='1M' count="$need_size"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, dd error'
