@@ -90,18 +90,14 @@ function log_notice(){
 
 # 获取系统的版本信息
 function get_system_version(){
-    local centos_version_file='/etc/redhat-release'
-    local ubuntu_version_file='/etc/issue'
-    if [ -f "$centos_version_file" ]; then
-        local version=$(cat "$centos_version_file")
-        echo "$version"
-        return 0
-    fi
-    if [ -f "$ubuntu_version_file" ]; then
-        # 截掉反斜杠及之后的内容，再去掉首尾空白字符
-        local version=$(cat "$ubuntu_version_file" | sed -e 's/\\.*$//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        echo "$version"
-        return 0
+    local os_release_file='/etc/os-release'
+    if [ -f "$os_release_file" ]; then
+        # 读取 NAME 的值，并去掉可能存在的首尾双引号
+        local version=$(grep '^NAME=' "$os_release_file" | head -n 1 | sed -e 's/^NAME=//' -e 's/^"//' -e 's/"$//')
+        if [ "$version" != '' ]; then
+            echo "$version"
+            return 0
+        fi
     fi
     log_error 'get_system_version failed, unknown system'
     return 1
@@ -322,6 +318,31 @@ function show_software(){
 
 
 
+# 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
+function backup_file(){
+    check_parameter "$1" || return 1
+    local source_file=$1
+
+    local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
+    local backup_new_file="$source_file - $current_time.bak"
+
+    if [ ! -f "$source_file" ]; then
+        log_error "file \"$source_file\" is not found"
+        return 1
+    fi
+    if [ -f "$backup_new_file" ]; then
+        log_error "file \"$backup_new_file\" already exists"
+        return 1
+    fi
+
+    \cp -f "$source_file" "$backup_new_file"
+    if [ ! -f "$backup_new_file" ]; then
+        log_error "file \"$backup_new_file\" copy failed"
+        return 1
+    fi
+
+    log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
+}
 # 设置系统时区为中国时区（Asia/Shanghai GMT+08:00）
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
@@ -361,6 +382,10 @@ function set_tcp_congestion_control_bbr(){
     # 修改配置前先备份
     local sysctl_conf_file='/etc/sysctl.conf'
     backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_congestion_control_bbr failed, backup sysctl.conf error'
+        return 1
+    fi
 
     sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
     sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
@@ -404,7 +429,14 @@ function set_memory_swap_to_4GB(){
 
     # 先创建新 swap 文件并启用；若 /usr/memory_swap 已启用，需先停用
     local swap_file='/usr/memory_swap'
-    swapoff "$swap_file" > '/dev/null' 2>&1
+    if awk '$2=="file"{print $1}' '/proc/swaps' | grep -q -F "$swap_file"; then
+        log_info "set_memory_swap: \"$swap_file\" is active, try to swapoff it first"
+        swapoff "$swap_file"
+        if [ $? -ne 0 ]; then
+            log_error 'set_memory_swap failed, swapoff old swap file error'
+            return 1
+        fi
+    fi
     dd if='/dev/zero' of="$swap_file" bs='1M' count="$(( need_size + 1 ))"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, dd error'
@@ -424,11 +456,21 @@ function set_memory_swap_to_4GB(){
 
     # 新 swap 已生效，停用并删除旧的 swap 文件，同时从 /etc/fstab 中移除对应条目（swap 分区不动）
     local fstab_file='/etc/fstab'
+    backup_file "$fstab_file" > '/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, backup fstab error'
+        return 1
+    fi
     local swap_path
     while read -r swap_path; do
         if [ "$swap_path" != "$swap_file" ] && [ -f "$swap_path" ]; then
             log_info "set_memory_swap remove old swap file: \"$swap_path\""
             swapoff "$swap_path" > '/dev/null' 2>&1
+            if [ $? -ne 0 ]; then
+                # 停用失败则保留该 swap 文件及 fstab 条目，避免删除仍在使用的 swap 文件
+                log_warn "set_memory_swap skip, swapoff \"$swap_path\" error, keep it"
+                continue
+            fi
             sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
             rm -f "$swap_path"
         fi
@@ -448,34 +490,6 @@ function set_memory_swap_to_4GB(){
 
     log_info 'set_memory_swap end, show current value'
     free -m
-}
-
-
-
-# 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
-function backup_file(){
-    check_parameter "$1" || return 1
-    local source_file=$1
-
-    local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
-    local backup_new_file="$source_file - $current_time.bak"
-
-    if [ ! -f "$source_file" ]; then
-        log_error "file \"$source_file\" is not found"
-        return 1
-    fi
-    if [ -f "$backup_new_file" ]; then
-        log_error "file \"$backup_new_file\" already exists"
-        return 1
-    fi
-
-    \cp -f "$source_file" "$backup_new_file"
-    if [ ! -f "$backup_new_file" ]; then
-        log_error "file \"$backup_new_file\" copy failed"
-        return 1
-    fi
-
-    log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
 
 
