@@ -440,22 +440,6 @@ function set_memory_swap_to_4GB(){
     log_info 'set_memory_swap end, show current value'
     free -m
 }
-# 禁用系统的 IPV6 功能
-function set_ipv6_disable(){
-    log_info 'set_ipv6_disable begin, show current value'
-    sysctl 'net.ipv6.conf.all.disable_ipv6'
-
-    local sysctl_conf_file='/etc/sysctl.conf'
-    sed -i '/net.ipv6.conf.all.disable_ipv6/d' "$sysctl_conf_file"
-
-    echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> "$sysctl_conf_file"
-
-    log_info 'set_ipv6_disable changed config, now reload'
-    sysctl --load
-
-    log_info 'set_ipv6_disable ok, show current value'
-    sysctl 'net.ipv6.conf.all.disable_ipv6'
-}
 
 
 
@@ -515,7 +499,6 @@ function show_tcp_listening(){
 # set_tcp_congestion_control_bbr
 # set_iptables_accept_all
 # set_memory_swap_to_4GB
-# set_ipv6_disable
 
 #### 查看信息 ####
 # get_system_version
