@@ -21,7 +21,6 @@ function v2ray_config_json(){
       "clients": [
         {
           "id": "${v2ray_uuid}",
-          "level": 0,
           "alterId": 0
         }
       ]
@@ -37,11 +36,6 @@ function v2ray_config_json(){
     {
       "protocol": "freedom",
       "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
     }
   ]
 }
