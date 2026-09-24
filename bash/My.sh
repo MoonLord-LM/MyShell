@@ -203,21 +203,14 @@ function show_software(){
         fi
     fi
 
-    log_info 'apt list --installed | grep '"'"'\[installed\]'"'"' | grep "'"$software"'"'
-    apt list --installed | grep '\[installed\]' | grep "$software"
+    log_info "dpkg-query -W -f='\${Status}' \"$software\" | grep 'install ok installed'"
+    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep 'install ok installed'
     if [ $? -eq 0 ]; then
-        log_info "show_software: \"$software\" is already intalled by apt"
+        log_info "show_software: \"$software\" is already installed"
         return 0
     fi
 
-    log_info 'dpkg --list | grep '"'"'\[installed\]'"'"' | grep "'"$software"'"'
-    dpkg --list | grep "$software"
-    if [ $? -eq 0 ]; then
-        log_info "show_software: \"$software\" is already intalled by dpkg"
-        return 0
-    fi
-
-    log_info "show_software: \"$software\" is not intalled"
+    log_info "show_software: \"$software\" is not installed"
     return 1
 }
 # 安装指定名称（$1）的软件
@@ -234,8 +227,13 @@ function install_software(){
         fi
     fi
 
-    apt list --installed "$software" | grep '\[installed\]' | grep "$software"
+    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
     if [ $? -ne 0 ]; then
+        apt update -y
+        if [ $? -ne 0 ]; then
+            log_error "install_software failed, apt update error"
+            return 1
+        fi
         apt install -y "$software"
         if [ $? -ne 0 ]; then
             log_error "install_software failed, \"$software\" install error"
@@ -244,7 +242,7 @@ function install_software(){
             log_info "install_software end, \"$software\" install ok"
         fi
     else
-        log_info "install_software skip, \"$software\" is already intalled"
+        log_info "install_software skip, \"$software\" is already installed"
     fi
 }
 # 卸载指定名称（$1）的软件
@@ -261,7 +259,7 @@ function remove_software(){
         fi
     fi
 
-    apt list --installed "$software" | grep '\[installed\]' | grep "$software"
+    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
     if [ $? -eq 0 ]; then
         apt remove -y "$software"
         apt autoremove -y
@@ -297,8 +295,7 @@ function prepare_common_command(){
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china begin, old time is \"$old_time\""
-    rm -rf '/etc/localtime'
-    ln -s '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
+    ln -sfn '/usr/share/zoneinfo/Asia/Shanghai' '/etc/localtime'
     local current_time=$(date "+%Y-%m-%d %H:%M:%S %z")
     log_info "set_timezone_china ok, current time is \"$current_time\""
     timedatectl
@@ -343,26 +340,67 @@ function set_iptables_accept_all(){
     iptables --policy FORWARD ACCEPT
     iptables --list
 }
-# 设置 /usr/memory_swap 文件为虚拟内存，保证物理内存和虚拟内存的总量在 4GB 或以上
+# 设置 /usr/memory_swap 文件为虚拟内存（替换现有的 swap 文件），保证物理内存和虚拟内存的总量在 4GB 或以上
 function set_memory_swap_to_4GB(){
-    local mem_size=`free -m | grep 'Mem:' | awk -F' ' '{print $2}'`
-    local swap_size=`free -m | grep 'Swap:' | awk -F' ' '{print $2}'`
+    local mem_size=$(free -m | awk '/^Mem:/{print $2}')
+    local swap_size=$(free -m | awk '/^Swap:/{print $2}')
     log_info "set_memory_swap begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
 
-    local need_size=$(( 4096 - $mem_size ))
-    if [ $(( $need_size - $swap_size - 1 )) -le 0 ]; then
+    # 总量已满足 4GB 要求时直接返回
+    if [ $(( mem_size + swap_size )) -ge 4096 ]; then
         log_info 'set_memory_swap end, memory is enough'
         return 0
     fi
 
-    log_info "set_memory_swap need to add swap memory: $need_size MB"
+    # 停用现有的 swap 文件（swap 分区不动）
+    local swap_path
+    while read -r swap_path; do
+        if [ -f "$swap_path" ]; then
+            log_info "set_memory_swap disable old swap file: \"$swap_path\""
+            swapoff "$swap_path"
+            if [ $? -ne 0 ]; then
+                log_error "set_memory_swap failed, swapoff \"$swap_path\" error"
+                return 1
+            fi
+        fi
+    done < <(awk '$2=="file"{print $1}' '/proc/swaps')
+
+    # 从 /etc/fstab 中移除对应的 swap 文件条目，并删除文件
+    local fstab_file='/etc/fstab'
+    while read -r swap_path; do
+        if [ -f "$swap_path" ]; then
+            log_info "set_memory_swap remove old swap file: \"$swap_path\""
+            sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
+            rm -f "$swap_path"
+        fi
+    done < <(awk '$3=="swap"{print $1}' "$fstab_file" 2> '/dev/null')
+
+    local need_size=$(( 4096 - mem_size ))
+    if [ "$need_size" -le 0 ]; then
+        log_info 'set_memory_swap end, memory is enough'
+        return 0
+    fi
+
+    log_info "set_memory_swap need swap memory: $need_size MB"
 
     local swap_file='/usr/memory_swap'
     rm -rf "$swap_file"
-    dd if='/dev/zero' of="$swap_file" bs='1M' count=$(( 4096 - $mem_size ))
+    dd if='/dev/zero' of="$swap_file" bs='1M' count="$need_size"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, dd error'
+        return 1
+    fi
     chmod 600 "$swap_file"
     mkswap "$swap_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, mkswap error'
+        return 1
+    fi
     swapon "$swap_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, swapon error'
+        return 1
+    fi
 
     local fstab_file='/etc/fstab'
     cat "$fstab_file" | grep "$swap_file"
