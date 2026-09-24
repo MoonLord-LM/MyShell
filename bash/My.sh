@@ -464,33 +464,51 @@ function set_memory_swap_to_4GB(){
         return 1
     fi
 
-    # 新 swap 已生效，停用并删除旧的 swap 文件
     local fstab_file='/etc/fstab'
     backup_file "$fstab_file" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, backup fstab error'
         return 1
     fi
+
+    # 取 /proc/swaps 与 /etc/fstab 的并集
+    local active_swap_files=$(awk '$2=="file"{print $1}' '/proc/swaps')
+    local all_swap_files=$({
+        echo "$active_swap_files"
+        awk '!/^[[:space:]]*#/ && $3=="swap"{print $1}' "$fstab_file"
+    } | sort -u)
+
     local swap_path
     while read -r swap_path; do
-        if [ "$swap_path" != "$swap_file" ] && [ -f "$swap_path" ]; then
-            log_info "set_memory_swap remove old swap file: \"$swap_path\""
+        if [ "$swap_path" == '' ] || [ "$swap_path" == "$swap_file" ] || [ ! -f "$swap_path" ]; then
+            continue
+        fi
+        log_info "set_memory_swap remove old swap file: \"$swap_path\""
+        echo "$active_swap_files" | grep -q -F -x "$swap_path"
+        if [ $? -eq 0 ]; then
             swapoff "$swap_path" > '/dev/null' 2>&1
             if [ $? -ne 0 ]; then
                 log_warn "set_memory_swap skip, swapoff \"$swap_path\" error, keep it"
                 continue
             fi
-            sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
-            rm -f "$swap_path"
         fi
-    done < <(awk '$2=="file"{print $1}' '/proc/swaps')
+        rm -f "$swap_path"
+        if [ $? -ne 0 ]; then
+            log_warn "set_memory_swap skip, remove \"$swap_path\" error, keep it"
+            continue
+        fi
+        sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
+    done <<< "$all_swap_files"
 
     # 写入 /etc/fstab 以便重启后自动挂载
-    grep -q "$swap_file" "$fstab_file"
+    grep -q -F "$swap_file" "$fstab_file"
     if [ $? -ne 0 ]; then
         echo "$swap_file swap swap defaults 0 0" >> "$fstab_file"
     fi
-    mount -a
+    swapon -a
+    if [ $? -ne 0 ]; then
+        log_warn 'set_memory_swap skip, swapon -a error'
+    fi
 
     local sysctl_conf_file='/etc/sysctl.conf'
     sed -i '/vm.swappiness/d' "$sysctl_conf_file"
