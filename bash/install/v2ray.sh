@@ -89,6 +89,7 @@ if [ $? -ne 0 ]; then
 fi
 
 backup_file "$v2ray_server_config_file"
+mkdir -p $(dirname "$v2ray_server_config_file")
 v2ray_server_config > "$v2ray_server_config_file"
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'

@@ -7,6 +7,7 @@
 
 
 # 参数设置：
+ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
 ss_server_port=10000
 ss_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
@@ -30,7 +31,7 @@ Description=shadowsocks-rust ssserver
 After=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/ssserver -c "${ss_server_config_file}"
+ExecStart="${ss_server_location}" -c "${ss_server_config_file}"
 Restart=on-failure
 
 [Install]
@@ -71,20 +72,26 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-tar -xzf "$tmp_file" -C '/usr/local/bin' 'ssserver'
+mkdir -p $(dirname "$ss_server_location")
+tar -xzf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
 if [ $? -ne 0 ]; then
     log_error 'shadowsocks-rust extract failed, quit now'
     exit 1
 fi
-chmod +x '/usr/local/bin/ssserver'
+
+chmod +x "$ss_server_location"
 rm -f "$tmp_file"
 
 ss_service_file > '/etc/systemd/system/ssserver.service'
 systemctl daemon-reload
 
-mkdir -p '/usr/local/etc/ssserver'
 backup_file "$ss_server_config_file"
+mkdir -p $(dirname "$ss_server_config_file")
 ss_config_json > "$ss_server_config_file"
+if [ $? -ne 0 ]; then
+    log_error 'ssserver write config failed, quit now'
+    exit 1
+fi
 cat "$ss_server_config_file"
 
 ss_server_ip=$(hostname -I | awk '{print $1}')
