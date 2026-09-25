@@ -7,6 +7,7 @@
 
 
 # 参数设置：
+v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 v2ray_server_port=10010
 v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
 v2ray_ws_path='/ws/'$(cat '/proc/sys/kernel/random/uuid')
@@ -87,13 +88,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-backup_file '/usr/local/etc/v2ray/config.json'
-v2ray_server_config > '/usr/local/etc/v2ray/config.json'
+backup_file "$v2ray_server_config_file"
+v2ray_server_config > "$v2ray_server_config_file"
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'
     exit 1
 fi
-cat '/usr/local/etc/v2ray/config.json'
+cat "$v2ray_server_config_file"
 
 v2ray_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "v2ray server ip: ${v2ray_server_ip}"
@@ -101,8 +102,8 @@ log_attention "v2ray port: ${v2ray_server_port}"
 log_attention "v2ray client id: ${v2ray_client_id}"
 log_attention "v2ray ws path: ${v2ray_ws_path}"
 
-v2ray_vmess_url='vmess://'$(v2ray_client_config | base64 -w 0)
-log_attention "v2ray share url: ${v2ray_vmess_url}"
+v2ray_share_url='vmess://'$(v2ray_client_config | base64 -w 0)
+log_attention "v2ray share url: ${v2ray_share_url}"
 
 
 
