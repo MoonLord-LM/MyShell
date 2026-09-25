@@ -378,7 +378,7 @@ function set_tcp_congestion_control_bbr(){
     fi
 
     local sysctl_conf_file='/etc/sysctl.conf'
-    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
         log_error 'set_tcp_congestion_control_bbr failed, backup sysctl.conf error'
         return 1
@@ -411,7 +411,7 @@ function set_tcp_network_buffer(){
     sysctl 'net.ipv4.tcp_wmem'
 
     local sysctl_conf_file='/etc/sysctl.conf'
-    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
         log_error 'set_tcp_network_buffer failed, backup sysctl.conf error'
         return 1
@@ -446,7 +446,7 @@ function set_tcp_fastopen(){
     sysctl 'net.ipv4.tcp_fastopen'
 
     local sysctl_conf_file='/etc/sysctl.conf'
-    backup_file "$sysctl_conf_file" > '/dev/null' 2>&1
+    backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
         log_error 'set_tcp_fastopen failed, backup sysctl.conf error'
         return 1
@@ -523,7 +523,7 @@ function set_memory_swap_to_4GB(){
     fi
 
     local fstab_file='/etc/fstab'
-    backup_file "$fstab_file" > '/dev/null' 2>&1
+    backup_file "$fstab_file"
     if [ $? -ne 0 ]; then
         log_error 'set_memory_swap failed, backup fstab error'
         return 1

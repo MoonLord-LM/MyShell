@@ -99,7 +99,8 @@ fi
 
 
 
-# 写入配置（uuid 随机生成，并在日志中展示）：
+# 写入配置：
+backup_file "$fstab_file"
 v2ray_server_config > '/usr/local/etc/v2ray/config.json'
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'
