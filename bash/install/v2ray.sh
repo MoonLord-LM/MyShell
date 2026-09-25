@@ -6,7 +6,7 @@
 
 
 
-# 参数设置（随机生成 v2ray_client_id / v2ray_ws_path ）
+# 参数设置：
 v2ray_server_port=10010
 v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
 v2ray_ws_path='/ws/'$(cat '/proc/sys/kernel/random/uuid')
@@ -80,16 +80,6 @@ fi
 
 # 开始安装：
 bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' )
-if [ $? -ne 0 ]; then
-    log_error 'v2ray install failed, quit now'
-    exit 1
-fi
-
-check_command_exist 'v2ray'
-if [ $? -ne 0 ]; then
-    log_error 'v2ray install failed, quit now'
-    exit 1
-fi
 
 v2ray version
 if [ $? -ne 0 ]; then
@@ -97,9 +87,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-
-
-# 写入配置：
 backup_file '/usr/local/etc/v2ray/config.json'
 v2ray_server_config > '/usr/local/etc/v2ray/config.json'
 if [ $? -ne 0 ]; then
