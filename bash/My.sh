@@ -326,7 +326,7 @@ function backup_file(){
     local backup_new_file="$source_file - $current_time.bak"
 
     if [ ! -f "$source_file" ]; then
-        log_error "file \"$source_file\" is not found"
+        log_attention "file \"$source_file\" is not found"
         return 1
     fi
     if [ -f "$backup_new_file" ]; then
