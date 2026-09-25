@@ -100,7 +100,7 @@ fi
 
 
 # 写入配置：
-backup_file "$fstab_file"
+backup_file '/usr/local/etc/v2ray/config.json'
 v2ray_server_config > '/usr/local/etc/v2ray/config.json'
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'
