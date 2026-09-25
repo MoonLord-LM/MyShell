@@ -7,16 +7,16 @@
 
 
 # 参数设置（随机生成 v2ray_client_id / v2ray_ws_path ）
-v2ray_port=10010
+v2ray_server_port=10010
 v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
 v2ray_ws_path='/ws/'$(cat '/proc/sys/kernel/random/uuid')
 
-function v2ray_config_json(){
+function v2ray_server_config(){
     cat <<EOF
 {
   "inbounds": [
     {
-      "port": ${v2ray_port},
+      "port": ${v2ray_server_port},
       "protocol": "vmess",
       "settings": {
         "clients": [
@@ -40,6 +40,28 @@ function v2ray_config_json(){
       "settings": {}
     }
   ]
+}
+EOF
+}
+
+function v2ray_client_config(){
+    cat <<EOF
+{
+  "v": "2",
+  "ps": "${v2ray_server_ip}",
+  "add": "${v2ray_server_ip}",
+  "port": "${v2ray_server_port}",
+  "id": "${v2ray_client_id}",
+  "aid": "0",
+  "scy": "auto",
+  "net": "ws",
+  "type": "none",
+  "host": "${v2ray_server_ip}",
+  "path": "${v2ray_ws_path}",
+  "tls": "",
+  "sni": "",
+  "alpn": "",
+  "fp": ""
 }
 EOF
 }
@@ -78,16 +100,21 @@ fi
 
 
 # 写入配置（uuid 随机生成，并在日志中展示）：
-v2ray_config_json > '/usr/local/etc/v2ray/config.json'
+v2ray_server_config > '/usr/local/etc/v2ray/config.json'
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'
     exit 1
 fi
+cat '/usr/local/etc/v2ray/config.json'
 
-log_attention "v2ray port: ${v2ray_port}"
+v2ray_server_ip=$(hostname -I | awk '{print $1}')
+log_attention "v2ray server ip: ${v2ray_server_ip}"
+log_attention "v2ray port: ${v2ray_server_port}"
 log_attention "v2ray client id: ${v2ray_client_id}"
 log_attention "v2ray ws path: ${v2ray_ws_path}"
-cat '/usr/local/etc/v2ray/config.json'
+
+v2ray_vmess_url='vmess://'$(v2ray_client_config | base64 -w 0)
+log_attention "v2ray share url: ${v2ray_vmess_url}"
 
 
 
