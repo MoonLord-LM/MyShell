@@ -55,40 +55,46 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
-x-server-labels: &server_labels
-  server: "${prometheus_server_name}"
-  server_ip: "${prometheus_server_ip}"
-
 scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets:
           - localhost:9090
-        labels: *server_labels
+        labels:
+          server: "${prometheus_server_name}"
+          server_ip: "${prometheus_server_ip}"
 
   - job_name: node
     static_configs:
       - targets:
           - host.docker.internal:${node_exporter_port}
-        labels: *server_labels
+        labels:
+          server: "${prometheus_server_name}"
+          server_ip: "${prometheus_server_ip}"
 
   - job_name: nginx
     static_configs:
       - targets:
           - host.docker.internal:${nginx_exporter_port}
-        labels: *server_labels
+        labels:
+          server: "${prometheus_server_name}"
+          server_ip: "${prometheus_server_ip}"
 
   - job_name: mysql
     static_configs:
       - targets:
           - host.docker.internal:${mysqld_exporter_port}
-        labels: *server_labels
+        labels:
+          server: "${prometheus_server_name}"
+          server_ip: "${prometheus_server_ip}"
 
   - job_name: redis
     static_configs:
       - targets:
           - host.docker.internal:${redis_exporter_port}
-        labels: *server_labels
+        labels:
+          server: "${prometheus_server_name}"
+          server_ip: "${prometheus_server_ip}"
 EOF
 }
 
