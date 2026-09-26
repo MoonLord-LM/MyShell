@@ -191,7 +191,7 @@ if [ -n "$mysql_password" ]; then
             --restart unless-stopped \
             --add-host host.docker.internal:${docker_host_ip} \
             -p "$mysqld_exporter_port:9104" \
-            -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@tcp(${mysql_host}:${mysql_port})/" \
+            -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@tcp(${mysql_host}:${mysql_port})/metrics?tls=skip-verify" \
             "$mysqld_exporter_image"
         if [ $? -ne 0 ]; then
             log_error 'mysqld_exporter container start failed, skip'
