@@ -44,7 +44,6 @@ redis_password="${REDIS_PASSWORD:-}"
 
 phpfpm_exporter_container_name='prometheus_phpfpm_exporter'
 phpfpm_exporter_image='hipages/php-fpm_exporter:latest'
-phpfpm_exporter_port=19253
 phpfpm_socket='/run/php/php8.4-fpm.sock'
 
 function prometheus_config_yml(){
@@ -76,7 +75,7 @@ scrape_configs:
 
   - job_name: 'phpfpm'
     static_configs:
-      - targets: ['host.docker.internal:19253']
+
 EOF
 }
 
@@ -103,12 +102,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-docker inspect "$prometheus_container_name" > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-    log_info 'prometheus container already exists, quit now'
-    exit 0
-fi
-
 mkdir -p "$prometheus_data_dir"
 chown -R 65534:65534 "$prometheus_data_dir"
 
@@ -120,6 +113,33 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 chown 65534:65534 "$prometheus_config_file"
+
+docker inspect "$prometheus_container_name" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    docker pull "$prometheus_image"
+    docker run -d \
+        --name "$prometheus_container_name" \
+        --restart unless-stopped \
+        -p "$prometheus_port:9090" \
+        -v "$prometheus_config_file:/etc/prometheus/prometheus.yml" \
+        -v "$prometheus_data_dir:/prometheus" \
+        "$prometheus_image"
+    if [ $? -ne 0 ]; then
+        log_error 'prometheus container start failed, skip'
+    fi
+    log_attention "prometheus installed on port $prometheus_port"
+else
+    log_info 'prometheus container already exists, skip'
+fi
+
+prometheus_server_ip=$(hostname -I | awk '{print $1}')
+log_attention "prometheus server ip: ${prometheus_server_ip}"
+log_attention "prometheus server port: ${prometheus_port}"
+log_attention "prometheus config file: ${prometheus_config_file}"
+log_attention "prometheus data dir: ${prometheus_data_dir}"
+
+prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
+log_attention "prometheus server url: ${prometheus_server_url}"
 
 docker inspect "$node_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -133,7 +153,12 @@ if [ $? -ne 0 ]; then
         -v '/sys:/host/sys:ro' \
         --path.rootfs=/host \
         "$node_exporter_image"
+    if [ $? -ne 0 ]; then
+        log_error 'node_exporter container start failed, skip'
+    fi
     log_attention "node_exporter installed on port $node_exporter_port"
+else
+    log_info 'node_exporter container already exists, skip'
 fi
 
 docker inspect "$nginx_exporter_container_name" > /dev/null 2>&1
@@ -145,7 +170,12 @@ if [ $? -ne 0 ]; then
         -p "$nginx_exporter_port:9113" \
         -e "SCRAPE_URI=http://${nginx_host}:${nginx_port}/nginx_status" \
         "$nginx_exporter_image"
+    if [ $? -ne 0 ]; then
+        log_error 'nginx_exporter container start failed, skip'
+    fi
     log_attention "nginx_exporter installed on port $nginx_exporter_port"
+else
+    log_info 'nginx_exporter container already exists, skip'
 fi
 
 if [ -n "$mysql_password" ]; then
@@ -158,32 +188,42 @@ if [ -n "$mysql_password" ]; then
             -p "$mysqld_exporter_port:9104" \
             -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@(${mysql_host}:${mysql_port})/" \
             "$mysqld_exporter_image"
+        if [ $? -ne 0 ]; then
+            log_error 'mysqld_exporter container start failed, skip'
+        fi
         log_attention "mysqld_exporter installed on port $mysqld_exporter_port"
+    else
+        log_info 'mysqld_exporter container already exists, skip'
     fi
 else
-    log_info 'mysql_password is empty, skip mysqld_exporter installation'
+    log_warn 'mysql_password is empty, skip mysqld_exporter installation'
+    log_info 'To enable mysql_exporter:'
+    log_info 'export MYSQL_PASSWORD="<password>"'
+    log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
-docker inspect "$redis_exporter_container_name" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    docker pull "$redis_exporter_image"
-    if [ -n "$redis_password" ]; then
+if [ -n "$redis_password" ]; then
+    docker inspect "$redis_exporter_container_name" > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        docker pull "$redis_exporter_image"
         docker run -d \
             --name "$redis_exporter_container_name" \
             --restart unless-stopped \
             -p "$redis_exporter_port:9121" \
             -e "REDIS_ADDR=redis://:${redis_password}@${redis_host}:${redis_port}" \
             "$redis_exporter_image"
-        log_attention "redis_exporter installed on port $redis_exporter_port (with password)"
+        if [ $? -ne 0 ]; then
+            log_error 'redis_exporter container start failed, skip'
+        fi
+        log_attention "redis_exporter installed on port $redis_exporter_port"
     else
-        docker run -d \
-            --name "$redis_exporter_container_name" \
-            --restart unless-stopped \
-            -p "$redis_exporter_port:9121" \
-            -e "REDIS_ADDR=${redis_host}:${redis_port}" \
-            "$redis_exporter_image"
-        log_attention "redis_exporter installed on port $redis_exporter_port (no password)"
+        log_info 'redis_exporter container already exists, skip'
     fi
+else
+    log_warn 'redis_password is empty, skip redis_exporter installation'
+    log_info 'To enable redis_exporter:'
+    log_info 'export REDIS_PASSWORD="<password>"'
+    log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
 docker inspect "$phpfpm_exporter_container_name" > /dev/null 2>&1
@@ -192,40 +232,17 @@ if [ $? -ne 0 ]; then
     docker run -d \
         --name "$phpfpm_exporter_container_name" \
         --restart unless-stopped \
-        -p "$phpfpm_exporter_port:9253" \
-        -e "PHPFPM_SCHEME=unix" \
-        -e "PHPFPM_PATH=${phpfpm_socket}" \
+        --network host \
+        -e "PHPFPM_ADDRESS=${phpfpm_socket}" \
         -v "${phpfpm_socket}:${phpfpm_socket}:ro" \
         "$phpfpm_exporter_image"
-    log_attention "phpfpm_exporter installed on port $phpfpm_exporter_port (socket: $phpfpm_socket)"
+    if [ $? -ne 0 ]; then
+        log_error 'phpfpm_exporter container start failed, skip'
+    fi
+    log_attention "phpfpm_exporter installed (socket: $phpfpm_socket)"
+else
+    log_info 'phpfpm_exporter container already exists, skip'
 fi
-
-docker pull "$prometheus_image"
-if [ $? -ne 0 ]; then
-    log_error 'prometheus image pull failed, quit now'
-    exit 1
-fi
-
-docker run -d \
-    --name "$prometheus_container_name" \
-    --restart unless-stopped \
-    -p "$prometheus_port:9090" \
-    -v "$prometheus_config_file:/etc/prometheus/prometheus.yml" \
-    -v "$prometheus_data_dir:/prometheus" \
-    "$prometheus_image"
-if [ $? -ne 0 ]; then
-    log_error 'prometheus container start failed, quit now'
-    exit 1
-fi
-
-prometheus_server_ip=$(hostname -I | awk '{print $1}')
-log_attention "prometheus server ip: ${prometheus_server_ip}"
-log_attention "prometheus server port: ${prometheus_port}"
-log_attention "prometheus config file: ${prometheus_config_file}"
-log_attention "prometheus data dir: ${prometheus_data_dir}"
-
-prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
-log_attention "prometheus server url: ${prometheus_server_url}"
 
 
 
