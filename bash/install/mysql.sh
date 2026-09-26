@@ -90,6 +90,10 @@ if [ $? -ne 0 ]; then
 
     tmp_file="/tmp/mysql-apt-config_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.deb"
     wget -O "$tmp_file" --timeout=120 --no-cache "$mysql_apt_config_url"
+    if [ $? -ne 0 ]; then
+        log_error 'mysql-apt-config download failed, quit now'
+        exit 1
+    fi
 
     dpkg --configure -a
     dpkg --install "$tmp_file"
