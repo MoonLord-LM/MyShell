@@ -253,6 +253,7 @@ fi
 
 
 # ———————————————————————— Start ————————————————————————
-docker ps -a --filter "name=$prometheus_container_name"
-
 show_tcp_listening
+
+log_info 'docker images:' && docker images
+log_info 'docker ps -a:' && docker ps -a
