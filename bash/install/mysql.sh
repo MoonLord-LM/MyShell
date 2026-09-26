@@ -1,43 +1,54 @@
 #!/bin/bash
 
 # MySQL
-# 开源地址：https://github.com/mysql
+# 开源地址：https://github.com/mysql/mysql-server
 # 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
 
 
 # 参数设置：
+mysql_apt_config_url='https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.40-1_all.deb'
+mysql_apt_config_select='mysql-8.4-lts'
+mysql_conf_file='/etc/mysql/mysql.conf.d/mysqld.cnf'
+mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+mysql_ssl_key='/etc/mysql/ssl/server-key.pem'
+mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
+
 function mysql_config_cnf(){
     cat <<EOF
-#
-# The MySQL  Server configuration file.
-#
-# For explanations see
-# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
-
 [mysqld]
+bind-address = *
+ssl-key = $mysql_ssl_key
+ssl-cert = $mysql_ssl_cert
+
+require_secure_transport = ON
+
+plugin-load-add = connection_control.so
+connection_control_failed_connections_threshold = 5
+connection_control_min_connection_delay = 2147483000
+connection_control_max_connection_delay = 2147483000
 EOF
 }
 
-function set_root_password(){
-    log_info "set_root_password begin"
-    mysql -h 'localhost' -u 'root' -e 'exit' | grep "Access denied for user 'root'@'localhost' (using password: NO)"
-    if [ $? -eq 0 ]; then
-        log_info "set_root_password by mysql_secure_installation"
-        mysql_secure_installation
+function mysql_gen_ssl_cert(){
+    log_info 'mysql_gen_ssl_cert begin'
+    mkdir -p $(dirname "$mysql_ssl_key")
+    openssl req -newkey rsa:4096 -nodes -keyout "$mysql_ssl_key" -x509 -days 365000 -out "$mysql_ssl_cert" -subj '/CN=MySQL'
+    if [ $? -ne 0 ]; then
+        log_error 'mysql_gen_ssl_cert failed, quit now'
         exit 1
     fi
-    log_info "set_root_password ok"
+    chmod 600 "$mysql_ssl_key"
+    log_info 'mysql_gen_ssl_cert ok'
 }
 
 function allow_remote_access(){
     log_info "allow_remote_access begin"
-    password='MySQL@33060'
-    mysql -h 'localhost' -u 'root' "-p$password" --batch <<EOF
-        use mysql;
-        alter user 'root' identified with caching_sha2_password by 'MySQL@33060';
-        update user set host = '%' where user = 'root';
-        select user, host, plugin, authentication_string from user;
+    mysql -h 'localhost' -u 'root' --batch <<EOF
+        create user if not exists 'admin'@'%' identified by '$mysql_password';
+        alter user 'admin'@'%' identified by '$mysql_password';
+        grant all privileges on *.* to 'admin'@'%' with grant option;
+        select user, host, plugin from mysql.user;
         flush privileges;
 EOF
     log_info "allow_remote_access ok"
@@ -56,43 +67,47 @@ fi
 
 
 # 开始安装：
-check_system_is_debian
-if [ $? -eq 0 ]; then
-    # Fix Begin
-    # E: Package 'mysql-server' has no installation candidate
-    log_info 'mysql-apt-config install begin'
+show_software 'mysql-apt-config'
+if [ $? -ne 0 ]; then
+    # debconf 预置答案，安装时不会弹出版本选择界面
+    echo "mysql-apt-config mysql-apt-config/select-server select $mysql_apt_config_select" | debconf-set-selections
 
-    show_software 'mysql-apt-config'
-    if [ $? -ne 0 ]; then
-        wget -O '/tmp/mysql-apt-config_0.8.22-1_all.deb' --timeout=10 --no-cache \
-        'https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.22-1_all.deb'
+    tmp_file="/tmp/mysql-apt-config_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.deb"
+    wget -O "$tmp_file" --timeout=120 --no-cache "$mysql_apt_config_url"
 
-        # 图形界面操作
-        dpkg --configure -a
-        dpkg --install '/tmp/mysql-apt-config_0.8.22-1_all.deb'
-        update_software
-    fi
+    dpkg --configure -a
+    dpkg --install "$tmp_file"
+    update_software
 
-    show_software 'mysql-apt-config'
-    if [ $? -ne 0 ]; then
-        log_error 'mysql-server install failed, quit now'
-        exit 1
-    fi
-
-    log_info 'mysql-apt-config install end'
-    # Fix End
+    rm -f "$tmp_file"
 fi
 
-check_command_exist 'mysqld' || install_software 'mysql-server'
-mysqld --version
+show_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then
-    log_error 'mysql-server install failed, quit now'
+    log_error 'mysql-apt-config install failed, quit now'
     exit 1
 fi
 
-set_root_password
+check_command_exist 'mysqld' || install_software 'mysql-community-server'
+mysqld --version
+if [ $? -ne 0 ]; then
+    log_error 'mysql-community-server install failed, quit now'
+    exit 1
+fi
+
+mysql_gen_ssl_cert
+
+backup_file "$mysql_conf_file"
+mysql_config_cnf > "$mysql_conf_file"
+
 allow_remote_access
-mysql_config_cnf > '/etc/mysql/mysql.conf.d/mysqld.cnf'
+
+mysql_server_ip=$(hostname -I | awk '{print $1}')
+log_attention "mysql server ip: ${mysql_server_ip}"
+log_attention "mysql port: 3306"
+log_attention "mysql user: admin"
+log_attention "mysql password: ${mysql_password}"
+log_attention "mysql ssl cert: ${mysql_ssl_cert}"
 
 
 
