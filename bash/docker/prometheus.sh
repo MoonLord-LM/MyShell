@@ -114,6 +114,7 @@ if [ $? -ne 0 ]; then
 fi
 chown 65534:65534 "$prometheus_config_file"
 
+docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}')
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -121,7 +122,7 @@ if [ $? -ne 0 ]; then
     docker run -d \
         --name "$prometheus_container_name" \
         --restart unless-stopped \
-        --add-host host.docker.internal:${prometheus_server_ip} \
+        --add-host host.docker.internal:${docker_host_ip} \
         -p "$prometheus_port:9090" \
         -v "$prometheus_config_file:/etc/prometheus/prometheus.yml" \
         -v "$prometheus_data_dir:/prometheus" \
