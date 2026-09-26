@@ -27,6 +27,7 @@ ssl-key = $mysql_ssl_key
 ssl-cert = $mysql_ssl_cert
 
 require_secure_transport = ON
+mysqlx = OFF
 
 plugin-load-add = connection_control.so
 connection_control_failed_connections_threshold = 5
