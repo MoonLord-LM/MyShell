@@ -259,6 +259,7 @@ function remove_software(){
 function prepare_common_command(){
     check_command_exist 'netstat' || install_software 'net-tools'
     check_command_exist 'curl' || install_software 'curl'
+    check_command_exist 'openssl' || install_software 'openssl'
 
     check_command_exist 'python3' || install_software 'python3'
     check_command_exist 'java' || install_software 'openjdk'
