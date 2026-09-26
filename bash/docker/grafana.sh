@@ -75,6 +75,9 @@ log_attention "grafana user: ${grafana_admin_user}"
 log_attention "grafana password: ${grafana_admin_password}"
 log_attention "grafana data dir: ${grafana_data_dir}"
 
+grafana_server_url="http://${grafana_server_ip}:${grafana_port}"
+log_attention "grafana server url: ${grafana_server_url}"
+
 
 
 

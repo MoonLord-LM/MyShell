@@ -113,6 +113,9 @@ log_attention "prometheus server port: ${prometheus_port}"
 log_attention "prometheus config file: ${prometheus_config_file}"
 log_attention "prometheus data dir: ${prometheus_data_dir}"
 
+prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
+log_attention "prometheus server url: ${prometheus_server_url}"
+
 
 
 
