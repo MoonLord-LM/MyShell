@@ -53,7 +53,7 @@ fi
 
 # 开始安装：
 tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
-ss_file_name_match="$(uname -m)-unknown-linux-gnu"
+ss_file_name_match="$(uname -m)-unknown-linux-musl"
 
 ss_download_url=$(
     wget -O- --timeout=60 --no-cache 'https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest' | \
