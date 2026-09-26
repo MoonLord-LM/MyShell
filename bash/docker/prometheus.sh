@@ -151,7 +151,6 @@ if [ $? -ne 0 ]; then
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
-        --path.rootfs=/host \
         "$node_exporter_image"
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
