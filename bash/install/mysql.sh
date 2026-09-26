@@ -33,7 +33,7 @@ bind-address = *
 port = $mysql_server_port
 ssl-key = $mysql_ssl_key
 ssl-cert = $mysql_ssl_cert
-tls_versions = TLSv1.2,TLSv1.3
+tls_version = TLSv1.2,TLSv1.3
 
 require_secure_transport = ON
 mysqlx = OFF
@@ -129,6 +129,12 @@ mysql_gen_ssl_cert
 
 backup_file "$mysql_conf_file"
 mysql_config_cnf > "$mysql_conf_file"
+
+mysqld --validate-config
+if [ $? -ne 0 ]; then
+    log_error 'mysql-community-server config failed, quit now'
+    exit 1
+fi
 
 allow_remote_access
 
