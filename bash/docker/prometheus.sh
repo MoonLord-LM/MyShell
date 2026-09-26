@@ -189,7 +189,7 @@ if [ -n "$mysql_password" ]; then
 user = ${mysql_user}
 password = ${mysql_password}
 EOF
-    chmod 600 "$mysqld_exporter_config_file"
+    chmod 644 "$mysqld_exporter_config_file"
 
     docker inspect "$mysqld_exporter_container_name" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
