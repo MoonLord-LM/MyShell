@@ -39,7 +39,7 @@ redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
 redis_exporter_port=19121
 redis_host='localhost'
-redis_port=6379
+redis_port=16379
 redis_password="${REDIS_PASSWORD:-}"
 
 phpfpm_exporter_container_name='prometheus_phpfpm_exporter'
@@ -55,7 +55,7 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['host.docker.internal:19090']
 
   - job_name: 'node'
     static_configs:
