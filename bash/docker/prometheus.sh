@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh' | bash
 
-# Prometheus Server
+# Prometheus
 # https://github.com/prometheus/prometheus
 
 
