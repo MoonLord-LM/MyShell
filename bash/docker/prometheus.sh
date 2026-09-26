@@ -30,6 +30,7 @@ nginx_port=80
 mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'
 mysqld_exporter_port=19104
+mysqld_exporter_config_file='/etc/mysqld_exporter.cnf'
 mysql_host='host.docker.internal'
 mysql_port=13306
 mysql_user='admin'
@@ -183,6 +184,13 @@ else
 fi
 
 if [ -n "$mysql_password" ]; then
+    cat <<EOF > "$mysqld_exporter_config_file"
+[client]
+user = ${mysql_user}
+password = ${mysql_password}
+EOF
+    chmod 600 "$mysqld_exporter_config_file"
+
     docker inspect "$mysqld_exporter_container_name" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         docker pull "$mysqld_exporter_image"
@@ -191,8 +199,11 @@ if [ -n "$mysql_password" ]; then
             --restart unless-stopped \
             --add-host host.docker.internal:${docker_host_ip} \
             -p "$mysqld_exporter_port:9104" \
-            -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@tcp(${mysql_host}:${mysql_port})/metrics?tls=skip-verify" \
-            "$mysqld_exporter_image"
+            -v "$mysqld_exporter_config_file:/.my.cnf:ro" \
+            "$mysqld_exporter_image" \
+            --config.my-cnf="/.my.cnf" \
+            --mysqld.address="${mysql_host}:${mysql_port}" \
+            --tls.insecure-skip-verify
         if [ $? -ne 0 ]; then
             log_error 'mysqld_exporter container start failed, skip'
         fi
