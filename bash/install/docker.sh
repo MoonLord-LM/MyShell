@@ -48,6 +48,7 @@ else
     exit 1
 fi
 
+mkdir -p "$(dirname "$docker_gpg_key_file")"
 wget -O- --timeout=120 --no-cache "${docker_repo_url}/gpg" | gpg --dearmor --yes -o "$docker_gpg_key_file"
 if [ $? -ne 0 ]; then
     log_error 'docker gpg key download failed, quit now'
@@ -71,6 +72,12 @@ fi
 docker version
 if [ $? -ne 0 ]; then
     log_error 'docker install failed, quit now'
+    exit 1
+fi
+
+docker compose version
+if [ $? -ne 0 ]; then
+    log_error 'docker compose install failed, quit now'
     exit 1
 fi
 
