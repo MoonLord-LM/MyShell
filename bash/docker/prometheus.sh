@@ -45,6 +45,7 @@ redis_password="${REDIS_PASSWORD:-}"
 
 phpfpm_exporter_container_name='prometheus_phpfpm_exporter'
 phpfpm_exporter_image='hipages/php-fpm_exporter:latest'
+phpfpm_exporter_port=19105
 phpfpm_socket='/run/php/php8.4-fpm.sock'
 
 function prometheus_config_yml(){
@@ -76,7 +77,7 @@ scrape_configs:
 
   - job_name: 'phpfpm'
     static_configs:
-
+      - targets: ['host.docker.internal:19105']
 EOF
 }
 
@@ -249,14 +250,17 @@ if [ $? -ne 0 ]; then
     docker run -d \
         --name "$phpfpm_exporter_container_name" \
         --restart unless-stopped \
-        --network host \
-        -e "PHPFPM_ADDRESS=${phpfpm_socket}" \
-        -v "${phpfpm_socket}:${phpfpm_socket}:ro" \
-        "$phpfpm_exporter_image"
+        --add-host host.docker.internal:${docker_host_ip} \
+        -p "$phpfpm_exporter_port:$phpfpm_exporter_port" \
+        -v "${phpfpm_socket}:${phpfpm_socket}:rw" \
+        "$phpfpm_exporter_image" \
+        server \
+        --phpfpm.scrape-uri "unix://${phpfpm_socket};/status" \
+        --web.listen-address=":${phpfpm_exporter_port}"
     if [ $? -ne 0 ]; then
         log_error 'phpfpm_exporter container start failed, skip'
     fi
-    log_attention "phpfpm_exporter installed (socket: $phpfpm_socket)"
+    log_attention "phpfpm_exporter installed (port: $phpfpm_exporter_port, socket: $phpfpm_socket)"
 else
     log_info 'phpfpm_exporter container already exists, skip'
 fi
