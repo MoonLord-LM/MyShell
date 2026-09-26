@@ -58,23 +58,23 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['host.docker.internal:19090']
+      - targets: ['localhost:9090']
 
   - job_name: 'node'
     static_configs:
-      - targets: ['host.docker.internal:19100']
+      - targets: ['host.docker.internal:${node_exporter_port}']
 
   - job_name: 'nginx'
     static_configs:
-      - targets: ['host.docker.internal:19113']
+      - targets: ['host.docker.internal:${nginx_exporter_port}']
 
   - job_name: 'mysql'
     static_configs:
-      - targets: ['host.docker.internal:19104']
+      - targets: ['host.docker.internal:${mysqld_exporter_port}']
 
   - job_name: 'redis'
     static_configs:
-      - targets: ['host.docker.internal:19121']
+      - targets: ['host.docker.internal:${redis_exporter_port}']
 EOF
 }
 
@@ -143,8 +143,8 @@ chmod 644 "$prometheus_config_file"
 
 if [ ! -d "$prometheus_data_dir" ]; then
     mkdir -p "$prometheus_data_dir"
-    chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_data_dir"
 fi
+chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_data_dir"
 
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -162,7 +162,8 @@ if [ $? -ne 0 ]; then
     fi
     log_attention "prometheus installed on port $prometheus_port"
 else
-    log_info 'prometheus container already exists, skip'
+    log_info 'prometheus container already exists, restart'
+    docker restart "$prometheus_container_name"
 fi
 
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
@@ -193,7 +194,8 @@ if [ $? -ne 0 ]; then
     fi
     log_attention "node_exporter installed on port $node_exporter_port"
 else
-    log_info 'node_exporter container already exists, skip'
+    log_info 'node_exporter container already exists, restart'
+    docker restart "$node_exporter_container_name"
 fi
 
 docker inspect "$nginx_exporter_container_name" > /dev/null 2>&1
@@ -211,7 +213,8 @@ if [ $? -ne 0 ]; then
     fi
     log_attention "nginx_exporter installed on port $nginx_exporter_port"
 else
-    log_info 'nginx_exporter container already exists, skip'
+    log_info 'nginx_exporter container already exists, restart'
+    docker restart "$nginx_exporter_container_name"
 fi
 
 if [ -n "$mysql_password" ]; then
@@ -245,7 +248,8 @@ password = \"${mysql_password_escaped}\"
             fi
             log_attention "mysqld_exporter installed on port $mysqld_exporter_port"
         else
-            log_info 'mysqld_exporter container already exists, skip'
+            log_info 'mysqld_exporter container already exists, restart'
+            docker restart "$mysqld_exporter_container_name"
         fi
     fi
 else
@@ -282,7 +286,8 @@ if [ -n "$redis_password" ]; then
             fi
             log_attention "redis_exporter installed on port $redis_exporter_port"
         else
-            log_info 'redis_exporter container already exists, skip'
+            log_info 'redis_exporter container already exists, restart'
+            docker restart "$redis_exporter_container_name"
         fi
     fi
 else
