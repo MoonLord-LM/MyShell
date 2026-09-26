@@ -10,6 +10,10 @@
 
 
 # ———————————————————————— Config ————————————————————————
+log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
+log_warn 'export MYSQL_PASSWORD="<password>"'
+log_warn 'export REDIS_PASSWORD="<password>"'
+
 prometheus_container_name='prometheus'
 prometheus_image='prom/prometheus:latest'
 prometheus_data_dir='/var/lib/prometheus'
@@ -43,11 +47,6 @@ redis_host='host.docker.internal'
 redis_port=16379
 redis_password="${REDIS_PASSWORD:-}"
 
-phpfpm_exporter_container_name='prometheus_phpfpm_exporter'
-phpfpm_exporter_image='hipages/php-fpm_exporter:latest'
-phpfpm_exporter_port=19105
-phpfpm_socket='/run/php/php8.4-fpm.sock'
-
 function prometheus_config_yml(){
     cat <<EOF
 global:
@@ -74,10 +73,6 @@ scrape_configs:
   - job_name: 'redis'
     static_configs:
       - targets: ['host.docker.internal:19121']
-
-  - job_name: 'phpfpm'
-    static_configs:
-      - targets: ['host.docker.internal:19105']
 EOF
 }
 
@@ -242,27 +237,6 @@ else
     log_info 'To enable redis_exporter:'
     log_info 'export REDIS_PASSWORD="<password>"'
     log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
-fi
-
-docker inspect "$phpfpm_exporter_container_name" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    docker pull "$phpfpm_exporter_image"
-    docker run -d \
-        --name "$phpfpm_exporter_container_name" \
-        --restart unless-stopped \
-        --add-host host.docker.internal:${docker_host_ip} \
-        -p "$phpfpm_exporter_port:$phpfpm_exporter_port" \
-        -v "${phpfpm_socket}:${phpfpm_socket}:rw" \
-        "$phpfpm_exporter_image" \
-        server \
-        --phpfpm.scrape-uri "unix://${phpfpm_socket};/status" \
-        --web.listen-address=":${phpfpm_exporter_port}"
-    if [ $? -ne 0 ]; then
-        log_error 'phpfpm_exporter container start failed, skip'
-    fi
-    log_attention "phpfpm_exporter installed (port: $phpfpm_exporter_port, socket: $phpfpm_socket)"
-else
-    log_info 'phpfpm_exporter container already exists, skip'
 fi
 
 
