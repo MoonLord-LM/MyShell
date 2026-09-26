@@ -12,10 +12,6 @@
 
 
 # ———————————————————————— Config ————————————————————————
-log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
-log_warn 'export MYSQL_PASSWORD="<password>"'
-log_warn 'export REDIS_PASSWORD="<password>"'
-
 prometheus_container_name='prometheus'
 prometheus_image='prom/prometheus:latest'
 prometheus_data_dir='/var/lib/prometheus'
@@ -95,6 +91,10 @@ fi
 
 
 # ———————————————————————— Install ————————————————————————
+log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
+log_warn 'export MYSQL_PASSWORD="<password>"'
+log_warn 'export REDIS_PASSWORD="<password>"'
+
 check_command_exist 'docker'
 if [ $? -ne 0 ]; then
     log_error 'docker not installed, please install docker first'
