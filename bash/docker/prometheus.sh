@@ -54,30 +54,41 @@ function prometheus_config_yml(){
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  external_labels:
-    hostname: '${prometheus_server_name}'
-    ip: '${prometheus_server_ip}'
+
+x-server-labels: &server_labels
+  server: "${prometheus_server_name}"
+  server_ip: "${prometheus_server_ip}"
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: prometheus
     static_configs:
-      - targets: ['localhost:9090']
+      - targets:
+          - localhost:9090
+        labels: *server_labels
 
-  - job_name: 'node'
+  - job_name: node
     static_configs:
-      - targets: ['host.docker.internal:${node_exporter_port}']
+      - targets:
+          - host.docker.internal:${node_exporter_port}
+        labels: *server_labels
 
-  - job_name: 'nginx'
+  - job_name: nginx
     static_configs:
-      - targets: ['host.docker.internal:${nginx_exporter_port}']
+      - targets:
+          - host.docker.internal:${nginx_exporter_port}
+        labels: *server_labels
 
-  - job_name: 'mysql'
+  - job_name: mysql
     static_configs:
-      - targets: ['host.docker.internal:${mysqld_exporter_port}']
+      - targets:
+          - host.docker.internal:${mysqld_exporter_port}
+        labels: *server_labels
 
-  - job_name: 'redis'
+  - job_name: redis
     static_configs:
-      - targets: ['host.docker.internal:${redis_exporter_port}']
+      - targets:
+          - host.docker.internal:${redis_exporter_port}
+        labels: *server_labels
 EOF
 }
 
