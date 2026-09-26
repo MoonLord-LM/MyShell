@@ -30,7 +30,6 @@ nginx_exporter_port=19113
 nginx_host='host.docker.internal'
 nginx_port=80
 
-# prom/mysqld-exporter:latest 容器内用户 nobody(65534:65534)
 mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'
 mysqld_exporter_port=19104
@@ -41,7 +40,6 @@ mysql_port=13306
 mysql_user='admin'
 mysql_password="${MYSQL_PASSWORD:-}"
 
-# oliver006/redis_exporter:latest 容器内用户 59000:59000
 redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
 redis_exporter_port=19121
@@ -80,8 +78,6 @@ scrape_configs:
 EOF
 }
 
-# 用法：write_secret_file <file> <content> [owner_uid]
-# owner_uid 是容器内实际运行用户的 UID；省略时默认 root
 function write_secret_file(){
     local file="$1"
     local content="$2"
@@ -150,7 +146,6 @@ if [ ! -d "$prometheus_data_dir" ]; then
     chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_data_dir"
 fi
 
-# ———— Prometheus ————
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$prometheus_image"
@@ -260,9 +255,8 @@ else
 fi
 
 if [ -n "$redis_password" ]; then
-    redis_password_json_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$redis_exporter_password_file" \
-"{\"redis://${redis_host}:${redis_port}\": \"${redis_password_json_escaped}\"}" \
+"{\"redis://${redis_host}:${redis_port}\": \"${redis_password}\"}" \
 "$redis_exporter_uid"
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
