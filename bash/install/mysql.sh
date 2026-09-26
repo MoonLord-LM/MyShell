@@ -64,6 +64,10 @@ function allow_remote_access(){
         select user, host, plugin from mysql.user;
         flush privileges;
 EOF
+    if [ $? -ne 0 ]; then
+        log_error 'allow_remote_access failed, quit now'
+        exit 1
+    fi
 }
 
 
