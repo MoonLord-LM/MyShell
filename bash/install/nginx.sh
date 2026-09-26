@@ -1,16 +1,15 @@
 #!/bin/bash
 
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
+
 # Nginx
-# 开源地址：https://github.com/nginx
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
+# https://github.com/nginx
 
 
 
-# 参数设置：
 
 
-
-# 加载函数：
+# ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -20,7 +19,9 @@ fi
 
 
 
-# 开始安装：
+
+
+# ———————————————————————— Install ————————————————————————
 check_command_exist 'nginx' || install_software 'nginx'
 
 nginx -v
@@ -31,11 +32,11 @@ fi
 
 
 
-# 启动服务：
+
+
+# ———————————————————————— Start ————————————————————————
 systemctl restart 'nginx'
 systemctl enable 'nginx'
 systemctl status --no-pager 'nginx'
 
 show_tcp_listening
-
-

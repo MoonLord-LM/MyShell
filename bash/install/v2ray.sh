@@ -1,12 +1,15 @@
 #!/bin/bash
 
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
+
 # V2Ray
-# 开源地址：https://github.com/v2fly/v2ray-core
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
+# https://github.com/v2fly/v2ray-core
 
 
 
-# 参数设置：
+
+
+# ———————————————————————— Config ————————————————————————
 v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 v2ray_server_port=10010
 v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
@@ -69,7 +72,9 @@ EOF
 
 
 
-# 加载函数：
+
+
+# ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -79,7 +84,9 @@ fi
 
 
 
-# 开始安装：
+
+
+# ———————————————————————— Install ————————————————————————
 bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' )
 
 v2ray version
@@ -108,11 +115,11 @@ log_attention "v2ray share url: ${v2ray_share_url}"
 
 
 
-# 启动服务：
+
+
+# ———————————————————————— Start ————————————————————————
 systemctl restart 'v2ray'
 systemctl enable 'v2ray'
 systemctl status --no-pager 'v2ray'
 
 show_tcp_listening
-
-

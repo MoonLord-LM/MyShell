@@ -1,12 +1,15 @@
 #!/bin/bash
 
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
+
 # Shadowsocks
-# 开源地址：https://github.com/shadowsocks/shadowsocks-rust
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
+# https://github.com/shadowsocks/shadowsocks-rust
 
 
 
-# 参数设置：
+
+
+# ———————————————————————— Config ————————————————————————
 ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
 ss_server_port=10000
@@ -41,7 +44,9 @@ EOF
 
 
 
-# 加载函数：
+
+
+# ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -51,7 +56,9 @@ fi
 
 
 
-# 开始安装：
+
+
+# ———————————————————————— Install ————————————————————————
 tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"
 
@@ -105,11 +112,11 @@ log_attention "shadowsocks share url: ${ss_share_url}"
 
 
 
-# 启动服务：
+
+
+# ———————————————————————— Start ————————————————————————
 systemctl restart 'ssserver'
 systemctl enable 'ssserver'
 systemctl status --no-pager 'ssserver'
 
 show_tcp_listening
-
-
