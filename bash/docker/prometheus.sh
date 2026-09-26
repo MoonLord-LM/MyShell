@@ -24,13 +24,13 @@ node_exporter_port=19100
 nginx_exporter_container_name='prometheus_nginx_exporter'
 nginx_exporter_image='nginx/nginx-prometheus-exporter:latest'
 nginx_exporter_port=19113
-nginx_host='localhost'
+nginx_host='host.docker.internal'
 nginx_port=80
 
 mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'
 mysqld_exporter_port=19104
-mysql_host='localhost'
+mysql_host='host.docker.internal'
 mysql_port=13306
 mysql_user='admin'
 mysql_password="${MYSQL_PASSWORD:-}"
@@ -38,7 +38,7 @@ mysql_password="${MYSQL_PASSWORD:-}"
 redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
 redis_exporter_port=19121
-redis_host='localhost'
+redis_host='host.docker.internal'
 redis_port=16379
 redis_password="${REDIS_PASSWORD:-}"
 
@@ -168,6 +168,7 @@ if [ $? -ne 0 ]; then
     docker run -d \
         --name "$nginx_exporter_container_name" \
         --restart unless-stopped \
+        --add-host host.docker.internal:${docker_host_ip} \
         -p "$nginx_exporter_port:9113" \
         -e "SCRAPE_URI=http://${nginx_host}:${nginx_port}/nginx_status" \
         "$nginx_exporter_image"
@@ -186,6 +187,7 @@ if [ -n "$mysql_password" ]; then
         docker run -d \
             --name "$mysqld_exporter_container_name" \
             --restart unless-stopped \
+            --add-host host.docker.internal:${docker_host_ip} \
             -p "$mysqld_exporter_port:9104" \
             -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@(${mysql_host}:${mysql_port})/" \
             "$mysqld_exporter_image"
@@ -210,6 +212,7 @@ if [ -n "$redis_password" ]; then
         docker run -d \
             --name "$redis_exporter_container_name" \
             --restart unless-stopped \
+            --add-host host.docker.internal:${docker_host_ip} \
             -p "$redis_exporter_port:9121" \
             -e "REDIS_ADDR=redis://:${redis_password}@${redis_host}:${redis_port}" \
             "$redis_exporter_image"
