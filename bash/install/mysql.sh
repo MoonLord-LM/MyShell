@@ -44,6 +44,8 @@ function mysql_gen_ssl_cert(){
         log_error 'mysql_gen_ssl_cert failed, quit now'
         exit 1
     fi
+
+    chown mysql:mysql "$mysql_ssl_key" "$mysql_ssl_cert"
     chmod 600 "$mysql_ssl_key"
     log_info 'mysql_gen_ssl_cert ok'
 }
