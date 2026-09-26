@@ -63,7 +63,7 @@ tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"
 
 ss_download_url=$(
-    wget -O- --timeout=60 --no-cache 'https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest' | \
+    wget -O- --timeout=120 --no-cache 'https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest' | \
     grep --color=never -o 'https://[^"]*' | \
     grep --color=never "$ss_file_name_match.tar.\(xz\|gz\)\$" | \
     head -n 1
