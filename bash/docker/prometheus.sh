@@ -153,7 +153,9 @@ if [ $? -ne 0 ]; then
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
-        "$node_exporter_image"
+        "$node_exporter_image" \
+        --path.rootfs=/host \
+        --web.listen-address=":${node_exporter_port}"
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
     fi
@@ -189,7 +191,7 @@ if [ -n "$mysql_password" ]; then
             --restart unless-stopped \
             --add-host host.docker.internal:${docker_host_ip} \
             -p "$mysqld_exporter_port:9104" \
-            -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@(${mysql_host}:${mysql_port})/" \
+            -e "DATA_SOURCE_NAME=${mysql_user}:${mysql_password}@tcp(${mysql_host}:${mysql_port})/" \
             "$mysqld_exporter_image"
         if [ $? -ne 0 ]; then
             log_error 'mysqld_exporter container start failed, skip'
