@@ -17,6 +17,7 @@ php_apt_source_file='/etc/apt/sources.list.d/php.list'
 php_version='8.4'
 php_fpm_service="php${php_version}-fpm"
 php_fpm_listen="/run/php/php${php_version}-fpm.sock"
+php_components="cli fpm"
 php_extensions='opcache mysql pgsql sqlite3 curl mbstring gd bcmath zip redis memcached yaml xml xsl soap intl imagick gmp bz2'
 
 
@@ -50,17 +51,23 @@ fi
 codename=$(get_system_version_codename)
 echo "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main" > "$php_apt_source_file"
 
-php_packages="php${php_version}-cli php${php_version}-fpm"
-for php_extension in $php_extensions; do
-    php_packages="${php_packages} php${php_version}-${php_extension}"
+for component_suffix in $php_components; do
+    component="php${php_version}-${component_suffix}"
+    install_software "$component"
+    if [ $? -ne 0 ]; then
+        log_error "php component install failed: $component, quit now"
+        exit 1
+    fi
 done
 
-update_software
-apt install -y $php_packages
-if [ $? -ne 0 ]; then
-    log_error 'php packages install failed, quit now'
-    exit 1
-fi
+for php_extension in $php_extensions; do
+    component="php${php_version}-${php_extension}"
+    install_software "$component"
+    if [ $? -ne 0 ]; then
+        log_error "php extension install failed: $component, quit now"
+        exit 1
+    fi
+done
 
 "php${php_version}" -v | grep --color=never "PHP ${php_version}"
 if [ $? -ne 0 ]; then

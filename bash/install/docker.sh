@@ -63,11 +63,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-install_software "$docker_components"
-if [ $? -ne 0 ]; then
-    log_error 'docker components installation failed, quit now'
-    exit 1
-fi
+for component in $docker_components; do
+    install_software "$component"
+    if [ $? -ne 0 ]; then
+        log_error "docker component install failed: $component, quit now"
+        exit 1
+    fi
+done
 
 docker version
 if [ $? -ne 0 ]; then
