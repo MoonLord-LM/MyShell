@@ -1,18 +1,59 @@
 #!/bin/bash
 
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
+
 # Redis
-# 开源地址：https://github.com/redis
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
+# https://github.com/redis
 
 
 
-# 参数设置：
+
+
+# ———————————————————————— Config ————————————————————————
+redis_apt_repo_url='https://packages.redis.io/deb/'
+redis_gpg_key_file='/usr/share/keyrings/packages.redis.io.gpg'
+redis_apt_source_file='/etc/apt/sources.list.d/redis.list'
+
 redis_conf_file='/etc/redis/redis.conf'
-redis_password='Redis@6379'
+redis_ssl_key='/etc/redis/ssl/server-key.pem'
+redis_ssl_cert='/etc/redis/ssl/server-cert.pem'
+
+redis_server_port=16379
+redis_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+
+function redis_config_cnf(){
+    cat <<EOF
+supervised systemd
+dir /var/lib/redis
+
+port 0
+tls-port $redis_server_port
+tls-key-file $redis_ssl_key
+tls-cert-file $redis_ssl_cert
+tls-auth-clients no
+
+requirepass $redis_password
+protected-mode no
+EOF
+}
+
+function redis_gen_ssl_cert(){
+    mkdir -p $(dirname "$redis_ssl_key")
+    openssl req -newkey rsa:4096 -nodes -keyout "$redis_ssl_key" -x509 -days 365000 -out "$redis_ssl_cert" -subj '/CN=Redis'
+    if [ $? -ne 0 ]; then
+        log_error 'redis_gen_ssl_cert failed, quit now'
+        exit 1
+    fi
+
+    chown redis:redis "$redis_ssl_key" "$redis_ssl_cert"
+    chmod 600 "$redis_ssl_key"
+}
 
 
 
-# 加载函数：
+
+
+# ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -22,29 +63,49 @@ fi
 
 
 
-# 开始安装：
-check_command_exist 'redis-server' || install_software 'redis-server'
+
+
+# ———————————————————————— Install ————————————————————————
+check_command_exist 'redis-server'
+if [ $? -eq 0 ]; then
+    log_info 'redis already installed, quit now'
+    exit 0
+fi
+
+wget -O "$redis_gpg_key_file" --timeout=120 --no-cache "${redis_apt_repo_url}gpg"
+if [ $? -ne 0 ]; then
+    log_error 'redis gpg key download failed, quit now'
+    exit 1
+fi
+
+codename=$(get_system_version_codename)
+echo "deb [signed-by=$redis_gpg_key_file] $redis_apt_repo_url $codename main" > "$redis_apt_source_file"
+
+install_software 'redis'
 redis-server --version
 if [ $? -ne 0 ]; then
     log_error 'redis-server install failed, quit now'
     exit 1
 fi
 
-sed -i '/bind 127.0.0.1/d' "$redis_conf_file"
-sed -i '/requirepass/d'    "$redis_conf_file" && echo "requirepass $redis_password" >> "$redis_conf_file"
-sed -i '/protected-mode/d' "$redis_conf_file" && echo 'protected-mode no' >> "$redis_conf_file"
+redis_gen_ssl_cert
 
-cat "$redis_conf_file" | grep 'bind 127.0.0.1'
-cat "$redis_conf_file" | grep 'requirepass'
-cat "$redis_conf_file" | grep 'protected-mode'
+backup_file "$redis_conf_file"
+redis_config_cnf > "$redis_conf_file"
+
+redis_server_ip=$(hostname -I | awk '{print $1}')
+log_attention "redis server ip: ${redis_server_ip}"
+log_attention "redis server port: ${redis_server_port}"
+log_attention "redis password: ${redis_password}"
+log_attention "redis ssl cert: ${redis_ssl_cert}"
 
 
 
-# 启动服务：
+
+
+# ———————————————————————— Start ————————————————————————
 systemctl restart 'redis-server'
 systemctl enable 'redis-server'
 systemctl status --no-pager 'redis-server'
 
 show_tcp_listening
-
-
