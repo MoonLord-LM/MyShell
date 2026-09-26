@@ -43,16 +43,15 @@ elif check_system_is_debian; then
     docker_repo_url="$docker_apt_repo_url/debian"
 fi
 
-install -m 0755 -d /etc/apt/keyrings
 wget -O- --timeout=120 --no-cache "${docker_repo_url}/gpg" | gpg --dearmor --yes -o "$docker_gpg_key_file"
 if [ $? -ne 0 ]; then
     log_error 'docker gpg key download failed, quit now'
     exit 1
 fi
-chmod a+r "$docker_gpg_key_file"
 
 codename=$(get_system_version_codename)
-echo "deb [arch="$(dpkg --print-architecture)" signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable" > "$docker_apt_source_file"
+system_arch="$(dpkg --print-architecture)"
+echo "deb [arch=$system_arch signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable" > "$docker_apt_source_file"
 if [ $? -ne 0 ]; then
     log_error 'docker apt source setup failed, quit now'
     exit 1
