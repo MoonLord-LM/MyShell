@@ -33,6 +33,7 @@ bind-address = *
 port = $mysql_server_port
 ssl-key = $mysql_ssl_key
 ssl-cert = $mysql_ssl_cert
+tls_versions = TLSv1.2,TLSv1.3
 
 require_secure_transport = ON
 mysqlx = OFF

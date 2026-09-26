@@ -23,17 +23,29 @@ redis_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 function redis_config_cnf(){
     cat <<EOF
-supervised systemd
 dir /var/lib/redis
+dbfilename dump.rdb
+logfile /var/log/redis/redis-server.log
 
+bind 0.0.0.0 ::
 port 0
 tls-port $redis_server_port
 tls-key-file $redis_ssl_key
 tls-cert-file $redis_ssl_cert
 tls-auth-clients no
+tls-protocols "TLSv1.2 TLSv1.3"
 
 requirepass $redis_password
-protected-mode no
+protected-mode yes
+
+maxmemory 2gb
+maxmemory-policy allkeys-lru
+
+appendonly no
+save 600 1
+save 300 100
+save 120 10000
+stop-writes-on-bgsave-error yes
 EOF
 }
 
