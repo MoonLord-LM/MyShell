@@ -215,10 +215,11 @@ else
 fi
 
 if [ -n "$mysql_password" ]; then
+    mysql_password_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$mysqld_exporter_config_file" \
 "[client]
 user = ${mysql_user}
-password = \"${mysql_password}\"
+password = \"${mysql_password_escaped}\"
 " \
 "$mysqld_exporter_uid"
     if [ $? -ne 0 ]; then
@@ -255,8 +256,9 @@ else
 fi
 
 if [ -n "$redis_password" ]; then
+    redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$redis_exporter_password_file" \
-"{\"redis://${redis_host}:${redis_port}\": \"${redis_password}\"}" \
+"{\"redis://${redis_host}:${redis_port}\": \"${redis_password_escaped}\"}" \
 "$redis_exporter_uid"
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
