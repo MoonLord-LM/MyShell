@@ -1,16 +1,24 @@
 #!/bin/bash
 
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
+
 # Docker
-# 开源地址：https://github.com/docker
-# 在线安装：wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
+# https://github.com/docker
 
 
 
-# 参数设置：
+
+
+# ———————————————————————— Config ————————————————————————
+docker_apt_repo_url='https://download.docker.com/linux'
+docker_gpg_key_file='/etc/apt/keyrings/docker.gpg'
+docker_apt_source_file='/etc/apt/sources.list.d/docker.list'
 
 
 
-# 加载函数：
+
+
+# ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command
 if [ $? -ne 0 ]; then
@@ -20,24 +28,63 @@ fi
 
 
 
-# 开始安装：
-check_command_exist 'docker' || install_software 'docker.io'
+
+
+# ———————————————————————— Install ————————————————————————
+check_command_exist 'docker'
+if [ $? -eq 0 ]; then
+    log_info 'docker already installed, quit now'
+    exit 0
+fi
+
+if check_system_is_ubuntu; then
+    docker_repo_url="$docker_apt_repo_url/ubuntu"
+elif check_system_is_debian; then
+    docker_repo_url="$docker_apt_repo_url/debian"
+fi
+
+install -m 0755 -d /etc/apt/keyrings
+wget -O- --timeout=120 --no-cache "${docker_repo_url}/gpg" | gpg --dearmor --yes -o "$docker_gpg_key_file"
+if [ $? -ne 0 ]; then
+    log_error 'docker gpg key download failed, quit now'
+    exit 1
+fi
+chmod a+r "$docker_gpg_key_file"
+
+codename=$(get_system_version_codename)
+echo "deb [arch="$(dpkg --print-architecture)" signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable" > "$docker_apt_source_file"
+if [ $? -ne 0 ]; then
+    log_error 'docker apt source setup failed, quit now'
+    exit 1
+fi
+
+install_software 'docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin'
+if [ $? -ne 0 ]; then
+    log_error 'docker components installation failed, quit now'
+    exit 1
+fi
+
 docker version
 if [ $? -ne 0 ]; then
-    log_error 'docker install failed, quit now'
+    log_error 'docker command not found or not working after installation, quit now'
     exit 1
 fi
 
 
 
-# 启动服务：
+
+
+# ———————————————————————— Start ————————————————————————
 systemctl restart 'docker'
 systemctl enable 'docker'
 systemctl status --no-pager 'docker'
 
-docker run 'hello-world'
+show_tcp_listening
 
+docker run 'hello-world'
+if [ $? -ne 0 ]; then
+    log_error 'docker hello-world test failed, quit now'
+    exit 1
+fi
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
-
-
