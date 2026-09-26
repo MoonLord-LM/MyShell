@@ -10,14 +10,14 @@
 
 
 # ———————————————————————— Config ————————————————————————
+php_apt_repo_url='https://packages.sury.org/php/'
+php_gpg_key_file='/usr/share/keyrings/deb.sury.org-php.gpg'
+php_apt_source_file='/etc/apt/sources.list.d/php.list'
+
 php_version='8.4'
 php_fpm_service="php${php_version}-fpm"
 php_fpm_listen="/run/php/php${php_version}-fpm.sock"
 php_extensions='opcache mysql pgsql sqlite3 curl mbstring gd bcmath zip redis memcached yaml xml xsl soap intl imagick gmp bz2'
-
-php_apt_repo_url='https://packages.sury.org/php/'
-php_gpg_key_file='/usr/share/keyrings/deb.sury.org-php.gpg'
-php_apt_source_file='/etc/apt/sources.list.d/php.list'
 
 
 
