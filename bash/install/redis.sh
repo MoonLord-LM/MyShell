@@ -23,6 +23,8 @@ redis_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 function redis_config_cnf(){
     cat <<EOF
+supervised systemd
+
 dir /var/lib/redis
 dbfilename dump.rdb
 logfile /var/log/redis/redis-server.log
