@@ -52,13 +52,13 @@ fi
 
 
 # 开始安装：
-tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar.gz"
-ss_file_name_suffix="$(uname -m)-unknown-linux-gnu.tar.gz"
+tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
+ss_file_name_match="$(uname -m)-unknown-linux-gnu"
 
 ss_download_url=$(
     wget -O- --timeout=60 --no-cache 'https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest' | \
     grep --color=never -o 'https://[^"]*' | \
-    grep --color=never "$ss_file_name_suffix" | \
+    grep --color=never "$ss_file_name_match.tar.\(xz\|gz\)\$" | \
     head -n 1
 )
 if [ "$ss_download_url" == '' ]; then
@@ -73,7 +73,7 @@ if [ $? -ne 0 ]; then
 fi
 
 mkdir -p $(dirname "$ss_server_location")
-tar -xzf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
+tar -xf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
 if [ $? -ne 0 ]; then
     log_error 'shadowsocks-rust extract failed, quit now'
     exit 1
