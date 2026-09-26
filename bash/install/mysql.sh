@@ -9,15 +9,20 @@
 # 参数设置：
 mysql_apt_config_url='https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.40-1_all.deb'
 mysql_apt_config_select='mysql-8.4-lts'
+
 mysql_conf_file='/etc/mysql/mysql.conf.d/mysqld.cnf'
-mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 mysql_ssl_key='/etc/mysql/ssl/server-key.pem'
 mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
+
+mysql_user='admin'
+mysql_server_port=13306
+mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 function mysql_config_cnf(){
     cat <<EOF
 [mysqld]
 bind-address = *
+port = $mysql_server_port
 ssl-key = $mysql_ssl_key
 ssl-cert = $mysql_ssl_cert
 
@@ -45,9 +50,9 @@ function mysql_gen_ssl_cert(){
 function allow_remote_access(){
     log_info "allow_remote_access begin"
     mysql -h 'localhost' -u 'root' --batch <<EOF
-        create user if not exists 'admin'@'%' identified by '$mysql_password';
-        alter user 'admin'@'%' identified by '$mysql_password';
-        grant all privileges on *.* to 'admin'@'%' with grant option;
+        create user if not exists '$mysql_user'@'%' identified by '$mysql_password';
+        alter user '$mysql_user'@'%' identified by '$mysql_password';
+        grant all privileges on *.* to '$mysql_user'@'%' with grant option;
         select user, host, plugin from mysql.user;
         flush privileges;
 EOF
@@ -104,8 +109,8 @@ allow_remote_access
 
 mysql_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "mysql server ip: ${mysql_server_ip}"
-log_attention "mysql port: 3306"
-log_attention "mysql user: admin"
+log_attention "mysql port: ${mysql_server_port}"
+log_attention "mysql user: ${mysql_user}"
 log_attention "mysql password: ${mysql_password}"
 log_attention "mysql ssl cert: ${mysql_ssl_cert}"
 
