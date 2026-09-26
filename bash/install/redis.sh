@@ -10,7 +10,7 @@
 
 
 # ———————————————————————— Config ————————————————————————
-redis_apt_repo_url='https://packages.redis.io/deb/'
+redis_apt_repo_url='https://packages.redis.io'
 redis_gpg_key_file='/usr/share/keyrings/packages.redis.io.gpg'
 redis_apt_source_file='/etc/apt/sources.list.d/redis.list'
 
@@ -72,14 +72,14 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-wget -O "$redis_gpg_key_file" --timeout=120 --no-cache "${redis_apt_repo_url}gpg"
+wget -O- --timeout=120 --no-cache "${redis_apt_repo_url}/gpg" | gpg --dearmor --yes -o "$redis_gpg_key_file"
 if [ $? -ne 0 ]; then
     log_error 'redis gpg key download failed, quit now'
     exit 1
 fi
 
 codename=$(get_system_version_codename)
-echo "deb [signed-by=$redis_gpg_key_file] $redis_apt_repo_url $codename main" > "$redis_apt_source_file"
+echo "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main" > "$redis_apt_source_file"
 
 install_software 'redis'
 redis-server --version
