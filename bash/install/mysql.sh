@@ -24,6 +24,11 @@ mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 function mysql_config_cnf(){
     cat <<EOF
 [mysqld]
+pid-file = /var/run/mysqld/mysqld.pid
+socket = /var/run/mysqld/mysqld.sock
+datadir = /var/lib/mysql
+log-error = /var/log/mysql/error.log
+
 bind-address = *
 port = $mysql_server_port
 ssl-key = $mysql_ssl_key
