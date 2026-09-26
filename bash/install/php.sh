@@ -12,6 +12,7 @@
 # ———————————————————————— Config ————————————————————————
 php_version='8.4'
 php_fpm_service="php${php_version}-fpm"
+php_fpm_listen="/run/php/php${php_version}-fpm.sock"
 php_extensions='opcache mysql pgsql sqlite3 curl mbstring gd bcmath zip redis memcached yaml xml xsl soap intl imagick gmp bz2'
 
 php_apt_repo_url='https://packages.sury.org/php/'
@@ -61,7 +62,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-php -v | grep --color=never "PHP ${php_version}"
+"php${php_version}" -v | grep --color=never "PHP ${php_version}"
 if [ $? -ne 0 ]; then
     log_error 'php install failed, quit now'
     exit 1
@@ -75,6 +76,10 @@ fi
 
 tmp_file="/tmp/composer-setup_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.php"
 wget -O "$tmp_file" --timeout=120 --no-cache 'https://getcomposer.org/installer'
+if [ $? -ne 0 ]; then
+    log_error 'composer download failed, quit now'
+    exit 1
+fi
 php "$tmp_file" --install-dir='/usr/local/bin' --filename='composer'
 if [ $? -ne 0 ]; then
     log_error 'composer install failed, quit now'
@@ -84,6 +89,8 @@ rm -f "$tmp_file"
 
 log_attention "php version: $(php -r 'echo PHP_VERSION;')"
 log_attention "php extensions: $(php -m | wc -l)"
+log_attention "php fpm service: ${php_fpm_service}"
+log_attention "php fastcgi_pass: unix:${php_fpm_listen};"
 
 
 
