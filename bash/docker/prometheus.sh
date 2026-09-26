@@ -127,6 +127,7 @@ if [ -z "$docker_host_ip" ]; then
     log_error 'cannot detect docker bridge gateway, quit now'
     exit 1
 fi
+log_attention "docker host ip: ${docker_host_ip}"
 
 mkdir -p "$prometheus_config_dir"
 chown root:root "$prometheus_config_dir"
@@ -159,8 +160,9 @@ if [ $? -ne 0 ]; then
         "$prometheus_image"
     if [ $? -ne 0 ]; then
         log_error 'prometheus container start failed, skip'
+    else
+        log_attention "prometheus installed on port $prometheus_port"
     fi
-    log_attention "prometheus installed on port $prometheus_port"
 else
     log_info 'prometheus container already exists, restart'
     docker restart "$prometheus_container_name"
@@ -191,8 +193,9 @@ if [ $? -ne 0 ]; then
         --web.listen-address=":${node_exporter_port}"
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
+    else
+        log_attention "node_exporter installed on port $node_exporter_port"
     fi
-    log_attention "node_exporter installed on port $node_exporter_port"
 else
     log_info 'node_exporter container already exists, restart'
     docker restart "$node_exporter_container_name"
@@ -210,8 +213,9 @@ if [ $? -ne 0 ]; then
         "$nginx_exporter_image"
     if [ $? -ne 0 ]; then
         log_error 'nginx_exporter container start failed, skip'
+    else
+        log_attention "nginx_exporter installed on port $nginx_exporter_port"
     fi
-    log_attention "nginx_exporter installed on port $nginx_exporter_port"
 else
     log_info 'nginx_exporter container already exists, restart'
     docker restart "$nginx_exporter_container_name"
@@ -245,8 +249,9 @@ password = \"${mysql_password_escaped}\"
                 --tls.insecure-skip-verify
             if [ $? -ne 0 ]; then
                 log_error 'mysqld_exporter container start failed, skip'
+            else
+                log_attention "mysqld_exporter installed on port $mysqld_exporter_port"
             fi
-            log_attention "mysqld_exporter installed on port $mysqld_exporter_port"
         else
             log_info 'mysqld_exporter container already exists, restart'
             docker restart "$mysqld_exporter_container_name"
@@ -283,8 +288,9 @@ if [ -n "$redis_password" ]; then
                 --redis.password-file="/run/secrets/redis_password"
             if [ $? -ne 0 ]; then
                 log_error 'redis_exporter container start failed, skip'
+            else
+                log_attention "redis_exporter installed on port $redis_exporter_port"
             fi
-            log_attention "redis_exporter installed on port $redis_exporter_port"
         else
             log_info 'redis_exporter container already exists, restart'
             docker restart "$redis_exporter_container_name"
