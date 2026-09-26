@@ -173,6 +173,7 @@ else
     docker restart "$prometheus_container_name"
 fi
 
+log_attention "prometheus server name: ${prometheus_server_name}"
 log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
 log_attention "prometheus config dir: ${prometheus_config_dir}"
