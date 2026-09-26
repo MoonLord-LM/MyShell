@@ -54,6 +54,8 @@ if [ $? -ne 0 ]; then
 fi
 
 mkdir -p "$grafana_data_dir"
+chown -R 472:472 "$grafana_data_dir"
+
 docker run -d \
     --name "$grafana_container_name" \
     --restart unless-stopped \

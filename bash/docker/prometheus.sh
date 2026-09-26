@@ -79,15 +79,17 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-mkdir -p "$(dirname "$prometheus_config_file")"
 mkdir -p "$prometheus_data_dir"
+chown -R 65534:65534 "$prometheus_data_dir"
 
+mkdir -p "$(dirname "$prometheus_config_file")"
 backup_file "$prometheus_config_file"
 prometheus_config_yml > "$prometheus_config_file"
 if [ $? -ne 0 ]; then
     log_error 'prometheus config file create failed, quit now'
     exit 1
 fi
+chown 65534:65534 "$prometheus_config_file"
 
 docker pull "$prometheus_image"
 if [ $? -ne 0 ]; then
