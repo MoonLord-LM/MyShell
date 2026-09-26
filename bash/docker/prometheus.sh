@@ -120,6 +120,7 @@ if [ $? -ne 0 ]; then
     docker run -d \
         --name "$prometheus_container_name" \
         --restart unless-stopped \
+        --add-host host.docker.internal:${prometheus_server_ip} \
         -p "$prometheus_port:9090" \
         -v "$prometheus_config_file:/etc/prometheus/prometheus.yml" \
         -v "$prometheus_data_dir:/prometheus" \
