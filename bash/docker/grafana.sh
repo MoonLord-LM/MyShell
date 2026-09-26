@@ -47,14 +47,14 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
+mkdir -p "$grafana_data_dir"
+chown -R 472:472 "$grafana_data_dir"
+
 docker pull "$grafana_image"
 if [ $? -ne 0 ]; then
     log_error 'grafana image pull failed, quit now'
     exit 1
 fi
-
-mkdir -p "$grafana_data_dir"
-chown -R 472:472 "$grafana_data_dir"
 
 docker run -d \
     --name "$grafana_container_name" \
