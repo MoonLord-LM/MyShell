@@ -114,6 +114,7 @@ if [ $? -ne 0 ]; then
 fi
 chown 65534:65534 "$prometheus_config_file"
 
+prometheus_server_ip=$(hostname -I | awk '{print $1}')
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$prometheus_image"
@@ -133,7 +134,6 @@ else
     log_info 'prometheus container already exists, skip'
 fi
 
-prometheus_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
 log_attention "prometheus config file: ${prometheus_config_file}"
