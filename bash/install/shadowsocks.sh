@@ -100,7 +100,7 @@ log_attention "shadowsocks port: ${ss_server_port}"
 log_attention "shadowsocks method: ${ss_method}"
 log_attention "shadowsocks password: ${ss_password}"
 
-ss_share_url='ss://'$(printf '%s' "${ss_method}:${ss_password}" | base64 -w 0 | tr '+' '-' | tr '/' '_' | tr -d '=')'@'${ss_server_ip}':'${ss_server_port}
+ss_share_url='ss://'$(printf '%s' "${ss_method}:${ss_password}" | base64 -w 0 | tr '+' '-' | tr '/' '_' | tr -d '=')'@'${ss_server_ip}':'${ss_server_port}'#'${ss_server_ip}
 log_attention "shadowsocks share url: ${ss_share_url}"
 
 
