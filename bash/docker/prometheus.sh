@@ -54,6 +54,9 @@ function prometheus_config_yml(){
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    hostname: '${prometheus_server_name}'
+    ip: '${prometheus_server_ip}'
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -133,6 +136,8 @@ mkdir -p "$prometheus_config_dir"
 chown root:root "$prometheus_config_dir"
 chmod 755 "$prometheus_config_dir"
 
+prometheus_server_name=$(hostname)
+prometheus_server_ip=$(hostname -I | awk '{print $1}')
 backup_file "$prometheus_config_file"
 prometheus_config_yml > "$prometheus_config_file"
 if [ $? -ne 0 ]; then
@@ -168,7 +173,6 @@ else
     docker restart "$prometheus_container_name"
 fi
 
-prometheus_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
 log_attention "prometheus config dir: ${prometheus_config_dir}"
