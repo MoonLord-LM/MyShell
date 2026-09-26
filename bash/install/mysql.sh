@@ -109,7 +109,7 @@ allow_remote_access
 
 mysql_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "mysql server ip: ${mysql_server_ip}"
-log_attention "mysql port: ${mysql_server_port}"
+log_attention "mysql server port: ${mysql_server_port}"
 log_attention "mysql user: ${mysql_user}"
 log_attention "mysql password: ${mysql_password}"
 log_attention "mysql ssl cert: ${mysql_ssl_cert}"
