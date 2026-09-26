@@ -87,6 +87,12 @@ fi
 
 
 # ———————————————————————— Install ————————————————————————
+check_command_exist 'v2ray'
+if [ $? -eq 0 ]; then
+    log_info 'v2ray already installed, quit now'
+    exit 0
+fi
+
 bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' )
 
 v2ray version

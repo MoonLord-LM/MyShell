@@ -22,7 +22,13 @@ fi
 
 
 # ———————————————————————— Install ————————————————————————
-check_command_exist 'nginx' || install_software 'nginx'
+check_command_exist 'nginx'
+if [ $? -eq 0 ]; then
+    log_info 'nginx already installed, quit now'
+    exit 0
+fi
+
+install_software 'nginx'
 
 nginx -v
 if [ $? -ne 0 ]; then

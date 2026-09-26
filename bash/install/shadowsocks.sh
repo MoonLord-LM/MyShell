@@ -59,6 +59,12 @@ fi
 
 
 # ———————————————————————— Install ————————————————————————
+check_command_exist 'ssserver'
+if [ $? -eq 0 ]; then
+    log_info 'shadowsocks already installed, quit now'
+    exit 0
+fi
+
 tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"
 

@@ -88,39 +88,53 @@ function log_notice(){
 
 
 
-# 获取系统的版本信息
-function get_system_version(){
+# 获取系统的名称
+function get_system_name(){
     local os_release_file='/etc/os-release'
     if [ -f "$os_release_file" ]; then
         # 读取 PRETTY_NAME 的值，并去掉可能存在的首尾双引号
-        local version=$(grep '^PRETTY_NAME=' "$os_release_file" | head -n 1 | sed -e 's/^PRETTY_NAME=//' -e 's/^"//' -e 's/"$//')
-        if [ "$version" != '' ]; then
-            echo "$version"
+        local name=$(grep '^PRETTY_NAME=' "$os_release_file" | head -n 1 | sed -e 's/^PRETTY_NAME=//' -e 's/^"//' -e 's/"$//')
+        if [ "$name" != '' ]; then
+            echo "$name"
             return 0
         fi
     fi
-    log_error 'get_system_version failed, unknown system'
+    log_error 'get_system_name failed, unknown system'
+    return 1
+}
+# 获取系统的版本代号
+function get_system_version_codename(){
+    local os_release_file='/etc/os-release'
+    if [ -f "$os_release_file" ]; then
+        # 读取 VERSION_CODENAME 的值，并去掉可能存在的首尾双引号
+        local codename=$(grep '^VERSION_CODENAME=' "$os_release_file" | head -n 1 | sed -e 's/^VERSION_CODENAME=//' -e 's/^"//' -e 's/"$//')
+        if [ "$codename" != '' ]; then
+            echo "$codename"
+            return 0
+        fi
+    fi
+    log_error 'get_system_version_codename failed, unknown system'
     return 1
 }
 # 判断系统是否是 Ubuntu
 function check_system_is_ubuntu(){
-    get_system_version | grep 'Ubuntu' > '/dev/null' 2>&1
+    get_system_name | grep 'Ubuntu' > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_ubuntu: false'
         return 1
     fi
-    local version=$(get_system_version)
-    log_info "check_system_is_ubuntu: $version"
+    local name=$(get_system_name)
+    log_info "check_system_is_ubuntu: $name"
 }
 # 判断系统是否是 Debian
 function check_system_is_debian(){
-    get_system_version | grep 'Debian' > '/dev/null' 2>&1
+    get_system_name | grep 'Debian' > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_debian: false'
         return 1
     fi
-    local version=$(get_system_version)
-    log_info "check_system_is_debian: $version"
+    local name=$(get_system_name)
+    log_info "check_system_is_debian: $name"
 }
 
 
@@ -611,7 +625,8 @@ function show_tcp_listening(){
 # set_memory_swap_to_4GB
 
 #### 查看信息 ####
-# get_system_version
+# get_system_name
+# get_system_version_codename
 # show_software_list
 # show_tcp_listening
 
