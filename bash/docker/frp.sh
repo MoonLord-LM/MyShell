@@ -105,6 +105,7 @@ if [ $? -ne 0 ]; then
 fi
 chown "$run_uid_gid" "$frp_data_dir"
 
+backup_file "$frp_config_file"
 generate_frp_config_content > "$frp_config_file"
 if [ $? -ne 0 ]; then
     log_error 'frp server config file creation failed, quit now'
