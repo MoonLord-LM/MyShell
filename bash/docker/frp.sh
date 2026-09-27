@@ -129,7 +129,7 @@ docker run -d \
     -v "$frp_config_file:/etc/frp/frp.toml:ro" \
     -v "$frp_data_dir:/var/lib/frp" \
     "$frp_image" \
-    frps -c /etc/frp/frp.toml
+    -c /etc/frp/frp.toml
 
 if [ $? -ne 0 ]; then
     log_error 'frp server container start failed, quit now'
