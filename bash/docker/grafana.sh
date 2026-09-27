@@ -145,7 +145,7 @@ fi
 grafana_server_name=$(hostname)
 grafana_server_ip=$(hostname -I | awk '{print $1}')
 
-log_attention "grafana server name: ${prometheus_server_name}"
+log_attention "grafana server name: ${grafana_server_name}"
 log_attention "grafana server ip: ${grafana_server_ip}"
 log_attention "grafana server port: ${grafana_port}"
 log_attention "grafana data dir: ${grafana_data_dir}"
