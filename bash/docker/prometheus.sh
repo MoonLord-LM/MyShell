@@ -280,16 +280,17 @@ if [ $? -ne 0 ]; then
         --user "$run_uid_gid" \
         --name "$node_exporter_container_name" \
         --restart unless-stopped \
-        -p "${docker_host_ip}:${node_exporter_port}:9100" \
+        --net=host \
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
         "$node_exporter_image" \
-        --path.rootfs=/host
+        --path.rootfs=/host \
+        --web.listen-address="${docker_host_ip}:${node_exporter_port}"
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
     else
-        log_attention "node_exporter installed on ${docker_host_ip}:${node_exporter_port} (internal only)"
+        log_attention "node_exporter installed on ${docker_host_ip}:${node_exporter_port}"
     fi
 else
     log_info 'node_exporter container already exists, restart'
@@ -310,7 +311,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         log_error 'nginx_exporter container start failed, skip'
     else
-        log_attention "nginx_exporter installed on ${docker_host_ip}:${nginx_exporter_port} (internal only)"
+        log_attention "nginx_exporter installed on ${docker_host_ip}:${nginx_exporter_port}"
     fi
 else
     log_info 'nginx_exporter container already exists, restart'
@@ -346,7 +347,7 @@ password = \"${mysql_password_escaped}\"
             if [ $? -ne 0 ]; then
                 log_error 'mysqld_exporter container start failed, skip'
             else
-                log_attention "mysqld_exporter installed on ${docker_host_ip}:${mysqld_exporter_port} (internal only)"
+                log_attention "mysqld_exporter installed on ${docker_host_ip}:${mysqld_exporter_port}"
             fi
         else
             log_info 'mysqld_exporter container already exists, restart'
@@ -385,7 +386,7 @@ if [ -n "$redis_password" ]; then
             if [ $? -ne 0 ]; then
                 log_error 'redis_exporter container start failed, skip'
             else
-                log_attention "redis_exporter installed on ${docker_host_ip}:${redis_exporter_port} (internal only)"
+                log_attention "redis_exporter installed on ${docker_host_ip}:${redis_exporter_port}"
             fi
         else
             log_info 'redis_exporter container already exists, restart'
