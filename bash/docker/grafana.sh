@@ -15,7 +15,6 @@
 grafana_container_name='grafana'
 grafana_image='grafana/grafana:latest'
 grafana_data_dir='/var/lib/grafana'
-grafana_uid='472'
 
 grafana_secrets_dir='/etc/grafana/secrets'
 grafana_admin_password_file="${grafana_secrets_dir}/admin_password"
@@ -24,9 +23,10 @@ grafana_port=13000
 grafana_admin_user='admin'
 grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
+run_uid_gid='472:472'
+
 function create_secrets_dir(){
     local dir="$1"
-    local owner="${2:-root}"
 
     mkdir -p "$dir"
     local rc=$?
@@ -34,7 +34,7 @@ function create_secrets_dir(){
         return $rc
     fi
 
-    chown "${owner}:${owner}" "$dir"
+    chown "$run_uid_gid" "$dir"
     rc=$?
     if [ $rc -ne 0 ]; then
         return $rc
@@ -51,7 +51,6 @@ function create_secrets_dir(){
 function write_secret_file(){
     local file="$1"
     local content="$2"
-    local owner="${3:-root}"
 
     ( umask 077; printf '%s' "$content" > "$file" )
     local rc=$?
@@ -59,7 +58,7 @@ function write_secret_file(){
         return $rc
     fi
 
-    chown "${owner}:${owner}" "$file"
+    chown "$run_uid_gid" "$file"
     rc=$?
     if [ $rc -ne 0 ]; then
         return $rc
@@ -96,7 +95,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log_warn 'optional $GRAFANA_PASSWORD, if not set, a random password will be generated'
+log_warn 'require $GRAFANA_PASSWORD, if not set, a random password will be generated'
 log_warn 'export GRAFANA_PASSWORD="<password>"'
 
 docker inspect "$grafana_container_name" > /dev/null 2>&1
@@ -106,16 +105,16 @@ if [ $? -eq 0 ]; then
 fi
 
 mkdir -p "$grafana_data_dir"
-chown -R "${grafana_uid}:${grafana_uid}" "$grafana_data_dir"
+chown -R "$run_uid_gid" "$grafana_data_dir"
 
-create_secrets_dir "$grafana_secrets_dir" "$grafana_uid"
+create_secrets_dir "$grafana_secrets_dir"
 if [ $? -ne 0 ]; then
     log_error 'grafana secrets dir create failed, quit now'
     exit 1
 fi
 
 backup_file "$grafana_admin_password_file"
-write_secret_file "$grafana_admin_password_file" "$grafana_admin_password" "$grafana_uid"
+write_secret_file "$grafana_admin_password_file" "$grafana_admin_password"
 if [ $? -ne 0 ]; then
     log_error 'grafana password file create failed, quit now'
     exit 1
@@ -128,7 +127,7 @@ if [ $? -ne 0 ]; then
 fi
 
 docker run -d \
-    --user "${grafana_uid}:${grafana_uid}" \
+    --user "$run_uid_gid" \
     --name "$grafana_container_name" \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
@@ -143,12 +142,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+grafana_server_name=$(hostname)
 grafana_server_ip=$(hostname -I | awk '{print $1}')
+
+log_attention "grafana server name: ${prometheus_server_name}"
 log_attention "grafana server ip: ${grafana_server_ip}"
 log_attention "grafana server port: ${grafana_port}"
+log_attention "grafana data dir: ${grafana_data_dir}"
 log_attention "grafana user: ${grafana_admin_user}"
 log_attention "grafana password: ${grafana_admin_password}"
-log_attention "grafana data dir: ${grafana_data_dir}"
 
 grafana_server_url="http://${grafana_server_ip}:${grafana_port}"
 log_attention "grafana server url: ${grafana_server_url}"
