@@ -33,18 +33,20 @@ run_uid_gid='65534:65534'
 
 function generate_frps_config_content(){
     cat <<EOF
+serverAddr = "::"
 bindPort = ${frps_bind_port}
 vhostHTTPPort = ${frps_vhost_http_port}
+tlsEnable = true
+
 authenticationMethod = "token"
 token = "${frps_token}"
-tlsEnable = true
+
+store.path = "${frps_store_path}"
 
 log.to = "file"
 log.file = "${frps_log_file}"
 log.level = "info"
 log.maxDays = 3
-
-store.path = "${frps_store_path}"
 
 [dashboard]
 addr = "::"
