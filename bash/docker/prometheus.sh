@@ -178,7 +178,7 @@ log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
 log_warn 'export MYSQL_PASSWORD="<password>"'
 log_warn 'export REDIS_PASSWORD="<password>"'
 
-log_warn 'require $PROMETHEUS_PASSWORD, if not set, a random password will be generated'
+log_warn 'require $PROMETHEUS_PASSWORD, if not set, a random password will be generated:'
 log_warn 'export PROMETHEUS_PASSWORD="<password>"'
 
 docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null)

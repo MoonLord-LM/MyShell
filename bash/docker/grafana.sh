@@ -95,7 +95,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log_warn 'require $GRAFANA_PASSWORD, if not set, a random password will be generated'
+log_warn 'require $GRAFANA_PASSWORD, if not set, a random password will be generated:'
 log_warn 'export GRAFANA_PASSWORD="<password>"'
 
 docker inspect "$grafana_container_name" > /dev/null 2>&1
