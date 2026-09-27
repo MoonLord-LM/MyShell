@@ -26,7 +26,7 @@ frp_vhost_http_port=17080
 frp_dashboard_port=17500
 
 frp_dashboard_user='admin'
-frp_dashboard_password="${FRPS_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
+frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 
 run_uid_gid='65534:65534'
@@ -79,8 +79,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log_warn 'require $FRPS_DASHBOARD_PASSWORD, if not set, a random password will be generated:'
-log_warn 'export FRPS_DASHBOARD_PASSWORD="<password>"'
+log_warn 'require $FRP_DASHBOARD_PASSWORD, if not set, a random password will be generated:'
+log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
 
 log_warn 'require $FRP_TOKEN, if not set, a random token will be generated:'
 log_warn 'export FRP_TOKEN="<token>"'
@@ -128,7 +128,7 @@ docker run -d \
     -v "$frp_config_file:/etc/frp/frp.toml:ro" \
     -v "$frp_data_dir:/var/lib/frp" \
     "$frp_image" \
-    frp -c /etc/frp/frp.toml
+    frps -c /etc/frp/frp.toml
 
 if [ $? -ne 0 ]; then
     log_error 'frp server container start failed, quit now'
