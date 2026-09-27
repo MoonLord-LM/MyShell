@@ -42,7 +42,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "efzerr4gv94w0e"
+                        "name": "bfzhdb3f9vhmof"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -63,7 +63,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "ffzgt47b77z0ga"
+                        "name": "afzhde4y93f28a"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -187,7 +187,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "efzerr4gv94w0e"
+                        "name": "bfzhdb3f9vhmof"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -208,7 +208,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "ffzgt47b77z0ga"
+                        "name": "afzhde4y93f28a"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -332,7 +332,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "efzerr4gv94w0e"
+                        "name": "bfzhdb3f9vhmof"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -353,7 +353,7 @@
                     "hidden": false,
                     "query": {
                       "datasource": {
-                        "name": "ffzgt47b77z0ga"
+                        "name": "afzhde4y93f28a"
                       },
                       "group": "prometheus",
                       "kind": "DataQuery",
@@ -463,6 +463,151 @@
             "version": "13.2.2"
           }
         }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "bfzhdb3f9vhmof"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum by(instance) (rate(node_network_receive_bytes_total{device!=\"lo\"}[5m])) + sum by(instance) (rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]))",
+                        "legendFormat": "CC-5TH-BDAY-VPS1",
+                        "range": true
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "afzhde4y93f28a"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum by(instance) (rate(node_network_receive_bytes_total{device!=\"lo\"}[5m])) + sum by(instance) (rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]))",
+                        "legendFormat": "CC-5TH-BDAY-VPS2",
+                        "range": true
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 4,
+          "links": [],
+          "title": "网络流量 (MB/s)",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "max": 10485760,
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 7340032
+                      },
+                      {
+                        "color": "red",
+                        "value": 10485760
+                      }
+                    ]
+                  },
+                  "unit": "Bps"
+                },
+                "overrides": []
+              },
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max"
+                  ],
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              }
+            },
+            "version": "13.2.2"
+          }
+        }
       }
     },
     "layout": {
@@ -506,6 +651,19 @@
               "width": 24,
               "x": 0,
               "y": 16
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-4"
+              },
+              "height": 8,
+              "width": 24,
+              "x": 0,
+              "y": 24
             }
           }
         ]
