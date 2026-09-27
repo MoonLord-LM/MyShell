@@ -2,6 +2,9 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
+# docker rm -f grafana
+# rm -f '/etc/grafana/secrets/admin_password'
+
 # Grafana
 # https://github.com/grafana/grafana
 
@@ -98,6 +101,11 @@ docker inspect "$grafana_container_name" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     log_info 'grafana container already exists, quit now'
     exit 0
+fi
+
+if [ -f "$grafana_admin_password_file" ]; then
+    log_error "grafana admin password file already exists: ${grafana_admin_password_file}, quit now"
+    exit 1
 fi
 
 mkdir -p "$grafana_data_dir"
