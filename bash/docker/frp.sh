@@ -26,7 +26,7 @@ frps_vhost_http_port=17080
 frps_dashboard_port=17500
 
 frps_dashboard_user='admin'
-frps_dashboard_password="${FRPS_DASHBOARD_PASSWORD:-$(head -c 16 /dev/urandom | base64 -w 0)}"
+frps_dashboard_password="${FRPS_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 frps_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 
 run_uid_gid='65534:65534'
