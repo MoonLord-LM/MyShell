@@ -280,7 +280,7 @@ if [ $? -ne 0 ]; then
         --user "$run_uid_gid" \
         --name "$node_exporter_container_name" \
         --restart unless-stopped \
-        --net=host \
+        --network host \
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
