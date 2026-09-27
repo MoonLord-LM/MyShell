@@ -22,7 +22,7 @@ grafana_admin_password_file="${grafana_secrets_dir}/admin_password"
 
 grafana_port=13000
 grafana_admin_user='admin'
-grafana_admin_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
 function create_secrets_dir(){
     local dir="$1"
@@ -96,15 +96,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+log_warn 'optional $GRAFANA_PASSWORD, if not set, a random password will be generated'
+log_warn 'export GRAFANA_PASSWORD="<password>"'
+
 docker inspect "$grafana_container_name" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     log_info 'grafana container already exists, quit now'
     exit 0
-fi
-
-if [ -f "$grafana_admin_password_file" ]; then
-    log_error "grafana admin password file already exists: ${grafana_admin_password_file}, quit now"
-    exit 1
 fi
 
 mkdir -p "$grafana_data_dir"
@@ -116,6 +114,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+backup_file "$grafana_admin_password_file"
 write_secret_file "$grafana_admin_password_file" "$grafana_admin_password" "$grafana_uid"
 if [ $? -ne 0 ]; then
     log_error 'grafana password file create failed, quit now'
@@ -129,6 +128,7 @@ if [ $? -ne 0 ]; then
 fi
 
 docker run -d \
+    --user "${grafana_uid}:${grafana_uid}" \
     --name "$grafana_container_name" \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
