@@ -17,23 +17,30 @@ prometheus_image='prom/prometheus:latest'
 prometheus_data_dir='/var/lib/prometheus'
 prometheus_config_dir='/etc/prometheus'
 prometheus_config_file="${prometheus_config_dir}/prometheus.yml"
+prometheus_web_config_file="${prometheus_config_dir}/prometheus-web.yml"
+prometheus_scrape_password_file="${prometheus_config_dir}/prometheus-scrape-password"
 prometheus_port=19090
 prometheus_uid='65534'
+prometheus_admin_user='admin'
+prometheus_admin_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 node_exporter_container_name='prometheus_node_exporter'
 node_exporter_image='prom/node-exporter:latest'
 node_exporter_port=19100
+node_exporter_web_config_file="${prometheus_config_dir}/node-exporter-web.yml"
 
 nginx_exporter_container_name='prometheus_nginx_exporter'
 nginx_exporter_image='nginx/nginx-prometheus-exporter:latest'
 nginx_exporter_port=19113
+nginx_exporter_web_config_file="${prometheus_config_dir}/nginx-exporter-web.yml"
 nginx_host='host.docker.internal'
 nginx_port=80
 
 mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'
 mysqld_exporter_port=19104
-mysqld_exporter_config_file="${prometheus_config_dir}/mysqld_exporter.cnf"
+mysqld_exporter_config_file="${prometheus_config_dir}/mysqld-exporter.cnf"
+mysqld_exporter_web_config_file="${prometheus_config_dir}/mysqld-exporter-web.yml"
 mysqld_exporter_uid='65534'
 mysql_host='host.docker.internal'
 mysql_port=13306
@@ -43,7 +50,8 @@ mysql_password="${MYSQL_PASSWORD:-}"
 redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
 redis_exporter_port=19121
-redis_exporter_password_file="${prometheus_config_dir}/redis_exporter_password"
+redis_exporter_password_file="${prometheus_config_dir}/redis-exporter-password"
+redis_exporter_web_config_file="${prometheus_config_dir}/redis-exporter-web.yml"
 redis_exporter_uid='59000'
 redis_host='host.docker.internal'
 redis_port=16379
@@ -57,6 +65,9 @@ global:
 
 scrape_configs:
   - job_name: prometheus
+    basic_auth:
+      username: ${prometheus_admin_user}
+      password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
           - localhost:9090
@@ -65,6 +76,9 @@ scrape_configs:
           server_ip: "${prometheus_server_ip}"
 
   - job_name: node
+    basic_auth:
+      username: ${prometheus_admin_user}
+      password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
           - host.docker.internal:${node_exporter_port}
@@ -73,6 +87,9 @@ scrape_configs:
           server_ip: "${prometheus_server_ip}"
 
   - job_name: nginx
+    basic_auth:
+      username: ${prometheus_admin_user}
+      password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
           - host.docker.internal:${nginx_exporter_port}
@@ -81,6 +98,9 @@ scrape_configs:
           server_ip: "${prometheus_server_ip}"
 
   - job_name: mysql
+    basic_auth:
+      username: ${prometheus_admin_user}
+      password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
           - host.docker.internal:${mysqld_exporter_port}
@@ -89,6 +109,9 @@ scrape_configs:
           server_ip: "${prometheus_server_ip}"
 
   - job_name: redis
+    basic_auth:
+      username: ${prometheus_admin_user}
+      password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
           - host.docker.internal:${redis_exporter_port}
@@ -189,6 +212,48 @@ fi
 
 prometheus_server_name=$(hostname)
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
+
+prometheus_admin_password_hash=$(htpasswd -nbB "$prometheus_admin_user" "$prometheus_admin_password" | cut -d: -f2)
+if [ -z "$prometheus_admin_password_hash" ]; then
+    log_error 'prometheus admin password hash generate failed, quit now'
+    exit 1
+fi
+web_config_content="basic_auth_users:
+  ${prometheus_admin_user}: ${prometheus_admin_password_hash}
+"
+
+backup_file "$prometheus_web_config_file"
+write_secret_file "$prometheus_web_config_file" "$web_config_content" "$prometheus_uid"
+if [ $? -ne 0 ]; then
+    log_error 'prometheus web config file create failed, quit now'
+    exit 1
+fi
+write_secret_file "$prometheus_scrape_password_file" "$prometheus_admin_password" "$prometheus_uid"
+if [ $? -ne 0 ]; then
+    log_error 'prometheus scrape password file create failed, quit now'
+    exit 1
+fi
+write_secret_file "$node_exporter_web_config_file" "$web_config_content" "$prometheus_uid"
+if [ $? -ne 0 ]; then
+    log_error 'node_exporter web config file create failed, quit now'
+    exit 1
+fi
+write_secret_file "$nginx_exporter_web_config_file" "$web_config_content" "$prometheus_uid"
+if [ $? -ne 0 ]; then
+    log_error 'nginx_exporter web config file create failed, quit now'
+    exit 1
+fi
+write_secret_file "$mysqld_exporter_web_config_file" "$web_config_content" "$mysqld_exporter_uid"
+if [ $? -ne 0 ]; then
+    log_error 'mysqld_exporter web config file create failed, quit now'
+    exit 1
+fi
+write_secret_file "$redis_exporter_web_config_file" "$web_config_content" "$redis_exporter_uid"
+if [ $? -ne 0 ]; then
+    log_error 'redis_exporter web config file create failed, quit now'
+    exit 1
+fi
+
 backup_file "$prometheus_config_file"
 prometheus_config_yml > "$prometheus_config_file"
 if [ $? -ne 0 ]; then
@@ -212,8 +277,11 @@ if [ $? -ne 0 ]; then
         --add-host host.docker.internal:${docker_host_ip} \
         -p "$prometheus_port:9090" \
         -v "$prometheus_config_file:/etc/prometheus/prometheus.yml:ro" \
+        -v "$prometheus_web_config_file:/etc/prometheus/prometheus-web.yml:ro" \
+        -v "$prometheus_scrape_password_file:/etc/prometheus/prometheus-scrape-password:ro" \
         -v "$prometheus_data_dir:/prometheus" \
-        "$prometheus_image"
+        "$prometheus_image" \
+        --web.config.file=/etc/prometheus/prometheus-web.yml
     if [ $? -ne 0 ]; then
         log_error 'prometheus container start failed, skip'
     else
@@ -229,7 +297,10 @@ log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
 log_attention "prometheus config dir: ${prometheus_config_dir}"
 log_attention "prometheus config file: ${prometheus_config_file}"
+log_attention "prometheus web config file: ${prometheus_web_config_file}"
 log_attention "prometheus data dir: ${prometheus_data_dir}"
+log_attention "prometheus user: ${prometheus_admin_user}"
+log_attention "prometheus password: ${prometheus_admin_password}"
 
 prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
 log_attention "prometheus server url: ${prometheus_server_url}"
@@ -244,9 +315,11 @@ if [ $? -ne 0 ]; then
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
+        -v "$node_exporter_web_config_file:/etc/node-exporter/node-exporter-web.yml:ro" \
         "$node_exporter_image" \
         --path.rootfs=/host \
-        --web.listen-address=":${node_exporter_port}"
+        --web.listen-address=":${node_exporter_port}" \
+        --web.config.file=/etc/node-exporter/node-exporter-web.yml
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
     else
@@ -265,8 +338,10 @@ if [ $? -ne 0 ]; then
         --restart unless-stopped \
         --add-host host.docker.internal:${docker_host_ip} \
         -p "$nginx_exporter_port:9113" \
+        -v "$nginx_exporter_web_config_file:/etc/nginx-exporter/nginx-exporter-web.yml:ro" \
         -e "SCRAPE_URI=http://${nginx_host}:${nginx_port}/nginx_status" \
-        "$nginx_exporter_image"
+        "$nginx_exporter_image" \
+        --web.config=/etc/nginx-exporter/nginx-exporter-web.yml
     if [ $? -ne 0 ]; then
         log_error 'nginx_exporter container start failed, skip'
     else
@@ -299,10 +374,12 @@ password = \"${mysql_password_escaped}\"
                 --add-host host.docker.internal:${docker_host_ip} \
                 -p "$mysqld_exporter_port:9104" \
                 -v "$mysqld_exporter_config_file:/.my.cnf:ro" \
+                -v "$mysqld_exporter_web_config_file:/etc/mysqld-exporter/mysqld-exporter-web.yml:ro" \
                 "$mysqld_exporter_image" \
                 --config.my-cnf="/.my.cnf" \
                 --mysqld.address="${mysql_host}:${mysql_port}" \
-                --tls.insecure-skip-verify
+                --tls.insecure-skip-verify \
+                --web.config.file=/etc/mysqld-exporter/mysqld-exporter-web.yml
             if [ $? -ne 0 ]; then
                 log_error 'mysqld_exporter container start failed, skip'
             else
@@ -339,9 +416,11 @@ if [ -n "$redis_password" ]; then
                 --add-host host.docker.internal:${docker_host_ip} \
                 -p "$redis_exporter_port:9121" \
                 -v "$redis_exporter_password_file:/run/secrets/redis_password:ro" \
+                -v "$redis_exporter_web_config_file:/etc/redis-exporter/redis-exporter-web.yml:ro" \
                 "$redis_exporter_image" \
                 --redis.addr="redis://${redis_host}:${redis_port}" \
-                --redis.password-file="/run/secrets/redis_password"
+                --redis.password-file="/run/secrets/redis_password" \
+                --web.config.file=/etc/redis-exporter/redis-exporter-web.yml
             if [ $? -ne 0 ]; then
                 log_error 'redis_exporter container start failed, skip'
             else
