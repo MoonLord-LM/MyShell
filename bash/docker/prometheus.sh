@@ -20,7 +20,6 @@ prometheus_config_file="${prometheus_config_dir}/prometheus.yml"
 prometheus_web_config_file="${prometheus_config_dir}/prometheus-web.yml"
 prometheus_scrape_password_file="${prometheus_config_dir}/prometheus-scrape-password"
 prometheus_port=19090
-prometheus_uid='65534'
 prometheus_user='admin'
 prometheus_password="${PROMETHEUS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
@@ -38,7 +37,6 @@ mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'
 mysqld_exporter_port=19104
 mysqld_exporter_config_file="${prometheus_config_dir}/mysqld-exporter.cnf"
-mysqld_exporter_uid='65534'
 mysql_host='host.docker.internal'
 mysql_port=13306
 mysql_user='admin'
@@ -48,10 +46,11 @@ redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
 redis_exporter_port=19121
 redis_exporter_password_file="${prometheus_config_dir}/redis-exporter-password"
-redis_exporter_uid='59000'
 redis_host='host.docker.internal'
 redis_port=16379
 redis_password="${REDIS_PASSWORD:-}"
+
+run_uid_gid='65534:65534'
 
 function prometheus_config_yml(){
     cat <<EOF
@@ -107,7 +106,6 @@ EOF
 
 function create_secrets_dir(){
     local dir="$1"
-    local owner="${2:-root}"
 
     mkdir -p "$dir"
     local rc=$?
@@ -115,7 +113,7 @@ function create_secrets_dir(){
         return $rc
     fi
 
-    chown "${owner}:${owner}" "$dir"
+    chown "$run_uid_gid" "$dir"
     rc=$?
     if [ $rc -ne 0 ]; then
         return $rc
@@ -132,7 +130,6 @@ function create_secrets_dir(){
 function write_secret_file(){
     local file="$1"
     local content="$2"
-    local owner="${3:-root}"
 
     ( umask 077; printf '%s' "$content" > "$file" )
     local rc=$?
@@ -140,7 +137,7 @@ function write_secret_file(){
         return $rc
     fi
 
-    chown "${owner}:${owner}" "$file"
+    chown "$run_uid_gid" "$file"
     rc=$?
     if [ $rc -ne 0 ]; then
         return $rc
@@ -188,8 +185,9 @@ if [ -z "$docker_host_ip" ]; then
     exit 1
 fi
 log_attention "docker host ip: ${docker_host_ip}"
+log_attention "containers run as uid:gid: ${run_uid_gid}"
 
-create_secrets_dir "$prometheus_config_dir" "root"
+create_secrets_dir "$prometheus_config_dir"
 if [ $? -ne 0 ]; then
     log_error 'prometheus config dir create failed, quit now'
     exit 1
@@ -208,12 +206,12 @@ web_config_content="basic_auth_users:
 "
 
 backup_file "$prometheus_web_config_file"
-write_secret_file "$prometheus_web_config_file" "$web_config_content" "$prometheus_uid"
+write_secret_file "$prometheus_web_config_file" "$web_config_content"
 if [ $? -ne 0 ]; then
     log_error 'prometheus web config file create failed, quit now'
     exit 1
 fi
-write_secret_file "$prometheus_scrape_password_file" "$prometheus_password" "$prometheus_uid"
+write_secret_file "$prometheus_scrape_password_file" "$prometheus_password"
 if [ $? -ne 0 ]; then
     log_error 'prometheus scrape password file create failed, quit now'
     exit 1
@@ -225,18 +223,19 @@ if [ $? -ne 0 ]; then
     log_error 'prometheus config file create failed, quit now'
     exit 1
 fi
-chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_config_file"
+chown "$run_uid_gid" "$prometheus_config_file"
 chmod 644 "$prometheus_config_file"
 
 if [ ! -d "$prometheus_data_dir" ]; then
     mkdir -p "$prometheus_data_dir"
 fi
-chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_data_dir"
+chown "$run_uid_gid" "$prometheus_data_dir"
 
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$prometheus_image"
     docker run -d \
+        --user "$run_uid_gid" \
         --name "$prometheus_container_name" \
         --restart unless-stopped \
         --add-host host.docker.internal:${docker_host_ip} \
@@ -276,6 +275,7 @@ docker inspect "$node_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$node_exporter_image"
     docker run -d \
+        --user "$run_uid_gid" \
         --name "$node_exporter_container_name" \
         --restart unless-stopped \
         -p "${docker_host_ip}:${node_exporter_port}:9100" \
@@ -298,6 +298,7 @@ docker inspect "$nginx_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$nginx_exporter_image"
     docker run -d \
+        --user "$run_uid_gid" \
         --name "$nginx_exporter_container_name" \
         --restart unless-stopped \
         --add-host host.docker.internal:${docker_host_ip} \
@@ -320,17 +321,17 @@ if [ -n "$mysql_password" ]; then
 "[client]
 user = ${mysql_user}
 password = \"${mysql_password_escaped}\"
-" \
-"$mysqld_exporter_uid"
+"
     if [ $? -ne 0 ]; then
         log_error 'mysqld_exporter config file create failed, skip'
     else
-        log_info "mysqld_exporter config file: ${mysqld_exporter_config_file} (mode 600, owner ${mysqld_exporter_uid})"
+        log_info "mysqld_exporter config file: ${mysqld_exporter_config_file} (mode 600, owner ${run_uid_gid})"
 
         docker inspect "$mysqld_exporter_container_name" > /dev/null 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$mysqld_exporter_image"
             docker run -d \
+                --user "$run_uid_gid" \
                 --name "$mysqld_exporter_container_name" \
                 --restart unless-stopped \
                 --add-host host.docker.internal:${docker_host_ip} \
@@ -360,17 +361,17 @@ fi
 if [ -n "$redis_password" ]; then
     redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$redis_exporter_password_file" \
-"{\"redis://${redis_host}:${redis_port}\": \"${redis_password_escaped}\"}" \
-"$redis_exporter_uid"
+"{\"redis://${redis_host}:${redis_port}\": \"${redis_password_escaped}\"}"
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
     else
-        log_info "redis_exporter password file: ${redis_exporter_password_file} (mode 600, owner ${redis_exporter_uid})"
+        log_info "redis_exporter password file: ${redis_exporter_password_file} (mode 600, owner ${run_uid_gid})"
 
         docker inspect "$redis_exporter_container_name" > /dev/null 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$redis_exporter_image"
             docker run -d \
+                --user "$run_uid_gid" \
                 --name "$redis_exporter_container_name" \
                 --restart unless-stopped \
                 --add-host host.docker.internal:${docker_host_ip} \
