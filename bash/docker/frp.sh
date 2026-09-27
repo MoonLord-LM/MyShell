@@ -38,8 +38,8 @@ bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 tlsEnable = true
 
-authenticationMethod = "token"
-token = "${frp_token}"
+auth.method = "token"
+auth.token = "${frp_token}"
 
 store.path = "${frp_store_path}"
 
