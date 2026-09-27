@@ -21,8 +21,8 @@ prometheus_web_config_file="${prometheus_config_dir}/prometheus-web.yml"
 prometheus_scrape_password_file="${prometheus_config_dir}/prometheus-scrape-password"
 prometheus_port=19090
 prometheus_uid='65534'
-prometheus_admin_user='admin'
-prometheus_admin_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+prometheus_user='admin'
+prometheus_password="${PROMETHEUS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
 node_exporter_container_name='prometheus_node_exporter'
 node_exporter_image='prom/node-exporter:latest'
@@ -62,7 +62,7 @@ global:
 scrape_configs:
   - job_name: prometheus
     basic_auth:
-      username: ${prometheus_admin_user}
+      username: ${prometheus_user}
       password_file: /etc/prometheus/prometheus-scrape-password
     static_configs:
       - targets:
@@ -177,9 +177,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
+log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD and $PROMETHEUS_PASSWORD, run these first:'
 log_warn 'export MYSQL_PASSWORD="<password>"'
 log_warn 'export REDIS_PASSWORD="<password>"'
+log_warn 'export PROMETHEUS_PASSWORD="<password>"'
 
 docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null)
 if [ -z "$docker_host_ip" ]; then
@@ -197,13 +198,13 @@ fi
 prometheus_server_name=$(hostname)
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
 
-prometheus_admin_password_hash=$(htpasswd -nbB "$prometheus_admin_user" "$prometheus_admin_password" | cut -d: -f2)
-if [ -z "$prometheus_admin_password_hash" ]; then
-    log_error 'prometheus admin password hash generate failed, quit now'
+prometheus_password_hash=$(htpasswd -nbB "$prometheus_user" "$prometheus_password" | cut -d: -f2)
+if [ -z "$prometheus_password_hash" ]; then
+    log_error 'prometheus password hash generate failed, quit now'
     exit 1
 fi
 web_config_content="basic_auth_users:
-  ${prometheus_admin_user}: ${prometheus_admin_password_hash}
+  ${prometheus_user}: ${prometheus_password_hash}
 "
 
 backup_file "$prometheus_web_config_file"
@@ -212,7 +213,7 @@ if [ $? -ne 0 ]; then
     log_error 'prometheus web config file create failed, quit now'
     exit 1
 fi
-write_secret_file "$prometheus_scrape_password_file" "$prometheus_admin_password" "$prometheus_uid"
+write_secret_file "$prometheus_scrape_password_file" "$prometheus_password" "$prometheus_uid"
 if [ $? -ne 0 ]; then
     log_error 'prometheus scrape password file create failed, quit now'
     exit 1
@@ -265,8 +266,8 @@ log_attention "prometheus config dir: ${prometheus_config_dir}"
 log_attention "prometheus config file: ${prometheus_config_file}"
 log_attention "prometheus web config file: ${prometheus_web_config_file}"
 log_attention "prometheus data dir: ${prometheus_data_dir}"
-log_attention "prometheus user: ${prometheus_admin_user}"
-log_attention "prometheus password: ${prometheus_admin_password}"
+log_attention "prometheus user: ${prometheus_user}"
+log_attention "prometheus password: ${prometheus_password}"
 
 prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
 log_attention "prometheus server url: ${prometheus_server_url}"
