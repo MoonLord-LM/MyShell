@@ -98,19 +98,51 @@ scrape_configs:
 EOF
 }
 
+function create_secrets_dir(){
+    local dir="$1"
+    local owner="${2:-root}"
+
+    mkdir -p "$dir"
+    local rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chown "${owner}:${owner}" "$dir"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chmod 755 "$dir"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+    return 0
+}
+
 function write_secret_file(){
     local file="$1"
     local content="$2"
     local owner="${3:-root}"
+
     ( umask 077; printf '%s' "$content" > "$file" )
     local rc=$?
     if [ $rc -ne 0 ]; then
         return $rc
     fi
+
+    chown "${owner}:${owner}" "$file"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
     chmod 600 "$file"
-    if [ "$(id -u)" -eq 0 ]; then
-        chown "${owner}:${owner}" "$file" 2>/dev/null || \
-            log_warn "chown ${owner}:${owner} ${file} failed, container may not be able to read it"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
     fi
     return 0
 }

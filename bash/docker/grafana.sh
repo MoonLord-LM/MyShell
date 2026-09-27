@@ -13,10 +13,63 @@
 grafana_container_name='grafana'
 grafana_image='grafana/grafana:latest'
 grafana_data_dir='/var/lib/grafana'
+grafana_uid='472'
+
+grafana_secrets_dir='/etc/grafana/secrets'
+grafana_admin_password_file="${grafana_secrets_dir}/admin_password"
 
 grafana_port=13000
 grafana_admin_user='admin'
 grafana_admin_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+
+function create_secrets_dir(){
+    local dir="$1"
+    local owner="${2:-root}"
+
+    mkdir -p "$dir"
+    local rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chown "${owner}:${owner}" "$dir"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chmod 755 "$dir"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+    return 0
+}
+
+function write_secret_file(){
+    local file="$1"
+    local content="$2"
+    local owner="${3:-root}"
+
+    ( umask 077; printf '%s' "$content" > "$file" )
+    local rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chown "${owner}:${owner}" "$file"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+
+    chmod 600 "$file"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        return $rc
+    fi
+    return 0
+}
 
 
 
@@ -48,7 +101,17 @@ if [ $? -eq 0 ]; then
 fi
 
 mkdir -p "$grafana_data_dir"
-chown -R 472:472 "$grafana_data_dir"
+chown -R "${grafana_uid}:${grafana_uid}" "$grafana_data_dir"
+
+mkdir -p "$grafana_secrets_dir"
+chown "${grafana_uid}:${grafana_uid}" "$grafana_secrets_dir"
+chmod 755 "$grafana_secrets_dir"
+write_secret_file "$grafana_admin_password_file" "$grafana_admin_password" "$grafana_uid"
+if [ $? -ne 0 ]; then
+    log_error 'grafana password file create failed, quit now'
+    exit 1
+fi
+log_info "grafana password file: ${grafana_admin_password_file} (mode 600, owner ${grafana_uid})"
 
 docker pull "$grafana_image"
 if [ $? -ne 0 ]; then
@@ -61,8 +124,9 @@ docker run -d \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
     -v "$grafana_data_dir:/var/lib/grafana" \
+    -v "${grafana_admin_password_file}:/run/secrets/grafana_admin_password:ro" \
     -e "GF_SECURITY_ADMIN_USER=$grafana_admin_user" \
-    -e "GF_SECURITY_ADMIN_PASSWORD=$grafana_admin_password" \
+    -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
     -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel" \
     "$grafana_image"
 if [ $? -ne 0 ]; then
@@ -85,6 +149,7 @@ log_attention "grafana server url: ${grafana_server_url}"
 
 
 # ———————————————————————— Start ————————————————————————
-docker ps -a --filter "name=$grafana_container_name"
-
 show_tcp_listening
+
+log_info 'docker images:' && docker images
+log_info 'docker ps -a:' && docker ps -a
