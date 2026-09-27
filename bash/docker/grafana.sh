@@ -103,15 +103,17 @@ fi
 mkdir -p "$grafana_data_dir"
 chown -R "${grafana_uid}:${grafana_uid}" "$grafana_data_dir"
 
-mkdir -p "$grafana_secrets_dir"
-chown "${grafana_uid}:${grafana_uid}" "$grafana_secrets_dir"
-chmod 755 "$grafana_secrets_dir"
+create_secrets_dir "$grafana_secrets_dir" "$grafana_uid"
+if [ $? -ne 0 ]; then
+    log_error 'grafana secrets dir create failed, quit now'
+    exit 1
+fi
+
 write_secret_file "$grafana_admin_password_file" "$grafana_admin_password" "$grafana_uid"
 if [ $? -ne 0 ]; then
     log_error 'grafana password file create failed, quit now'
     exit 1
 fi
-log_info "grafana password file: ${grafana_admin_password_file} (mode 600, owner ${grafana_uid})"
 
 docker pull "$grafana_image"
 if [ $? -ne 0 ]; then

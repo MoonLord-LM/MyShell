@@ -181,9 +181,11 @@ if [ -z "$docker_host_ip" ]; then
 fi
 log_attention "docker host ip: ${docker_host_ip}"
 
-mkdir -p "$prometheus_config_dir"
-chown root:root "$prometheus_config_dir"
-chmod 755 "$prometheus_config_dir"
+create_secrets_dir "$prometheus_config_dir" "root"
+if [ $? -ne 0 ]; then
+    log_error 'prometheus config dir create failed, quit now'
+    exit 1
+fi
 
 prometheus_server_name=$(hostname)
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
