@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frps.sh' | bash
+# wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
 # docker rm -f frps
 
