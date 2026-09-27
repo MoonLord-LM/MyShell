@@ -13,7 +13,7 @@
 
 # ———————————————————————— Config ————————————————————————
 frp_container_name='frp'
-frp_image='ghcr.io/fatedier/frp:latest'
+frp_image='fatedier/frp:latest'
 
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
