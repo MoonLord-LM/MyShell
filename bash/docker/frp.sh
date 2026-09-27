@@ -4,7 +4,7 @@
 
 # docker rm -f frp
 
-# FRP Server
+# Frp
 # https://github.com/fatedier/frp
 
 
@@ -112,7 +112,7 @@ if [ $? -ne 0 ]; then
 fi
 chmod 600 "$frp_config_file"
 chown "$run_uid_gid" "$frp_config_file"
-log_info "FRP server config file: ${frp_config_file} (mode 600)"
+log_info "frp server config file: ${frp_config_file} (mode 600)"
 
 docker pull "$frp_image"
 if [ $? -ne 0 ]; then
