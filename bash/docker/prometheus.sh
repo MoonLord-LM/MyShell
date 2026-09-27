@@ -3,6 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh' | bash
 
 # docker rm -f prometheus prometheus_node_exporter prometheus_nginx_exporter prometheus_mysql_exporter prometheus_redis_exporter
+# rm -f '/etc/prometheus/prometheus.yml'
 
 # Prometheus
 # https://github.com/prometheus/prometheus
@@ -232,7 +233,6 @@ if [ ! -d "$prometheus_data_dir" ]; then
 fi
 chown "${prometheus_uid}:${prometheus_uid}" "$prometheus_data_dir"
 
-# prometheus: public, with basic auth
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$prometheus_image"
@@ -272,7 +272,6 @@ log_attention "prometheus password: ${prometheus_admin_password}"
 prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
 log_attention "prometheus server url: ${prometheus_server_url}"
 
-# node_exporter: internal only
 docker inspect "$node_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$node_exporter_image"
@@ -295,7 +294,6 @@ else
     docker restart "$node_exporter_container_name"
 fi
 
-# nginx_exporter: internal only
 docker inspect "$nginx_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$nginx_exporter_image"
@@ -316,7 +314,6 @@ else
     docker restart "$nginx_exporter_container_name"
 fi
 
-# mysqld_exporter: internal only
 if [ -n "$mysql_password" ]; then
     mysql_password_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$mysqld_exporter_config_file" \
@@ -360,7 +357,6 @@ else
     log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
-# redis_exporter: internal only
 if [ -n "$redis_password" ]; then
     redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     write_secret_file "$redis_exporter_password_file" \
