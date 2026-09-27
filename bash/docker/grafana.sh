@@ -3,7 +3,6 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
 # docker rm -f grafana
-# rm -f '/etc/grafana/secrets/admin_password'
 
 # Grafana
 # https://github.com/grafana/grafana
