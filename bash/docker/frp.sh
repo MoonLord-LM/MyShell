@@ -13,8 +13,7 @@
 
 # ———————————————————————— Config ————————————————————————
 frp_container_name='frp'
-frp_image='fatedier/frp:latest'
-
+frp_image='fatedier/frps:v0.71.0'
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
@@ -33,26 +32,28 @@ run_uid_gid='65534:65534'
 
 function generate_frp_config_content(){
     cat <<EOF
-[common]
-serverAddr = "::"
+bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 tlsEnable = true
 
-auth.method = "token"
-auth.token = "${frp_token}"
+[auth]
+method = "token"
+token = "${frp_token}"
 
 store.path = "${frp_store_path}"
 
-log.to = "file"
-log.file = "${frp_log_file}"
-log.level = "info"
-log.maxDays = 3
+[log]
+to = "file"
+file = "${frp_log_file}"
+level = "info"
+maxDays = 3
 
-webServer.addr = "::"
-webServer.port = ${frp_dashboard_port}
-webServer.user = "${frp_dashboard_user}"
-webServer.password = "${frp_dashboard_password}"
+[webServer]
+addr = "::"
+port = ${frp_dashboard_port}
+user = "${frp_dashboard_user}"
+password = "${frp_dashboard_password}"
 EOF
 }
 
@@ -130,7 +131,6 @@ docker run -d \
     -v "$frp_data_dir:/var/lib/frp" \
     "$frp_image" \
     -c /etc/frp/frp.toml
-
 if [ $? -ne 0 ]; then
     log_error 'frp server container start failed, quit now'
     exit 1
