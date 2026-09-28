@@ -30,7 +30,7 @@ frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 
 run_uid_gid='65534:65534'
 
-function generate_frp_config_content(){
+function generate_frp_server_config(){
     cat <<EOF
 bindAddr = "::"
 bindPort = ${frp_bind_port}
@@ -53,6 +53,32 @@ webServer.addr = "::"
 webServer.port = ${frp_dashboard_port}
 webServer.user = "${frp_dashboard_user}"
 webServer.password = "${frp_dashboard_password}"
+EOF
+}
+
+function generate_frp_client_config(){
+    cat <<EOF
+serverAddr = "${frp_server_ip}"
+serverPort = ${frp_bind_port}
+
+auth.method = "token"
+auth.token = "${frp_token}"
+
+transport.poolCount = 20
+transport.dialServerKeepalive = 60
+transport.tcpMuxKeepaliveInterval = 60
+transport.heartbeatInterval = 60
+transport.tls.enable = true
+
+[[proxies]]
+name = "local-8080-http"
+type = "http"
+
+localIP = "127.0.0.1"
+localPort = 8080
+
+customDomains = ["${frp_server_ip}"]
+locations = ["/"]
 EOF
 }
 
@@ -106,7 +132,7 @@ fi
 chown "$run_uid_gid" "$frp_data_dir"
 
 backup_file "$frp_config_file"
-generate_frp_config_content > "$frp_config_file"
+generate_frp_server_config > "$frp_config_file"
 if [ $? -ne 0 ]; then
     log_error 'frp server config file creation failed, quit now'
     exit 1
@@ -157,29 +183,7 @@ log_attention "client run command: frpc.exe -c frpc.toml"
 
 echo
 log_attention "==================== frpc.toml example begin ===================="
-cat <<FRPC_EXAMPLE
-serverAddr = "${frp_server_ip}"
-serverPort = ${frp_bind_port}
-
-auth.method = "token"
-auth.token = "${frp_token}"
-
-transport.poolCount = 20
-transport.dialServerKeepalive = 60
-transport.tcpMuxKeepaliveInterval = 60
-transport.heartbeatInterval = 60
-transport.tls.enable = true
-
-[[proxies]]
-name = "local-8080-http"
-type = "http"
-
-localIP = "127.0.0.1"
-localPort = 8080
-
-customDomains = ["${frp_server_ip}"]
-locations = ["/"]
-FRPC_EXAMPLE
+log_attention "$(generate_frp_client_config)"
 log_attention "==================== frpc.toml example end ===================="
 echo
 
