@@ -79,11 +79,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log_warn 'require $FRP_DASHBOARD_PASSWORD, if not set, a random password will be generated:'
-log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
-
 log_warn 'require $FRP_TOKEN, if not set, a random token will be generated:'
 log_warn 'export FRP_TOKEN="<token>"'
+
+log_warn 'require $FRP_DASHBOARD_PASSWORD, if not set, a random password will be generated:'
+log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
 
 docker inspect "$frp_container_name" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
