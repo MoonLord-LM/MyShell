@@ -2,6 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/cockpit.sh' | bash
 
+# apt remove -y cockpit-bridge
+
 # Cockpit
 # https://github.com/cockpit-project/cockpit
 
@@ -13,6 +15,7 @@
 cockpit_apt_source_file='/etc/apt/sources.list.d/cockpit-backports.list'
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
 cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
+cockpit_cert_file='/etc/cockpit/ws-certs.d/0-self-signed.cert'
 
 cockpit_server_port=19190
 cockpit_allow_groups='root'
@@ -35,8 +38,21 @@ EOF
 function cockpit_socket_override(){
     cat <<EOF
 [Socket]
+ListenStream=
 ListenStream=[::]:${cockpit_server_port}
 EOF
+}
+
+function cockpit_gen_ssl_cert(){
+    mkdir -p $(dirname "$cockpit_cert_file")
+    openssl req -newkey rsa:4096 -nodes -keyout "$cockpit_cert_file" -x509 -days 365000 -out "$cockpit_cert_file" -subj '/CN=Cockpit'
+    if [ $? -ne 0 ]; then
+        log_error 'cockpit_gen_ssl_cert failed, quit now'
+        exit 1
+    fi
+
+    chown root:root "$cockpit_cert_file"
+    chmod 600 "$cockpit_cert_file"
 }
 
 
@@ -108,17 +124,17 @@ systemctl daemon-reload
 mkdir -p /etc/cockpit
 echo > /etc/cockpit/disallowed-users
 
-mkdir -p /etc/cockpit/ws-certs.d
-chown root:root /etc/cockpit/ws-certs.d
-chmod 700 /etc/cockpit/ws-certs.d
+cockpit_gen_ssl_cert
 
 cockpit_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "cockpit server ip: ${cockpit_server_ip}"
 log_attention "cockpit server port: ${cockpit_server_port}"
 log_attention "cockpit dashboard url: https://${cockpit_server_ip}:${cockpit_server_port}"
 log_attention "cockpit allow login group: ${cockpit_allow_groups}"
-log_attention "cockpit config file: ${cockpit_conf_file}"
-log_attention "cockpit socket config file: ${cockpit_socket_conf_file}"
+
+log_attention "cockpit config: ${cockpit_conf_file}"
+log_attention "cockpit socket config: ${cockpit_socket_conf_file}"
+log_attention "cockpit ssl cert: ${cockpit_cert_file}"
 
 
 
