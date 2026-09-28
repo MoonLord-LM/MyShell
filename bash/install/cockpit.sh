@@ -35,6 +35,7 @@ EOF
 function cockpit_socket_override(){
     cat <<EOF
 [Socket]
+ListenStream=
 ListenStream=0.0.0.0:${cockpit_server_port}
 ListenStream=[::]:${cockpit_server_port}
 EOF
@@ -104,6 +105,7 @@ cockpit_config_conf > "${cockpit_conf_file}"
 mkdir -p $(dirname "${cockpit_socket_conf_file}")
 backup_file "${cockpit_socket_conf_file}"
 cockpit_socket_override > "${cockpit_socket_conf_file}"
+systemctl daemon-reload
 
 mkdir -p /etc/cockpit
 echo > /etc/cockpit/disallowed-users
