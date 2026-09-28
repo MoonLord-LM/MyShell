@@ -38,9 +38,11 @@ vhostHTTPPort = ${frp_vhost_http_port}
 auth.method = "token"
 auth.token = "${frp_token}"
 
-transport.maxPoolCount = 20
-transport.tcpNoDelay = true
 transport.tls.force = true
+transport.maxPoolCount = 20
+transport.tcpKeepalive = 60
+transport.tcpMuxKeepaliveInterval = 60
+transport.heartbeatTimeout = 180
 
 log.to = "${frp_log_file}"
 log.level = "info"
