@@ -98,8 +98,15 @@ if [ $? -ne 0 ]; then
     elif check_system_is_ubuntu; then
         echo "deb http://archive.ubuntu.com/ubuntu ${codename}-backports main restricted universe multiverse" > "$cockpit_apt_source_file"
     fi
+
     update_software
-    apt install -t "${codename}-backports" -y cockpit cockpit-files cockpit-storaged cockpit-networkmanager cockpit-machines
+    apt install -t "${codename}-backports" -y cockpit
+    apt install -t "${codename}-backports" -y cockpit-storaged cockpit-networkmanager cockpit-machines
+
+    apt install -t "${codename}-backports" -y cockpit-files
+    if [ $? -ne 0 ]; then
+        apt install -t "${codename}-backports" -y cockpit-navigator
+    fi
 fi
 
 show_software 'cockpit-bridge'
