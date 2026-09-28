@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
 
-# apt remove -y php8.4-cli
+# apt remove -y php8.4-*
 
 # PHP
 # https://github.com/php/php-src
