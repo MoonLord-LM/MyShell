@@ -49,11 +49,10 @@ log.file = "${frp_log_file}"
 log.level = "info"
 log.maxDays = 3
 
-[dashboard]
-addr = "::"
-port = ${frp_dashboard_port}
-user = "${frp_dashboard_user}"
-password = "${frp_dashboard_password}"
+webServer.addr = "::"
+webServer.port = ${frp_dashboard_port}
+webServer.user = "${frp_dashboard_user}"
+webServer.password = "${frp_dashboard_password}"
 EOF
 }
 
