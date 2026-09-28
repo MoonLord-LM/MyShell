@@ -16,8 +16,8 @@
 cockpit_apt_source_file='/etc/apt/sources.list.d/cockpit-backports.list'
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
 cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
-cockpit_ssl_key='/etc/cockpit/ws-certs.d/0-self-signed.key'
-cockpit_ssl_cert='/etc/cockpit/ws-certs.d/0-self-signed.cert'
+cockpit_ssl_key='/etc/cockpit/ws-certs.d/1-self-signed.key'
+cockpit_ssl_cert='/etc/cockpit/ws-certs.d/1-self-signed.cert'
 
 cockpit_server_port=19190
 cockpit_allow_groups='root'
