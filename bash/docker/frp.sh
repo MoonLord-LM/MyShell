@@ -36,15 +36,16 @@ bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 tlsEnable = true
-store.path = "${frp_store_path}"
+
+[store]
+path = "${frp_store_path}"
 
 [auth]
 method = "token"
 token = "${frp_token}"
 
 [log]
-to = "file"
-output = "${frp_log_file}"
+to = "${frp_log_file}"
 level = "info"
 max_days = 3
 
