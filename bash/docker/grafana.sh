@@ -164,3 +164,5 @@ show_tcp_listening
 
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
+
+log_info "docker logs $grafana_container_name:" && docker logs "$grafana_container_name"
