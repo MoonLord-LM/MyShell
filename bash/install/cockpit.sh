@@ -116,6 +116,7 @@ cockpit_config_conf > "${cockpit_conf_file}"
 mkdir -p $(dirname "${cockpit_socket_conf_file}")
 backup_file "${cockpit_socket_conf_file}"
 cockpit_socket_override > "${cockpit_socket_conf_file}"
+systemctl daemon-reload
 
 echo > /etc/cockpit/disallowed-users
 
