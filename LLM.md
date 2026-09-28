@@ -61,8 +61,8 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 ## 增加更多安装脚本
 
-参考：  
-https://github.com/awesome-selfhosted/awesome-selfhosted  
+参考：
+https://github.com/awesome-selfhosted/awesome-selfhosted
 https://github.com/louislam/uptime-kuma
 https://github.com/photoprism/photoprism
 https://writefreely.org
