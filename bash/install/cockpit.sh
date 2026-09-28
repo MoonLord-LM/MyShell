@@ -89,7 +89,7 @@ if [ -z "${codename}" ]; then
     exit 1
 fi
 
-show_software 'cockpit'
+show_software 'cockpit-bridge'
 if [ $? -ne 0 ]; then
     if check_system_is_debian; then
         echo "deb http://deb.debian.org/debian ${codename}-backports main" > "$cockpit_apt_source_file"
@@ -100,7 +100,7 @@ if [ $? -ne 0 ]; then
     apt install -t "${codename}-backports" -y cockpit cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-podman
 fi
 
-show_software 'cockpit'
+show_software 'cockpit-bridge'
 if [ $? -ne 0 ]; then
     log_error 'cockpit install failed, quit now'
     exit 1
