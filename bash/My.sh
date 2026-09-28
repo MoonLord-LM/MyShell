@@ -326,7 +326,7 @@ function search_software(){
         fi
     fi
 
-    local result
+    local result=''
     result=$(dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' \
         | grep 'install ok installed' | awk '{print $1" "$2}' | grep -i "$keyword")
     if [ "$result" == '' ]; then
@@ -352,7 +352,7 @@ function update_system(){
         fi
     fi
 
-    local codename
+    local codename=''
     codename=$(get_system_version_codename)
     if [ $? -ne 0 ]; then
         log_error 'update_system failed, cannot get system codename'
@@ -384,12 +384,20 @@ function update_system(){
     fi
     log_warn "update_system: ${codename} → ${target_codename}"
 
-    backup_file '/etc/apt/sources.list'
+    local sources_list=''
+    check_system_is_ubuntu
+    if [ $? -ne 0 ]; then
+        sources_list='/etc/apt/sources.list'
+    else
+        sources_list='/etc/apt/sources.list.d/ubuntu.sources'
+    fi
+
+    backup_file "$sources_list"
     if [ $? -ne 0 ]; then
         log_error 'update_system failed, backup_file failed'
         return 1
     fi
-    sed -i "s/${codename}/${target_codename}/g" '/etc/apt/sources.list'
+    sed -i "s/${codename}/${target_codename}/g" "$sources_list"
 
     update_software_aggressive
     if [ $? -ne 0 ]; then
@@ -619,7 +627,7 @@ function set_memory_swap_to_4GB(){
         awk '!/^[[:space:]]*#/ && $3=="swap"{print $1}' "$fstab_file"
     } | sort -u)
 
-    local swap_path
+    local swap_path=''
     while read -r swap_path; do
         if [ "$swap_path" == '' ] || [ "$swap_path" == "$swap_file" ] || [ ! -f "$swap_path" ]; then
             continue
