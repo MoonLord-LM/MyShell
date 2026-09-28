@@ -182,9 +182,9 @@ echo
 log_attention "client run command: frpc.exe -c frpc.toml"
 
 echo
-log_attention "==================== frpc.toml example begin ===================="
-log_attention "$(generate_frp_client_config)"
-log_attention "==================== frpc.toml example end ===================="
+log_success "==================== frpc.toml example begin ===================="
+log_success "$(generate_frp_client_config)"
+log_success "==================== frpc.toml example end ===================="
 echo
 
 log_attention "client example local url: http://127.0.0.1:8080"
