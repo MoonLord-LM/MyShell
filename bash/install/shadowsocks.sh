@@ -10,6 +10,8 @@
 
 
 # ———————————————————————— Config ————————————————————————
+ss_server_api_release_url='https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest'
+
 ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
 ss_server_port=10000
@@ -69,7 +71,7 @@ tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"
 
 ss_download_url=$(
-    wget -O- --timeout=120 --no-cache 'https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest' | \
+    wget -O- --timeout=120 --no-cache "$ss_server_api_release_url" | \
     grep --color=never -o 'https://[^"]*' | \
     grep --color=never "$ss_file_name_match.tar.\(xz\|gz\)\$" | \
     head -n 1

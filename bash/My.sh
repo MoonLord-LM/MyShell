@@ -355,28 +355,28 @@ function update_system(){
     local codename
     codename=$(get_system_version_codename)
     if [ $? -ne 0 ]; then
-        log_error "update_system failed, cannot get system codename"
+        log_error 'update_system failed, cannot get system codename'
         return 1
     fi
 
-    local target_codename=""
+    local target_codename=''
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
-        if [[ "${codename}" == "trixie" ]]; then
+        if [[ "${codename}" == 'trixie' ]]; then
             log_success "update_system: no need to update, current: $(get_system_name) / ${codename}"
             return 0
-        elif [[ "${codename}" == "bookworm" ]]; then
-            target_codename="trixie"
+        elif [[ "${codename}" == 'bookworm' ]]; then
+            target_codename='trixie'
         else
             log_error "update_system: Debian only support upgrade from bookworm, current: ${codename}"
             return 1
         fi
     else
-        if [[ "${codename}" == "resolute" ]]; then
+        if [[ "${codename}" == 'resolute' ]]; then
             log_success "update_system: no need to update, current: $(get_system_name) / ${codename}"
             return 0
-        elif [[ "${codename}" == "noble" ]]; then
-            target_codename="resolute"
+        elif [[ "${codename}" == 'noble' ]]; then
+            target_codename='resolute'
         else
             log_error "update_system: Ubuntu only support upgrade from noble, current: ${codename}"
             return 1
@@ -384,16 +384,16 @@ function update_system(){
     fi
     log_warn "update_system: ${codename} → ${target_codename}"
 
-    backup_file "/etc/apt/sources.list"
+    backup_file '/etc/apt/sources.list'
     if [ $? -ne 0 ]; then
-        log_error "update_system failed, backup_file failed"
+        log_error 'update_system failed, backup_file failed'
         return 1
     fi
-    sed -i "s/${codename}/${target_codename}/g" "/etc/apt/sources.list"
+    sed -i "s/${codename}/${target_codename}/g" '/etc/apt/sources.list'
 
     update_software_aggressive
     if [ $? -ne 0 ]; then
-        log_error "update_system failed, update_software_aggressive failed"
+        log_error 'update_system failed, update_software_aggressive failed'
         return 1
     fi
 }
