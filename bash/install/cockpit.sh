@@ -99,7 +99,7 @@ if [ $? -ne 0 ]; then
         echo "deb http://archive.ubuntu.com/ubuntu ${codename}-backports main restricted universe multiverse" > "$cockpit_apt_source_file"
     fi
     update_software
-    apt install -t "${codename}-backports" -y cockpit cockpit-files cockpit-storaged cockpit-networkmanager cockpit-machines cockpit-sosreport
+    apt install -t "${codename}-backports" -y cockpit cockpit-files cockpit-storaged cockpit-networkmanager cockpit-machines
 fi
 
 show_software 'cockpit-bridge'
