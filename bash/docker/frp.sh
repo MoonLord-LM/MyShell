@@ -35,9 +35,11 @@ bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 
-transport.tls.force = true
 auth.method = "token"
 auth.token = "${frp_token}"
+
+transport.maxPoolCount = 20
+transport.tls.force = true
 
 log.to = "${frp_log_file}"
 log.level = "info"
