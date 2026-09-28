@@ -32,16 +32,16 @@ run_uid_gid='65534:65534'
 
 function generate_frp_config_content(){
     cat <<EOF
+[common]
 bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 tlsEnable = true
+store.path = "${frp_store_path}"
 
 [auth]
 method = "token"
 token = "${frp_token}"
-
-store.path = "${frp_store_path}"
 
 [log]
 to = "file"
