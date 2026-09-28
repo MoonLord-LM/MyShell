@@ -2,8 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/cockpit.sh' | bash
 
-# apt remove -y cockpit-bridge
-# rm -rf '/etc/cockpit/'
+# apt remove -y cockpit-bridge && rm -rf '/etc/cockpit/'
 
 # Cockpit
 # https://github.com/cockpit-project/cockpit
