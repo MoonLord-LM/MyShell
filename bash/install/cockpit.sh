@@ -99,7 +99,7 @@ if [ $? -ne 0 ]; then
         echo "deb http://archive.ubuntu.com/ubuntu ${codename}-backports main restricted universe multiverse" > "$cockpit_apt_source_file"
     fi
     update_software
-    apt install -t "${codename}-backports" -y cockpit cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-podman
+    apt install -t "${codename}-backports" -y cockpit cockpit-storaged cockpit-networkmanager cockpit-files cockpit-machines cockpit-sosreport
 fi
 
 show_software 'cockpit-bridge'
@@ -123,7 +123,6 @@ backup_file "${cockpit_socket_conf_file}"
 cockpit_socket_override > "${cockpit_socket_conf_file}"
 systemctl daemon-reload
 
-mkdir -p /etc/cockpit
 echo > /etc/cockpit/disallowed-users
 
 cockpit_gen_ssl_cert
