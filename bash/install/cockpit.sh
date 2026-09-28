@@ -101,7 +101,7 @@ if [ $? -ne 0 ]; then
 
     update_software
     apt install -t "${codename}-backports" -y cockpit
-    apt install -t "${codename}-backports" -y cockpit-storaged cockpit-networkmanager cockpit-machines
+    apt install -t "${codename}-backports" -y cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-machines
 
     apt install -t "${codename}-backports" -y cockpit-files
     if [ $? -ne 0 ]; then
