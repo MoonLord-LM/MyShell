@@ -312,8 +312,8 @@ function show_software_list(){
     log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
     dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
 }
-# 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述），显示名称和版本
-function show_software(){
+# 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述等），显示名称和版本
+function search_software(){
     check_parameter "$1" || return 1
     local keyword=$1
 
@@ -321,7 +321,7 @@ function show_software(){
     if [ $? -ne 0 ]; then
         check_system_is_debian
         if [ $? -ne 0 ]; then
-            log_error "show_software failed, unknown system"
+            log_error "search_software failed, unknown system"
             return 1
         fi
     fi
@@ -335,10 +335,10 @@ function show_software(){
             | grep 'install ok installed' | grep -i "$keyword" | awk -F'|' '{print $1" "$2}')
     fi
     if [ "$result" == '' ]; then
-        log_info "show_software: no software found by keyword \"$keyword\""
+        log_info "search_software: no software found by keyword \"$keyword\""
         return 1
     fi
-    log_info "show_software: search \"$keyword\""
+    log_info "search_software: search \"$keyword\""
     echo "$result"
 }
 

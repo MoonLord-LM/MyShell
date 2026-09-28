@@ -94,7 +94,7 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-show_software 'mysql-apt-config'
+search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then
     echo "mysql-apt-config mysql-apt-config/select-server select $mysql_apt_config_select" | debconf-set-selections
 
@@ -112,7 +112,7 @@ if [ $? -ne 0 ]; then
     rm -f "$tmp_file"
 fi
 
-show_software 'mysql-apt-config'
+search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then
     log_error 'mysql-apt-config install failed, quit now'
     exit 1
