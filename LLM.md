@@ -1,6 +1,6 @@
 # TODO
 
-## 1. 新增配置文件安全修改函数
+## 新增配置文件安全修改函数
 
 将配置文件的目录创建、文件备份和内容修改整合为 My.sh 里的一个函数
 同时，当文件内容无变化的时候，不进行备份和覆盖
@@ -10,7 +10,7 @@ mkdir -p $(dirname "${conf_file}")
 backup_file "${conf_file}"
 config_conf > "${conf_file}"
 ```
-## 1. 新增 root 密码重设函数
+## 新增 root 密码重设函数
 
 新增 root 密码重设函数，使用 256 bit 随机数
 
@@ -18,7 +18,7 @@ config_conf > "${conf_file}"
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ```
 
-## 2. 系统更新后，源没有跟随更新的问题
+## 系统更新后，源没有跟随更新的问题
 
     Hit:1 http://security.debian.org/debian-security trixie-security InRelease
     Hit:2 http://deb.debian.org/debian trixie InRelease
@@ -28,12 +28,12 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
     Hit:6 https://packages.redis.io/deb bookworm InRelease
     Hit:7 http://repo.mysql.com/apt/debian bookworm InRelease
 
-## 3. 考虑增加一个文件管理的 WEB UI
+## 考虑增加一个文件管理的 WEB UI
 
     FileBrowser‑Quantum
     OpenList
 
-## 4. 对各种 WEB UI 指定 URL 的根路径
+## 对各种 WEB UI 指定 URL 的根路径
 
 分配各自的相对路径，方便绑定到同一个域名上访问  
 
@@ -42,7 +42,7 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
     http://103.233.74.96:17500/Frp
     https://103.233.74.96:19190/Cockpit
 
-## 5. OpenList 的音乐播放器界面高度太小
+## OpenList 的音乐播放器界面高度太小
 
 ```html
 <script>
