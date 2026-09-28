@@ -12,7 +12,7 @@
 # ———————————————————————— Config ————————————————————————
 cockpit_apt_source_file='/etc/apt/sources.list.d/cockpit-backports.list'
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
-cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf"
+cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
 
 cockpit_server_port=19091
 cockpit_allow_groups='root'
