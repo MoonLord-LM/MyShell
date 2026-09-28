@@ -140,13 +140,13 @@ frp_server_name=$(hostname)
 frp_server_ip=$(hostname -I | awk '{print $1}')
 
 log_attention "frp server name: ${frp_server_name}"
-log_attention "frp server dashboard: http://${frp_server_ip}:${frp_dashboard_port}"
-log_attention "frp user: ${frp_dashboard_user}"
-log_attention "frp password: ${frp_dashboard_password}"
-
 log_attention "frp server bind: ${frp_server_ip}:${frp_bind_port}"
 log_attention "frp server vhost http: ${frp_server_ip}:${frp_vhost_http_port}"
 log_attention "frp server token: ${frp_token}"
+
+log_attention "frp server dashboard: http://${frp_server_ip}:${frp_dashboard_port}"
+log_attention "frp user: ${frp_dashboard_user}"
+log_attention "frp password: ${frp_dashboard_password}"
 
 log_attention "frp config directory: ${frp_config_dir}"
 log_attention "frp data directory: ${frp_data_dir}"
