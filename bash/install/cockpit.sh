@@ -15,7 +15,8 @@
 cockpit_apt_source_file='/etc/apt/sources.list.d/cockpit-backports.list'
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
 cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
-cockpit_cert_file='/etc/cockpit/ws-certs.d/0-self-signed.cert'
+cockpit_ssl_key='/etc/cockpit/ws-certs.d/0-self-signed.key'
+cockpit_ssl_cert='/etc/cockpit/ws-certs.d/0-self-signed.cert'
 
 cockpit_server_port=19190
 cockpit_allow_groups='root'
@@ -44,15 +45,15 @@ EOF
 }
 
 function cockpit_gen_ssl_cert(){
-    mkdir -p $(dirname "$cockpit_cert_file")
-    openssl req -newkey rsa:4096 -nodes -keyout "$cockpit_cert_file" -x509 -days 365000 -out "$cockpit_cert_file" -subj '/CN=Cockpit'
+    mkdir -p $(dirname "$cockpit_ssl_key")
+    openssl req -newkey rsa:4096 -nodes -keyout "$cockpit_ssl_key" -x509 -days 365000 -out "$cockpit_ssl_cert" -subj '/CN=Cockpit'
     if [ $? -ne 0 ]; then
         log_error 'cockpit_gen_ssl_cert failed, quit now'
         exit 1
     fi
 
-    chown root:root "$cockpit_cert_file"
-    chmod 600 "$cockpit_cert_file"
+    chown root:root "$cockpit_ssl_key"
+    chmod 600 "$cockpit_ssl_key"
 }
 
 
@@ -134,7 +135,8 @@ log_attention "cockpit allow login group: ${cockpit_allow_groups}"
 
 log_attention "cockpit config: ${cockpit_conf_file}"
 log_attention "cockpit socket config: ${cockpit_socket_conf_file}"
-log_attention "cockpit ssl cert: ${cockpit_cert_file}"
+log_attention "cockpit ssl key: ${cockpit_ssl_key}"
+log_attention "cockpit ssl cert: ${cockpit_ssl_cert}"
 
 
 
