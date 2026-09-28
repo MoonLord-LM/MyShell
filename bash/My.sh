@@ -177,6 +177,11 @@ function update_software(){
         log_error 'apt upgrade failed'
         return 1
     fi
+    apt autoremove -y
+    if [ $? -ne 0 ]; then
+        log_error 'apt autoremove failed'
+        return 1
+    fi
 }
 # 更新软件（激进，允许安装新依赖，允许删除已安装的软件）
 function update_software_aggressive(){
@@ -197,6 +202,11 @@ function update_software_aggressive(){
     apt full-upgrade -y
     if [ $? -ne 0 ]; then
         log_error 'apt full-upgrade failed'
+        return 1
+    fi
+    apt autoremove --purge -y
+    if [ $? -ne 0 ]; then
+        log_error 'apt autoremove purge failed'
         return 1
     fi
 }
