@@ -179,14 +179,12 @@ log_attention "frp config file: ${frp_config_file}"
 log_attention "frp log file: ${frp_log_file}"
 
 echo
-log_attention "client run command: frpc.exe -c frpc.toml"
-
-echo
 log_success "==================== frpc.toml example - begin ===================="
 log_success "$(generate_frp_client_config)"
 log_success "==================== frpc.toml example - end ===================="
 echo
 
+log_attention "client run command: frpc.exe -c frpc.toml"
 log_attention "client example local url: http://127.0.0.1:8080"
 log_attention "client example publish url: http://${frp_server_ip}:${frp_vhost_http_port}"
 
