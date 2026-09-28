@@ -68,4 +68,3 @@ https://github.com/photoprism/photoprism
 https://writefreely.org
 https://github.com/open-webui/open-webui
 https://github.com/portainer/portainer
-https://github.com/tryghost/ghost
