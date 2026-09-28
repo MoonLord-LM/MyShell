@@ -91,25 +91,14 @@ if [ -z "${codename}" ]; then
     exit 1
 fi
 
-show_software 'cockpit-bridge'
-if [ $? -ne 0 ]; then
-    if check_system_is_debian; then
-        echo "deb http://deb.debian.org/debian ${codename}-backports main" > "$cockpit_apt_source_file"
-    elif check_system_is_ubuntu; then
-        echo "deb http://archive.ubuntu.com/ubuntu ${codename}-backports main restricted universe multiverse" > "$cockpit_apt_source_file"
-    fi
+install_software cockpit
+install_software cockpit-storaged
+install_software cockpit-networkmanager
+install_software cockpit-files
+install_software cockpit-packagekit
+install_software cockpit-machines
 
-    update_software
-    apt install -t "${codename}-backports" -y cockpit
-    apt install -t "${codename}-backports" -y cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-machines
-
-    apt install -t "${codename}-backports" -y cockpit-files
-    if [ $? -ne 0 ]; then
-        apt install -t "${codename}-backports" -y cockpit-navigator
-    fi
-fi
-
-show_software 'cockpit-bridge'
+check_command_exist 'cockpit-bridge'
 if [ $? -ne 0 ]; then
     log_error 'cockpit install failed, quit now'
     exit 1
