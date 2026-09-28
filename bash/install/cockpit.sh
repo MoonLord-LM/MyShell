@@ -14,7 +14,7 @@ cockpit_apt_source_file='/etc/apt/sources.list.d/cockpit-backports.list'
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
 cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
 
-cockpit_server_port=19091
+cockpit_server_port=19190
 cockpit_allow_groups='root'
 
 cockpit_idle_timeout=1800
@@ -81,7 +81,7 @@ if [ $? -ne 0 ]; then
         echo "deb http://archive.ubuntu.com/ubuntu ${codename}-backports main restricted universe multiverse" > "$cockpit_apt_source_file"
     fi
     update_software
-    apt install -t "${codename}-backports" -y cockpit cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-podman
+    apt install -t "${codename}-backports" -y cockpit cockpit-bridge cockpit-storaged cockpit-networkmanager cockpit-packagekit cockpit-podman
 fi
 
 show_software 'cockpit'
