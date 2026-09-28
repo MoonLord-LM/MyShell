@@ -47,7 +47,7 @@ token = "${frp_token}"
 [log]
 to = "${frp_log_file}"
 level = "info"
-max_days = 3
+maxDays = 3
 
 [webServer]
 addr = "::"
