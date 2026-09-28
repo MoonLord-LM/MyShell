@@ -35,8 +35,6 @@ EOF
 function cockpit_socket_override(){
     cat <<EOF
 [Socket]
-ListenStream=
-ListenStream=0.0.0.0:${cockpit_server_port}
 ListenStream=[::]:${cockpit_server_port}
 EOF
 }
