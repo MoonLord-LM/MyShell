@@ -1,5 +1,9 @@
 # TODO
 
+## OpenList 如何修改默认端口和路径
+
+OpenList 如何修改默认端口和路径
+
 ## 新增配置文件安全修改函数
 
 将配置文件的目录创建、文件备份和内容修改整合为 My.sh 里的一个函数  
@@ -10,6 +14,7 @@ mkdir -p $(dirname "${conf_file}")
 backup_file "${conf_file}"
 config_conf > "${conf_file}"
 ```
+
 ## 新增 root 密码重设函数
 
 新增 root 密码重设函数，使用 256 bit 随机数  
