@@ -39,6 +39,7 @@ auth.method = "token"
 auth.token = "${frp_token}"
 
 transport.maxPoolCount = 20
+transport.tcpNoDelay = true
 transport.tls.force = true
 
 log.to = "${frp_log_file}"
