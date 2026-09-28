@@ -18,7 +18,6 @@ frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
 frp_log_file="${frp_data_dir}/frp.log"
-frp_store_path="${frp_data_dir}/frp_store.ini"
 
 frp_bind_port=17000
 frp_vhost_http_port=17080
@@ -36,22 +35,18 @@ bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 tlsEnable = true
-store.path = "${frp_store_path}"
 
-[auth]
-method = "token"
-token = "${frp_token}"
+auth.method = "token"
+auth.token = "${frp_token}"
 
-[log]
-to = "${frp_log_file}"
-level = "info"
-maxDays = 3
+log.to = "${frp_log_file}"
+log.level = "info"
+log.maxDays = 3
 
-[webServer]
-addr = "::"
-port = ${frp_dashboard_port}
-user = "${frp_dashboard_user}"
-password = "${frp_dashboard_password}"
+webServer.addr = "::"
+webServer.port = ${frp_dashboard_port}
+webServer.user = "${frp_dashboard_user}"
+webServer.password = "${frp_dashboard_password}"
 EOF
 }
 
@@ -150,7 +145,6 @@ log_attention "frp config directory: ${frp_config_dir}"
 log_attention "frp data directory: ${frp_data_dir}"
 log_attention "frp config file: ${frp_config_file}"
 log_attention "frp log file: ${frp_log_file}"
-log_attention "frp store path: ${frp_store_path}"
 
 
 
