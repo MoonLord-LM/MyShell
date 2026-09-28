@@ -34,8 +34,8 @@ function generate_frp_config_content(){
 bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
-tlsEnable = true
 
+transport.tls.force = true
 auth.method = "token"
 auth.token = "${frp_token}"
 
