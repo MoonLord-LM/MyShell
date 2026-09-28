@@ -2,8 +2,8 @@
 
 ## 新增配置文件安全修改函数
 
-将配置文件的目录创建、文件备份和内容修改整合为 My.sh 里的一个函数
-同时，当文件内容无变化的时候，不进行备份和覆盖
+将配置文件的目录创建、文件备份和内容修改整合为 My.sh 里的一个函数  
+同时，当文件内容无变化的时候，不进行备份和覆盖  
 
 ```shell
 mkdir -p $(dirname "${conf_file}")
@@ -12,7 +12,7 @@ config_conf > "${conf_file}"
 ```
 ## 新增 root 密码重设函数
 
-新增 root 密码重设函数，使用 256 bit 随机数
+新增 root 密码重设函数，使用 256 bit 随机数  
 
 ```shell
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
@@ -58,3 +58,7 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
   })();
 </script>
 ```
+
+## 增加更多安装脚本
+
+参考：https://github.com/awesome-selfhosted/awesome-selfhosted  
