@@ -91,10 +91,7 @@ if [ -z "${codename}" ]; then
 fi
 
 install_software cockpit
-install_software cockpit-storaged
-install_software cockpit-networkmanager
-install_software cockpit-files
-install_software cockpit-packagekit
+install_software cockpit-doc
 install_software cockpit-machines
 
 check_command_exist 'cockpit-bridge'
