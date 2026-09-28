@@ -6,6 +6,7 @@
 
 # Frp
 # https://github.com/fatedier/frp
+# https://gofrp.org/zh-cn/docs/reference/server-configures/
 
 
 
