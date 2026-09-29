@@ -153,7 +153,7 @@ function check_system_is_debian(){
 # 判断指定命令（$1）是否存在
 function check_command_exist(){
     check_parameter "$1" || return 1
-    local cmd=$1
+    local cmd="$1"
 
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
@@ -226,7 +226,7 @@ function update_software_aggressive(){
 # 安装指定名称（$1）的软件
 function install_software(){
     check_parameter "$1" || return 1
-    local software=$1
+    local software="$1"
 
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
@@ -255,7 +255,7 @@ function install_software(){
 # 卸载指定名称（$1）的软件
 function remove_software(){
     check_parameter "$1" || return 1
-    local software=$1
+    local software="$1"
 
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
@@ -319,7 +319,7 @@ function show_software_list(){
 # 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述等），显示名称和版本
 function search_software(){
     check_parameter "$1" || return 1
-    local keyword=$1
+    local keyword="$1"
 
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
@@ -409,9 +409,9 @@ function update_system(){
 # 准备文件夹（$1 目录路径；$2 可选参数：设置归属用户；$3 可选参数：设置目录权限）
 function prepare_dir(){
     check_parameter "$1" || return 1
-    local target_dir=$1
-    local target_user=$2
-    local target_mode=$3
+    local target_dir="$1"
+    local target_user="$2"
+    local target_mode="$3"
 
     mkdir -p "$target_dir"
     if [ $? -ne 0 ]; then
@@ -440,7 +440,7 @@ function prepare_dir(){
 # 备份文件（把指定路径 $1 的文件，保存到 [ - 时间.bak] 后缀的文件中）
 function backup_file(){
     check_parameter "$1" || return 1
-    local source_file=$1
+    local source_file="$1"
 
     local current_time=$(date "+%Y%m%d%H%M%S%z")
     local backup_new_file="$source_file - $current_time.bak"
@@ -466,10 +466,10 @@ function backup_file(){
 function update_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
-    local target_file=$1
-    local target_content=$2
-    local target_user=$3
-    local target_file_mode=$4
+    local target_file="$1"
+    local target_content="$2"
+    local target_user="$3"
+    local target_file_mode="$4"
 
     mkdir -p "$(dirname "$target_file")"
     if [ $? -ne 0 ]; then
