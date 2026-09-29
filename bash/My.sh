@@ -433,6 +433,54 @@ function backup_file(){
 
     log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
+# 写入配置文件（$1 文件路径；$2 文件内容；$3 归属用户，可选参数，传递时执行 chown 和 chmod 600）
+function update_config_file(){
+    check_parameter "$1" || return 1
+    check_parameter "$2" || return 1
+    local target_file=$1
+    local target_content=$2
+    local target_user=$3
+
+    mkdir -p "$(dirname "$target_file")"
+    if [ $? -ne 0 ]; then
+        log_error "update_config_file failed, mkdir \"$(dirname "$target_file")\" error"
+        return 1
+    fi
+
+    if [ -f "$target_file" ]; then
+        local old_content=$(cat "$target_file")
+        if [ "$old_content" == "$target_content" ]; then
+            log_info "update_config_file skip, \"$target_file\" is not changed"
+            return 0
+        fi
+        backup_file "$target_file"
+        if [ $? -ne 0 ]; then
+            log_error "update_config_file failed, backup_file \"$target_file\" error"
+            return 1
+        fi
+    fi
+
+    printf '%s' "$target_content" > "$target_file"
+    if [ $? -ne 0 ]; then
+        log_error "update_config_file failed, write file \"$target_file\" error"
+        return 1
+    fi
+
+    if [ "$target_user" != '' ]; then
+        chown "$target_user" "$target_file"
+        if [ $? -ne 0 ]; then
+            log_error "update_config_file failed, chown \"$target_file\" to \"$target_user\" error"
+            return 1
+        fi
+        chmod 600 "$target_file"
+        if [ $? -ne 0 ]; then
+            log_error "update_config_file failed, chmod 600 \"$target_file\" error"
+            return 1
+        fi
+    fi
+
+    log_info "update_config_file ok, \"$target_file\" is updated"
+}
 # 设置系统时区为中国时区（Asia/Shanghai GMT+08:00）
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
@@ -699,6 +747,9 @@ function show_tcp_listening(){
 # set_tcp_network_buffer
 # set_tcp_fastopen
 # set_memory_swap_to_4GB
+
+#### 文件操作 ####
+# update_config_file
 
 #### 查看信息 ####
 # get_system_name
