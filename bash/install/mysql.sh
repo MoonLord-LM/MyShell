@@ -3,7 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
 # export MYSQL_PASSWORD="<password>"
-# apt remove -y mysql-apt-config mysql-community-server-core
+# apt remove -y mysql-apt-config mysql-community-server-core && rm '/etc/apt/sources.list.d/mysql.list'
 
 # MySQL
 # https://github.com/mysql/mysql-server
@@ -13,7 +13,7 @@
 
 
 # ———————————————————————— Config ————————————————————————
-mysql_apt_config_url='https://repo.mysql.com/apt/debian/pool/mysql-apt-config/m/mysql-apt-config/mysql-apt-config_0.8.40-1_all.deb'
+mysql_apt_config_url='https://dev.mysql.com/get/mysql-apt-config_0.8.40-1_all.deb'
 mysql_apt_config_select='mysql-8.4-lts'
 
 mysql_conf_file='/etc/mysql/mysql.conf.d/mysqld.cnf'
