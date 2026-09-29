@@ -465,13 +465,14 @@ function prepare_data_dir(){
 
     log_info "prepare_data_dir ok, \"$target_dir\" is ready"
 }
-# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：设置归属用户）
+# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：设置归属用户；$4 可选参数：设置文件权限）
 function update_config_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
     local target_file=$1
     local target_content=$2
     local target_user=$3
+    local target_file_mode=$4
 
     mkdir -p "$(dirname "$target_file")"
     if [ $? -ne 0 ]; then
@@ -504,9 +505,12 @@ function update_config_file(){
             log_error "update_config_file failed, chown \"$target_file\" to \"$target_user\" error"
             return 1
         fi
-        chmod 600 "$target_file"
+    fi
+
+    if [ "$target_file_mode" != '' ]; then
+        chmod "$target_file_mode" "$target_file"
         if [ $? -ne 0 ]; then
-            log_error "update_config_file failed, chmod 600 \"$target_file\" error"
+            log_error "update_config_file failed, chmod $target_file_mode \"$target_file\" error"
             return 1
         fi
     fi

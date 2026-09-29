@@ -62,13 +62,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-prepare_data_dir "$grafana_secrets_dir" "$run_uid_gid" '755'
+prepare_data_dir "$grafana_secrets_dir" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'grafana secrets dir create failed, quit now'
     exit 1
 fi
 
-update_config_file "$grafana_admin_password_file" "$grafana_admin_password" "$run_uid_gid"
+update_config_file "$grafana_admin_password_file" "$grafana_admin_password" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'grafana password file create failed, quit now'
     exit 1
