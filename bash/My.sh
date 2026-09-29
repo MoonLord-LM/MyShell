@@ -160,8 +160,14 @@ function check_command_exist(){
         log_info "check_command_exist: \"$cmd\" does not exist"
         return 1
     fi
-    local cmd_file_path=$(command -v "$cmd")
-    log_info "check_command_exist: \"$cmd\" exists in \"$(dpkg -S "$cmd_file_path")\""
+
+    local cmd_file_path="$(command -v "$cmd")"
+    local pkg_info="$(dpkg -S "$cmd_file_path" 2>/dev/null)"
+    if [ $? -ne 0 ]; then
+        log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
+    else
+        log_info "check_command_exist: \"$cmd\" exists in \"$pkg_info\""
+    fi
 }
 # 更新软件（保守，允许安装新依赖，不删除已安装的软件）
 function update_software(){
