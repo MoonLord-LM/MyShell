@@ -36,10 +36,13 @@ if [ $? -eq 0 ]; then
 fi
 
 install_software 'nginx'
+{
+    if_error_then_exit 'nginx install failed, quit now'
+}
 
 nginx -v
 {
-    if_error_then_exit 'nginx install failed, quit now'
+    if_error_then_exit 'nginx version check failed, quit now'
 }
 
 

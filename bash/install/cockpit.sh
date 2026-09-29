@@ -90,11 +90,7 @@ if [ -z "${codename}" ]; then
     exit 1
 fi
 
-install_software cockpit
-install_software cockpit-doc
-install_software cockpit-machines
-
-check_command_exist 'cockpit-bridge'
+install_software cockpit cockpit-doc cockpit-machines
 {
     if_error_then_exit 'cockpit install failed, quit now'
 }

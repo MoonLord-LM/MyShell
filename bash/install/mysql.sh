@@ -122,6 +122,11 @@ mysqld --version
     if_error_then_exit 'mysql-community-server install failed, quit now'
 }
 
+mysqld --version
+{
+    if_error_then_exit 'mysql-community-server version check failed, quit now'
+}
+
 mysql_gen_ssl_cert
 
 update_file "$mysql_conf_file" "$(mysql_config_cnf)"

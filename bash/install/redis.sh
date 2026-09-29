@@ -96,9 +96,13 @@ codename=$(get_system_version_codename)
 update_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
 
 install_software 'redis'
+{
+    if_error_then_exit 'redis install failed, quit now'
+}
+
 redis-server --version
 {
-    if_error_then_exit 'redis-server install failed, quit now'
+    if_error_then_exit 'redis version check failed, quit now'
 }
 
 redis_gen_ssl_cert
