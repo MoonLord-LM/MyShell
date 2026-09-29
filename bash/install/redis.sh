@@ -3,6 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
 # export REDIS_PASSWORD="<password>"
+# apt remove -y redis-server
 
 # Redis
 # https://github.com/redis
