@@ -12,18 +12,6 @@ OpenList 如何修改默认端口和路径
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ```
 
-## 系统更新后，源没有跟随更新的问题
-
-update_software
-
-    Hit:1 http://security.debian.org/debian-security trixie-security InRelease
-    Hit:2 http://deb.debian.org/debian trixie InRelease
-    Hit:3 http://deb.debian.org/debian trixie-updates InRelease
-    Hit:4 https://packages.sury.org/php trixie InRelease
-    Hit:5 https://download.docker.com/linux/debian bookworm InRelease
-    Hit:6 https://packages.redis.io/deb bookworm InRelease
-    Hit:7 http://repo.mysql.com/apt/debian bookworm InRelease
-
 ## 考虑增加一个文件管理的 WEB UI
 
     FileBrowser‑Quantum
