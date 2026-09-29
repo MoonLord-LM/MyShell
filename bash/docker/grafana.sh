@@ -2,6 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
+# export GRAFANA_PASSWORD="<password>"
 # docker rm -f grafana
 
 # Grafana
@@ -46,7 +47,7 @@ check_command_exist 'docker'
     if_error_then_exit 'docker not installed, please install docker first'
 }
 
-log_warn 'require $GRAFANA_PASSWORD, if not set, a random password will be generated:'
+log_warn 'if $GRAFANA_PASSWORD is not set, a random password will be generated:'
 log_warn 'export GRAFANA_PASSWORD="<password>"'
 
 docker inspect "$grafana_container_name" > /dev/null 2>&1

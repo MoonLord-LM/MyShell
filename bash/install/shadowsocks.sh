@@ -2,6 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
+# export SS_PASSWORD="<password>"
+
 # Shadowsocks
 # https://github.com/shadowsocks/shadowsocks-rust
 
@@ -15,7 +17,7 @@ ss_server_api_release_url='https://api.github.com/repos/shadowsocks/shadowsocks-
 ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
 ss_server_port=10000
-ss_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+ss_password="${SS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 ss_method='2022-blake3-aes-256-gcm'
 
 run_uid_gid='root:root'
@@ -68,6 +70,9 @@ if [ $? -eq 0 ]; then
     log_info 'shadowsocks already installed, quit now'
     exit 0
 fi
+
+log_warn 'if $SS_PASSWORD is not set, a random password will be generated:'
+log_warn 'export SS_PASSWORD="<password>"'
 
 tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"

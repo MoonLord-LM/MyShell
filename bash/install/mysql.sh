@@ -2,6 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
+# export MYSQL_PASSWORD="<password>"
+
 # MySQL
 # https://github.com/mysql/mysql-server
 
@@ -19,7 +21,7 @@ mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
 
 mysql_user='admin'
 mysql_server_port=13306
-mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+mysql_password="${MYSQL_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
 run_uid_gid='mysql:mysql'
 
@@ -93,6 +95,9 @@ if [ $? -eq 0 ]; then
     log_info 'mysql already installed, quit now'
     exit 0
 fi
+
+log_warn 'if $MYSQL_PASSWORD is not set, a random password will be generated:'
+log_warn 'export MYSQL_PASSWORD="<password>"'
 
 search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then

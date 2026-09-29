@@ -2,6 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
+# export REDIS_PASSWORD="<password>"
+
 # Redis
 # https://github.com/redis
 
@@ -19,7 +21,7 @@ redis_ssl_key='/etc/redis/ssl/server-key.pem'
 redis_ssl_cert='/etc/redis/ssl/server-cert.pem'
 
 redis_server_port=16379
-redis_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+redis_password="${REDIS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
 run_uid_gid='redis:redis'
 
@@ -86,6 +88,9 @@ if [ $? -eq 0 ]; then
     log_info 'redis already installed, quit now'
     exit 0
 fi
+
+log_warn 'if $REDIS_PASSWORD is not set, a random password will be generated:'
+log_warn 'export REDIS_PASSWORD="<password>"'
 
 wget -O- --timeout=120 --no-cache "${redis_apt_repo_url}/gpg" | gpg --dearmor --yes -o "$redis_gpg_key_file"
 {
