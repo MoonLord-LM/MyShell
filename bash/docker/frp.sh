@@ -2,6 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
+# export FRP_TOKEN="<token>"
+# export FRP_DASHBOARD_PASSWORD="<password>"
 # docker rm -f frp
 
 # Frp
@@ -24,9 +26,9 @@ frp_bind_port=17000
 frp_vhost_http_port=17080
 frp_dashboard_port=17500
 
+frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 frp_dashboard_user='admin'
 frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
-frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 
 run_uid_gid='65534:65534'
 
@@ -104,10 +106,10 @@ check_command_exist 'docker'
     if_error_then_exit 'docker not installed, please install docker first'
 }
 
-log_warn 'require $FRP_TOKEN, if not set, a random token will be generated:'
+log_warn 'if $FRP_TOKEN is not set, a random token will be generated:'
 log_warn 'export FRP_TOKEN="<token>"'
 
-log_warn 'require $FRP_DASHBOARD_PASSWORD, if not set, a random password will be generated:'
+log_warn 'if $FRP_DASHBOARD_PASSWORD is not set, a random password will be generated:'
 log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
 
 docker inspect "$frp_container_name" > /dev/null 2>&1
