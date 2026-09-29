@@ -13,6 +13,7 @@
 
 
 # 参数设置：
+run_uid_gid='root:root'
 s3_access='eyJhIjoiMmQyOTVhZWZhMzY5OWM3Yjg3OGNmMDQ2OGJlYWY1M2UiLCJ0IjoiMDcxZDk1OTAtMzM2ZC00MWNiLWE0MTUtZTgzMDBlZDA3YjM2IiwicyI6Ik1qVmlZak0yWTJRdFl6RTJZaTAwTkdWbUxXSXdNbU10WVdabE5qWmtZVE5sTkdVMiJ9'
 
 

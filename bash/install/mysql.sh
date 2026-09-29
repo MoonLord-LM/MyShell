@@ -21,6 +21,8 @@ mysql_user='admin'
 mysql_server_port=13306
 mysql_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
+run_uid_gid='mysql:mysql'
+
 function mysql_config_cnf(){
     cat <<EOF
 [mysqld]
@@ -53,7 +55,7 @@ function mysql_gen_ssl_cert(){
         exit 1
     fi
 
-    chown mysql:mysql "$mysql_ssl_key" "$mysql_ssl_cert"
+    chown "$run_uid_gid" "$mysql_ssl_key" "$mysql_ssl_cert"
     chmod 600 "$mysql_ssl_key"
 }
 

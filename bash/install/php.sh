@@ -22,6 +22,8 @@ php_fpm_listen="/run/php/php${php_version}-fpm.sock"
 php_components="cli fpm"
 php_extensions='opcache mysql pgsql sqlite3 curl mbstring gd bcmath zip redis memcached yaml xml xsl soap intl imagick gmp bz2'
 
+run_uid_gid='www-data:www-data'
+
 
 
 

@@ -13,6 +13,7 @@
 
 
 # 参数设置：
+run_uid_gid='root:root'
 s2_access='eyJhIjoiMmQyOTVhZWZhMzY5OWM3Yjg3OGNmMDQ2OGJlYWY1M2UiLCJ0IjoiNDk4MjQ4OTUtODEwZi00MThhLWI1MWQtZDg5MjU5YjRlM2JiIiwicyI6IlltVmxZelkxTmpZdFlqSTFZaTAwTmpZM0xUa3pPVGd0TldJNFl6RXlNVGxsWm1VMCJ9'
 
 

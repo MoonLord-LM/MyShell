@@ -9,6 +9,13 @@
 
 
 
+# ———————————————————————— Config ————————————————————————
+run_uid_gid='www-data:www-data'
+
+
+
+
+
 # ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 prepare_common_command

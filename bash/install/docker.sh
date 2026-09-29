@@ -16,6 +16,8 @@ docker_apt_source_file='/etc/apt/sources.list.d/docker.list'
 
 docker_components='docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin'
 
+run_uid_gid='root:root'
+
 
 
 

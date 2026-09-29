@@ -7,6 +7,7 @@
 
 
 # 参数设置：
+run_uid_gid='www-data:www-data'
 conf_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx'
 ssl_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/nginx/ssl'
 tinyfilemanager_resource='https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/tinyfilemanager'
