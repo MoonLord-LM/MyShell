@@ -127,29 +127,7 @@ function create_secrets_dir(){
     return 0
 }
 
-function write_secret_file(){
-    local file="$1"
-    local content="$2"
 
-    ( umask 077; printf '%s' "$content" > "$file" )
-    local rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chown "$run_uid_gid" "$file"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chmod 600 "$file"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-    return 0
-}
 
 
 
@@ -207,20 +185,18 @@ web_config_content="basic_auth_users:
   ${prometheus_user}: ${prometheus_password_hash}
 "
 
-backup_file "$prometheus_web_config_file"
-write_secret_file "$prometheus_web_config_file" "$web_config_content"
+update_config_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'prometheus web config file create failed, quit now'
     exit 1
 fi
-write_secret_file "$prometheus_scrape_password_file" "$prometheus_password"
+update_config_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'prometheus scrape password file create failed, quit now'
     exit 1
 fi
 
-backup_file "$prometheus_config_file"
-prometheus_config_yml > "$prometheus_config_file"
+update_config_file "$prometheus_config_file" "$(prometheus_config_yml)"
 if [ $? -ne 0 ]; then
     log_error 'prometheus config file create failed, quit now'
     exit 1
@@ -320,11 +296,11 @@ fi
 
 if [ -n "$mysql_password" ]; then
     mysql_password_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
-    write_secret_file "$mysqld_exporter_config_file" \
+    update_config_file "$mysqld_exporter_config_file" \
 "[client]
 user = ${mysql_user}
 password = \"${mysql_password_escaped}\"
-"
+" "$run_uid_gid"
     if [ $? -ne 0 ]; then
         log_error 'mysqld_exporter config file create failed, skip'
     else
@@ -363,14 +339,10 @@ fi
 
 if [ -n "$redis_password" ]; then
     redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
-    redis_exporter_password_content=$(
-        cat <<EOF
-{
-  "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"
-}
-EOF
-    )
-    write_secret_file "$redis_exporter_password_file" "$redis_exporter_password_content"
+    update_config_file "$redis_exporter_password_file" \
+"{
+  \"redis://${redis_host}:${redis_port}\": \"${redis_password_escaped}\"
+}" "$run_uid_gid"
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
     else

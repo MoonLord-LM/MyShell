@@ -48,30 +48,6 @@ function create_secrets_dir(){
     return 0
 }
 
-function write_secret_file(){
-    local file="$1"
-    local content="$2"
-
-    ( umask 077; printf '%s' "$content" > "$file" )
-    local rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chown "$run_uid_gid" "$file"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chmod 600 "$file"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-    return 0
-}
-
 
 
 
@@ -113,8 +89,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-backup_file "$grafana_admin_password_file"
-write_secret_file "$grafana_admin_password_file" "$grafana_admin_password"
+update_config_file "$grafana_admin_password_file" "$grafana_admin_password" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'grafana password file create failed, quit now'
     exit 1

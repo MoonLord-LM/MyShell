@@ -105,13 +105,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-mkdir -p $(dirname "${cockpit_conf_file}")
-backup_file "${cockpit_conf_file}"
-cockpit_config_conf > "${cockpit_conf_file}"
-
-mkdir -p $(dirname "${cockpit_socket_conf_file}")
-backup_file "${cockpit_socket_conf_file}"
-cockpit_socket_override > "${cockpit_socket_conf_file}"
+update_config_file "${cockpit_conf_file}" "$(cockpit_config_conf)"
+update_config_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
 systemctl daemon-reload
 
 echo > /etc/cockpit/disallowed-users

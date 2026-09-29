@@ -97,12 +97,10 @@ fi
 chmod +x "$ss_server_location"
 rm -f "$tmp_file"
 
-ss_service_file > '/etc/systemd/system/ssserver.service'
+update_config_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
 systemctl daemon-reload
 
-backup_file "$ss_server_config_file"
-mkdir -p $(dirname "$ss_server_config_file")
-ss_config_json > "$ss_server_config_file"
+update_config_file "$ss_server_config_file" "$(ss_config_json)"
 if [ $? -ne 0 ]; then
     log_error 'ssserver write config failed, quit now'
     exit 1

@@ -117,13 +117,6 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-mkdir -p "$frp_config_dir"
-if [ $? -ne 0 ]; then
-    log_error 'frp config directory creation failed, quit now'
-    exit 1
-fi
-chown "$run_uid_gid" "$frp_config_dir"
-
 mkdir -p "$frp_data_dir"
 if [ $? -ne 0 ]; then
     log_error 'frp data directory creation failed, quit now'
@@ -131,14 +124,11 @@ if [ $? -ne 0 ]; then
 fi
 chown "$run_uid_gid" "$frp_data_dir"
 
-backup_file "$frp_config_file"
-generate_frp_server_config > "$frp_config_file"
+update_config_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'frp server config file creation failed, quit now'
     exit 1
 fi
-chmod 600 "$frp_config_file"
-chown "$run_uid_gid" "$frp_config_file"
 log_info "frp server config file: ${frp_config_file} (mode 600)"
 
 docker pull "$frp_image"

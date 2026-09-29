@@ -93,7 +93,7 @@ if [ $? -ne 0 ]; then
 fi
 
 codename=$(get_system_version_codename)
-echo "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main" > "$redis_apt_source_file"
+update_config_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
 
 install_software 'redis'
 redis-server --version
@@ -104,8 +104,7 @@ fi
 
 redis_gen_ssl_cert
 
-backup_file "$redis_conf_file"
-redis_config_cnf > "$redis_conf_file"
+update_config_file "$redis_conf_file" "$(redis_config_cnf)"
 
 redis_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "redis server ip: ${redis_server_ip}"

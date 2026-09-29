@@ -127,8 +127,7 @@ fi
 
 mysql_gen_ssl_cert
 
-backup_file "$mysql_conf_file"
-mysql_config_cnf > "$mysql_conf_file"
+update_config_file "$mysql_conf_file" "$(mysql_config_cnf)"
 
 mysqld --validate-config
 if [ $? -ne 0 ]; then
