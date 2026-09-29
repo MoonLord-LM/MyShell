@@ -51,7 +51,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 codename=$(get_system_version_codename)
-update_config_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
+update_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
 
 for component_suffix in $php_components; do
     component="php${php_version}-${component_suffix}"

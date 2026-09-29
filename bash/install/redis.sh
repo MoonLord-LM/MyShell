@@ -21,6 +21,8 @@ redis_ssl_cert='/etc/redis/ssl/server-cert.pem'
 redis_server_port=16379
 redis_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
+run_uid_gid='redis:redis'
+
 function redis_config_cnf(){
     cat <<EOF
 supervised systemd
@@ -59,7 +61,7 @@ function redis_gen_ssl_cert(){
         exit 1
     fi
 
-    chown redis:redis "$redis_ssl_key" "$redis_ssl_cert"
+    chown "$run_uid_gid" "$redis_ssl_key" "$redis_ssl_cert"
     chmod 600 "$redis_ssl_key"
 }
 
@@ -93,7 +95,7 @@ if [ $? -ne 0 ]; then
 fi
 
 codename=$(get_system_version_codename)
-update_config_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
+update_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
 
 install_software 'redis'
 redis-server --version
@@ -104,7 +106,7 @@ fi
 
 redis_gen_ssl_cert
 
-update_config_file "$redis_conf_file" "$(redis_config_cnf)"
+update_file "$redis_conf_file" "$(redis_config_cnf)" "$run_uid_gid" '600'
 
 redis_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "redis server ip: ${redis_server_ip}"

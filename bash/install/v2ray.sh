@@ -15,6 +15,8 @@ v2ray_server_port=10010
 v2ray_client_id=$(cat '/proc/sys/kernel/random/uuid')
 v2ray_ws_path='/ws/'$(cat '/proc/sys/kernel/random/uuid')
 
+run_uid_gid='65534:65534'
+
 function v2ray_server_config(){
     cat <<EOF
 {
@@ -101,7 +103,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-update_config_file "$v2ray_server_config_file" "$(v2ray_server_config)"
+update_file "$v2ray_server_config_file" "$(v2ray_server_config)" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'v2ray write config failed, quit now'
     exit 1

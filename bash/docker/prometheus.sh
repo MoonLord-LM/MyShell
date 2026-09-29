@@ -144,7 +144,7 @@ fi
 log_attention "docker host ip: ${docker_host_ip}"
 log_attention "containers run as uid:gid: ${run_uid_gid}"
 
-prepare_data_dir "$prometheus_config_dir" "$run_uid_gid"
+prepare_dir "$prometheus_config_dir" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'prometheus config dir create failed, quit now'
     exit 1
@@ -162,18 +162,18 @@ web_config_content="basic_auth_users:
   ${prometheus_user}: ${prometheus_password_hash}
 "
 
-update_config_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid" '600'
+update_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'prometheus web config file create failed, quit now'
     exit 1
 fi
-update_config_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
+update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'prometheus scrape password file create failed, quit now'
     exit 1
 fi
 
-update_config_file "$prometheus_config_file" "$(prometheus_config_yml)"
+update_file "$prometheus_config_file" "$(prometheus_config_yml)"
 if [ $? -ne 0 ]; then
     log_error 'prometheus config file create failed, quit now'
     exit 1
@@ -181,7 +181,7 @@ fi
 chown "$run_uid_gid" "$prometheus_config_file"
 chmod 644 "$prometheus_config_file"
 
-prepare_data_dir "$prometheus_data_dir" "$run_uid_gid"
+prepare_dir "$prometheus_data_dir" "$run_uid_gid"
 
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -276,7 +276,7 @@ user = ${mysql_user}
 password = "${mysql_password_escaped}"
 EOF
 )
-    update_config_file "$mysqld_exporter_config_file" "$mysqld_exporter_config_content" "$run_uid_gid" '600'
+    update_file "$mysqld_exporter_config_file" "$mysqld_exporter_config_content" "$run_uid_gid" '600'
     if [ $? -ne 0 ]; then
         log_error 'mysqld_exporter config file create failed, skip'
     else
@@ -321,7 +321,7 @@ if [ -n "$redis_password" ]; then
 }
 EOF
 )
-    update_config_file "$redis_exporter_password_file" "$redis_exporter_password_content" "$run_uid_gid" '600'
+    update_file "$redis_exporter_password_file" "$redis_exporter_password_content" "$run_uid_gid" '600'
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
     else

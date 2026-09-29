@@ -57,7 +57,7 @@ fi
 
 codename=$(get_system_version_codename)
 system_arch="$(dpkg --print-architecture)"
-update_config_file "$docker_apt_source_file" "deb [arch=$system_arch signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable"
+update_file "$docker_apt_source_file" "deb [arch=$system_arch signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable"
 if [ $? -ne 0 ]; then
     log_error 'docker apt source setup failed, quit now'
     exit 1

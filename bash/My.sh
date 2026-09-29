@@ -409,7 +409,38 @@ function update_system(){
 
 
 
-# 备份指定路径的文件（$1），保存到 [ - 时间.bak] 后缀的文件中
+# 准备文件夹（$1 目录路径；$2 可选参数：设置归属用户；$3 可选参数：设置目录权限）
+function prepare_dir(){
+    check_parameter "$1" || return 1
+    local target_dir=$1
+    local target_user=$2
+    local target_mode=$3
+
+    mkdir -p "$target_dir"
+    if [ $? -ne 0 ]; then
+        log_error "prepare_dir failed, mkdir \"$target_dir\" error"
+        return 1
+    fi
+
+    if [ "$target_user" != '' ]; then
+        chown "$target_user" "$target_dir"
+        if [ $? -ne 0 ]; then
+            log_error "prepare_dir failed, chown \"$target_dir\" to \"$target_user\" error"
+            return 1
+        fi
+    fi
+
+    if [ "$target_mode" != '' ]; then
+        chmod "$target_mode" "$target_dir"
+        if [ $? -ne 0 ]; then
+            log_error "prepare_dir failed, chmod $target_mode \"$target_dir\" error"
+            return 1
+        fi
+    fi
+
+    log_info "prepare_dir ok, \"$target_dir\" is ready"
+}
+# 备份文件（把指定路径 $1 的文件，保存到 [ - 时间.bak] 后缀的文件中）
 function backup_file(){
     check_parameter "$1" || return 1
     local source_file=$1
@@ -434,39 +465,8 @@ function backup_file(){
 
     log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
-# 准备数据目录（$1 目录路径；$2 可选参数：设置归属用户；$3 可选参数：设置目录权限）
-function prepare_data_dir(){
-    check_parameter "$1" || return 1
-    local target_dir=$1
-    local target_user=$2
-    local target_mode=$3
-
-    mkdir -p "$target_dir"
-    if [ $? -ne 0 ]; then
-        log_error "prepare_data_dir failed, mkdir \"$target_dir\" error"
-        return 1
-    fi
-
-    if [ "$target_user" != '' ]; then
-        chown "$target_user" "$target_dir"
-        if [ $? -ne 0 ]; then
-            log_error "prepare_data_dir failed, chown \"$target_dir\" to \"$target_user\" error"
-            return 1
-        fi
-    fi
-
-    if [ "$target_mode" != '' ]; then
-        chmod "$target_mode" "$target_dir"
-        if [ $? -ne 0 ]; then
-            log_error "prepare_data_dir failed, chmod $target_mode \"$target_dir\" error"
-            return 1
-        fi
-    fi
-
-    log_info "prepare_data_dir ok, \"$target_dir\" is ready"
-}
-# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：设置归属用户；$4 可选参数：设置文件权限）
-function update_config_file(){
+# 更新文件内容（$1 文件路径；$2 文件内容；$3 可选参数：设置归属用户；$4 可选参数：设置文件权限）
+function update_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
     local target_file=$1
@@ -476,33 +476,33 @@ function update_config_file(){
 
     mkdir -p "$(dirname "$target_file")"
     if [ $? -ne 0 ]; then
-        log_error "update_config_file failed, mkdir \"$(dirname "$target_file")\" error"
+        log_error "update_file failed, mkdir \"$(dirname "$target_file")\" error"
         return 1
     fi
 
     if [ -f "$target_file" ]; then
         local old_content=$(cat "$target_file")
         if [ "$old_content" == "$target_content" ]; then
-            log_info "update_config_file skip, \"$target_file\" is not changed"
+            log_info "update_file skip, \"$target_file\" is not changed"
             return 0
         fi
         backup_file "$target_file"
         if [ $? -ne 0 ]; then
-            log_error "update_config_file failed, backup_file \"$target_file\" error"
+            log_error "update_file failed, backup_file \"$target_file\" error"
             return 1
         fi
     fi
 
     printf '%s' "$target_content" > "$target_file"
     if [ $? -ne 0 ]; then
-        log_error "update_config_file failed, write file \"$target_file\" error"
+        log_error "update_file failed, write file \"$target_file\" error"
         return 1
     fi
 
     if [ "$target_user" != '' ]; then
         chown "$target_user" "$target_file"
         if [ $? -ne 0 ]; then
-            log_error "update_config_file failed, chown \"$target_file\" to \"$target_user\" error"
+            log_error "update_file failed, chown \"$target_file\" to \"$target_user\" error"
             return 1
         fi
     fi
@@ -510,13 +510,16 @@ function update_config_file(){
     if [ "$target_file_mode" != '' ]; then
         chmod "$target_file_mode" "$target_file"
         if [ $? -ne 0 ]; then
-            log_error "update_config_file failed, chmod $target_file_mode \"$target_file\" error"
+            log_error "update_file failed, chmod $target_file_mode \"$target_file\" error"
             return 1
         fi
     fi
 
-    log_info "update_config_file ok, \"$target_file\" is updated"
+    log_info "update_file ok, \"$target_file\" is updated"
 }
+
+
+
 # 设置系统时区为中国时区（Asia/Shanghai GMT+08:00）
 function set_timezone_china(){
     local old_time=$(date "+%Y-%m-%d %H:%M:%S %z")
@@ -785,7 +788,7 @@ function show_tcp_listening(){
 # set_memory_swap_to_4GB
 
 #### 文件操作 ####
-# update_config_file
+# update_file
 
 #### 查看信息 ####
 # get_system_name

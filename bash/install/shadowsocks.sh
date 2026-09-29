@@ -18,6 +18,8 @@ ss_server_port=10000
 ss_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ss_method='2022-blake3-aes-256-gcm'
 
+run_uid_gid='root:root'
+
 function ss_config_json(){
     cat <<EOF
 {
@@ -97,10 +99,10 @@ fi
 chmod +x "$ss_server_location"
 rm -f "$tmp_file"
 
-update_config_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
+update_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
 systemctl daemon-reload
 
-update_config_file "$ss_server_config_file" "$(ss_config_json)"
+update_file "$ss_server_config_file" "$(ss_config_json)" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'ssserver write config failed, quit now'
     exit 1

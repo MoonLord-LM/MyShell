@@ -23,6 +23,8 @@ cockpit_allow_groups='root'
 cockpit_idle_timeout=1800
 cockpit_allow_multi_host=false
 
+run_uid_gid='root:root'
+
 function cockpit_config_conf(){
     cat <<EOF
 [WebService]
@@ -51,7 +53,7 @@ function cockpit_gen_ssl_cert(){
         exit 1
     fi
 
-    chown root:root "$cockpit_ssl_key"
+    chown "$run_uid_gid" "$cockpit_ssl_key"
     chmod 600 "$cockpit_ssl_key"
 }
 
@@ -105,8 +107,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-update_config_file "${cockpit_conf_file}" "$(cockpit_config_conf)"
-update_config_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
+update_file "${cockpit_conf_file}" "$(cockpit_config_conf)"
+update_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
 systemctl daemon-reload
 
 echo > /etc/cockpit/disallowed-users

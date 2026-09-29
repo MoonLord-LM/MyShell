@@ -117,13 +117,13 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-prepare_data_dir "$frp_data_dir" "$run_uid_gid"
+prepare_dir "$frp_data_dir" "$run_uid_gid"
 if [ $? -ne 0 ]; then
     log_error 'frp data directory creation failed, quit now'
     exit 1
 fi
 
-update_config_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '600'
+update_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '600'
 if [ $? -ne 0 ]; then
     log_error 'frp server config file creation failed, quit now'
     exit 1
