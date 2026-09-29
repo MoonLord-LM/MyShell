@@ -363,8 +363,14 @@ fi
 
 if [ -n "$redis_password" ]; then
     redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
-    write_secret_file "$redis_exporter_password_file" \
-"{\"redis://${redis_host}:${redis_port}\": \"${redis_password_escaped}\"}"
+    redis_exporter_password_content=$(
+        cat <<EOF
+{
+  "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"
+}
+EOF
+    )
+    write_secret_file "$redis_exporter_password_file" "$redis_exporter_password_content"
     if [ $? -ne 0 ]; then
         log_error 'redis_exporter password file create failed, skip'
     else
