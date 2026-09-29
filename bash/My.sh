@@ -88,6 +88,15 @@ function log_notice(){
 
 
 
+# 结束运行，并输出红色的错误信息（$1）
+function error_exit() {
+    check_parameter "$1" || return 1
+    log_error "$1"
+    exit 1
+}
+
+
+
 # 获取系统的名称
 function get_system_name(){
     local os_release_file='/etc/os-release'
