@@ -100,7 +100,7 @@ fi
 log_warn 'if $MYSQL_PASSWORD is not set, a random password will be generated:'
 log_warn 'export MYSQL_PASSWORD="<password>"'
 
-check_command_exist 'mysql-apt-config'
+search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then
     echo "mysql-apt-config mysql-apt-config/select-server select $mysql_apt_config_select" | debconf-set-selections
 
@@ -117,7 +117,7 @@ if [ $? -ne 0 ]; then
     rm -f "$tmp_file"
 fi
 
-check_command_exist 'mysql-apt-config'
+search_software 'mysql-apt-config'
 {
     if_error_then_exit 'mysql-apt-config install failed, quit now'
 }
