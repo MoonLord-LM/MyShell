@@ -30,11 +30,11 @@ run_uid_gid='472:472'
 
 # ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
-prepare_common_command
 if [ $? -ne 0 ]; then
     echo -ne '\e[1;31m' && echo 'My.sh: load failed, quit now' && echo -ne '\e[0m'
     exit 1
 fi
+prepare_common_command
 
 
 
