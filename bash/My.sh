@@ -143,6 +143,7 @@ function check_system_is_debian(){
 function check_command_exist(){
     check_parameter "$1" || return 1
     local cmd=$1
+
     command -v "$cmd" > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "check_command_exist: \"$cmd\" does not exist"
@@ -433,7 +434,7 @@ function backup_file(){
 
     log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
-# 写入配置文件（$1 文件路径；$2 文件内容；$3 归属用户，可选参数，传递时执行 chown 和 chmod 600）
+# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：归属用户，传递时执行 chown 和 chmod 600）
 function update_config_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
