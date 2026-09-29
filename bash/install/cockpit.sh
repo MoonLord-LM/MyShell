@@ -79,10 +79,10 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-if ! check_system_is_ubuntu && ! check_system_is_debian; then
-    log_error 'cockpit install failed, unknown system'
-    exit 1
-fi
+check_system_is_ubuntu || check_system_is_debian
+{
+    if_error_then_exit 'cockpit install failed, unknown system'
+}
 
 codename=$(get_system_version_codename)
 if [ -z "${codename}" ]; then

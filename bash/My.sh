@@ -165,13 +165,10 @@ function check_command_exist(){
 }
 # 更新软件（保守，允许安装新依赖，不删除已安装的软件）
 function update_software(){
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error 'update_software failed, unknown system'
-            return 1
-        fi
+        log_error 'update_software failed, unknown system'
+        return 1
     fi
 
     dpkg --configure -a
@@ -197,13 +194,10 @@ function update_software(){
 }
 # 更新软件（激进，允许安装新依赖，允许删除已安装的软件）
 function update_software_aggressive(){
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error 'update_software_aggressive failed, unknown system'
-            return 1
-        fi
+        log_error 'update_software_aggressive failed, unknown system'
+        return 1
     fi
 
     update_software
@@ -227,13 +221,10 @@ function install_software(){
     check_parameter "$1" || return 1
     local software=$1
 
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "install_software failed, unknown system"
-            return 1
-        fi
+        log_error "install_software failed, unknown system"
+        return 1
     fi
 
     dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
@@ -259,13 +250,10 @@ function remove_software(){
     check_parameter "$1" || return 1
     local software=$1
 
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "remove_software failed, unknown system"
-            return 1
-        fi
+        log_error "remove_software failed, unknown system"
+        return 1
     fi
 
     dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
@@ -312,13 +300,10 @@ function prepare_common_command(){
 }
 # 查看系统已安装的程序和版本
 function show_software_list(){
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "show_software_list failed, unknown system"
-            return 1
-        fi
+        log_error "show_software_list failed, unknown system"
+        return 1
     fi
 
     log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
@@ -329,13 +314,10 @@ function search_software(){
     check_parameter "$1" || return 1
     local keyword=$1
 
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error "search_software failed, unknown system"
-            return 1
-        fi
+        log_error "search_software failed, unknown system"
+        return 1
     fi
 
     local result=''
@@ -355,13 +337,10 @@ function search_software(){
 }
 # 系统版本升级（例如，Debian bookworm → trixie 和 Ubuntu noble → resolute）
 function update_system(){
-    check_system_is_ubuntu
+    check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
-        check_system_is_debian
-        if [ $? -ne 0 ]; then
-            log_error 'update_system failed, unknown system'
-            return 1
-        fi
+        log_error 'update_system failed, unknown system'
+        return 1
     fi
 
     local codename=''
