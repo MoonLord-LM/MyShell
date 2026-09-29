@@ -164,7 +164,7 @@ function check_command_exist(){
     local cmd_file_path="$(command -v "$cmd")"
     local pkg_info="$(dpkg -S "$cmd_file_path" 2>/dev/null)"
 
-    if [ $pkg_info != '']; then
+    if [ "$pkg_info" != '']; then
         log_info "check_command_exist: \"$cmd\" exists in \"$pkg_info\""
     else
         log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
