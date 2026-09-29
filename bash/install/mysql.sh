@@ -3,6 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
 # export MYSQL_PASSWORD="<password>"
+# apt remove -y mysql-apt-config mysql-community-server-core
 
 # MySQL
 # https://github.com/mysql/mysql-server

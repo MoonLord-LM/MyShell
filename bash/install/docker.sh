@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
 
-# apt remove -y docker
+# apt remove -y docker-ce-cli
 
 # Docker
 # https://github.com/docker
