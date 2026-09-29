@@ -98,16 +98,14 @@ fi
 bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' )
 
 v2ray version
-if [ $? -ne 0 ]; then
-    log_error 'v2ray install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'v2ray install failed, quit now'
+}
 
 update_file "$v2ray_server_config_file" "$(v2ray_server_config)" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'v2ray write config failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'v2ray write config failed, quit now'
+}
 cat "$v2ray_server_config_file"
 
 v2ray_server_ip=$(hostname -I | awk '{print $1}')

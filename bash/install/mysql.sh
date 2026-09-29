@@ -50,10 +50,9 @@ EOF
 function mysql_gen_ssl_cert(){
     mkdir -p $(dirname "$mysql_ssl_key")
     openssl req -newkey rsa:4096 -nodes -keyout "$mysql_ssl_key" -x509 -days 365000 -out "$mysql_ssl_cert" -subj '/CN=MySQL'
-    if [ $? -ne 0 ]; then
-        log_error 'mysql_gen_ssl_cert failed, quit now'
-        exit 1
-    fi
+    {
+        if_error_then_exit 'mysql_gen_ssl_cert failed, quit now'
+    }
 
     chown "$run_uid_gid" "$mysql_ssl_key" "$mysql_ssl_cert"
     chmod 600 "$mysql_ssl_key"
@@ -67,10 +66,9 @@ function allow_remote_access(){
         select user, host, plugin from mysql.user;
         flush privileges;
 EOF
-    if [ $? -ne 0 ]; then
-        log_error 'allow_remote_access failed, quit now'
-        exit 1
-    fi
+    {
+        if_error_then_exit 'allow_remote_access failed, quit now'
+    }
 }
 
 
@@ -102,10 +100,9 @@ if [ $? -ne 0 ]; then
 
     tmp_file="/tmp/mysql-apt-config_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.deb"
     wget -O "$tmp_file" --timeout=120 --no-cache "$mysql_apt_config_url"
-    if [ $? -ne 0 ]; then
-        log_error 'mysql-apt-config download failed, quit now'
-        exit 1
-    fi
+    {
+        if_error_then_exit 'mysql-apt-config download failed, quit now'
+    }
 
     dpkg --configure -a
     dpkg --install "$tmp_file"
@@ -115,27 +112,24 @@ if [ $? -ne 0 ]; then
 fi
 
 search_software 'mysql-apt-config'
-if [ $? -ne 0 ]; then
-    log_error 'mysql-apt-config install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'mysql-apt-config install failed, quit now'
+}
 
 install_software 'mysql-community-server'
 mysqld --version
-if [ $? -ne 0 ]; then
-    log_error 'mysql-community-server install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'mysql-community-server install failed, quit now'
+}
 
 mysql_gen_ssl_cert
 
 update_file "$mysql_conf_file" "$(mysql_config_cnf)"
 
 mysqld --validate-config
-if [ $? -ne 0 ]; then
-    log_error 'mysql-community-server config failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'mysql-community-server config failed, quit now'
+}
 
 allow_remote_access
 

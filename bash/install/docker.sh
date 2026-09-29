@@ -52,38 +52,33 @@ fi
 
 mkdir -p "$(dirname "$docker_gpg_key_file")"
 wget -O- --timeout=120 --no-cache "${docker_repo_url}/gpg" | gpg --dearmor --yes -o "$docker_gpg_key_file"
-if [ $? -ne 0 ]; then
-    log_error 'docker gpg key download failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker gpg key download failed, quit now'
+}
 
 codename=$(get_system_version_codename)
 system_arch="$(dpkg --print-architecture)"
 update_file "$docker_apt_source_file" "deb [arch=$system_arch signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable"
-if [ $? -ne 0 ]; then
-    log_error 'docker apt source setup failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker apt source setup failed, quit now'
+}
 
 for component in $docker_components; do
     install_software "$component"
-    if [ $? -ne 0 ]; then
-        log_error "docker component install failed: $component, quit now"
-        exit 1
-    fi
+    {
+        if_error_then_exit "docker component install failed: $component, quit now"
+    }
 done
 
 docker version
-if [ $? -ne 0 ]; then
-    log_error 'docker install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker install failed, quit now'
+}
 
 docker compose version
-if [ $? -ne 0 ]; then
-    log_error 'docker compose install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker compose install failed, quit now'
+}
 
 
 
@@ -97,10 +92,9 @@ systemctl status --no-pager 'docker'
 show_tcp_listening
 
 docker run 'hello-world'
-if [ $? -ne 0 ]; then
-    log_error 'docker test failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker test failed, quit now'
+}
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
 

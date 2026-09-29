@@ -38,10 +38,9 @@ fi
 install_software 'nginx'
 
 nginx -v
-if [ $? -ne 0 ]; then
-    log_error 'nginx install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'nginx install failed, quit now'
+}
 
 
 

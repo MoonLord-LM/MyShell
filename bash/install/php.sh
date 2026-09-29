@@ -48,54 +48,47 @@ if [ $? -eq 0 ]; then
 fi
 
 wget -O "$php_gpg_key_file" --timeout=120 --no-cache "$php_apt_repo_url/apt.gpg"
-if [ $? -ne 0 ]; then
-    log_error 'add sury gpg key failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'add sury gpg key failed, quit now'
+}
 codename=$(get_system_version_codename)
 update_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
 
 for component_suffix in $php_components; do
     component="php${php_version}-${component_suffix}"
     install_software "$component"
-    if [ $? -ne 0 ]; then
-        log_error "php component install failed: $component, quit now"
-        exit 1
-    fi
+    {
+        if_error_then_exit "php component install failed: $component, quit now"
+    }
 done
 
 for php_extension in $php_extensions; do
     component="php${php_version}-${php_extension}"
     install_software "$component"
-    if [ $? -ne 0 ]; then
-        log_error "php extension install failed: $component, quit now"
-        exit 1
-    fi
+    {
+        if_error_then_exit "php extension install failed: $component, quit now"
+    }
 done
 
 "php${php_version}" -v | grep --color=never "PHP ${php_version}"
-if [ $? -ne 0 ]; then
-    log_error 'php install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'php install failed, quit now'
+}
 
 systemctl cat "$php_fpm_service"
-if [ $? -ne 0 ]; then
-    log_error 'php-fpm install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'php-fpm install failed, quit now'
+}
 
 tmp_file="/tmp/composer-setup_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.php"
 wget -O "$tmp_file" --timeout=120 --no-cache 'https://getcomposer.org/installer'
-if [ $? -ne 0 ]; then
-    log_error 'composer download failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'composer download failed, quit now'
+}
 php "$tmp_file" --install-dir='/usr/local/bin' --filename='composer'
-if [ $? -ne 0 ]; then
-    log_error 'composer install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'composer install failed, quit now'
+}
 rm -f "$tmp_file"
 
 log_attention "php version: $(php -r 'echo PHP_VERSION;')"

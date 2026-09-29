@@ -42,10 +42,9 @@ fi
 
 # ———————————————————————— Install ————————————————————————
 check_command_exist 'docker'
-if [ $? -ne 0 ]; then
-    log_error 'docker not installed, please install docker first'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker not installed, please install docker first'
+}
 
 log_warn 'require $GRAFANA_PASSWORD, if not set, a random password will be generated:'
 log_warn 'export GRAFANA_PASSWORD="<password>"'
@@ -57,28 +56,24 @@ if [ $? -eq 0 ]; then
 fi
 
 prepare_dir "$grafana_data_dir" "$run_uid_gid"
-if [ $? -ne 0 ]; then
-    log_error 'grafana data dir create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'grafana data dir create failed, quit now'
+}
 
 prepare_dir "$grafana_secrets_dir" "$run_uid_gid"
-if [ $? -ne 0 ]; then
-    log_error 'grafana secrets dir create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'grafana secrets dir create failed, quit now'
+}
 
 update_file "$grafana_admin_password_file" "$grafana_admin_password" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'grafana password file create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'grafana password file create failed, quit now'
+}
 
 docker pull "$grafana_image"
-if [ $? -ne 0 ]; then
-    log_error 'grafana image pull failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'grafana image pull failed, quit now'
+}
 
 docker run -d \
     --user "$run_uid_gid" \
@@ -91,10 +86,9 @@ docker run -d \
     -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
     -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel" \
     "$grafana_image"
-if [ $? -ne 0 ]; then
-    log_error 'grafana container start failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'grafana container start failed, quit now'
+}
 
 grafana_server_name=$(hostname)
 grafana_server_ip=$(hostname -I | awk '{print $1}')

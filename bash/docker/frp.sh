@@ -100,10 +100,9 @@ fi
 
 # ———————————————————————— Install ————————————————————————
 check_command_exist 'docker'
-if [ $? -ne 0 ]; then
-    log_error 'docker not installed, please install docker first'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker not installed, please install docker first'
+}
 
 log_warn 'require $FRP_TOKEN, if not set, a random token will be generated:'
 log_warn 'export FRP_TOKEN="<token>"'
@@ -118,23 +117,20 @@ if [ $? -eq 0 ]; then
 fi
 
 prepare_dir "$frp_data_dir" "$run_uid_gid"
-if [ $? -ne 0 ]; then
-    log_error 'frp data directory creation failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'frp data directory creation failed, quit now'
+}
 
 update_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'frp server config file creation failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'frp server config file creation failed, quit now'
+}
 log_info "frp server config file: ${frp_config_file} (mode 600)"
 
 docker pull "$frp_image"
-if [ $? -ne 0 ]; then
-    log_error 'frp server image pull failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'frp server image pull failed, quit now'
+}
 
 docker run -d \
     --user "$run_uid_gid" \
@@ -145,10 +141,9 @@ docker run -d \
     -v "$frp_data_dir:/var/lib/frp" \
     "$frp_image" \
     -c /etc/frp/frp.toml
-if [ $? -ne 0 ]; then
-    log_error 'frp server container start failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'frp server container start failed, quit now'
+}
 
 frp_server_name=$(hostname)
 frp_server_ip=$(hostname -I | awk '{print $1}')

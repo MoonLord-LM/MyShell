@@ -56,10 +56,9 @@ EOF
 function redis_gen_ssl_cert(){
     mkdir -p $(dirname "$redis_ssl_key")
     openssl req -newkey rsa:4096 -nodes -keyout "$redis_ssl_key" -x509 -days 365000 -out "$redis_ssl_cert" -subj '/CN=Redis'
-    if [ $? -ne 0 ]; then
-        log_error 'redis_gen_ssl_cert failed, quit now'
-        exit 1
-    fi
+    {
+        if_error_then_exit 'redis_gen_ssl_cert failed, quit now'
+    }
 
     chown "$run_uid_gid" "$redis_ssl_key" "$redis_ssl_cert"
     chmod 600 "$redis_ssl_key"
@@ -89,20 +88,18 @@ if [ $? -eq 0 ]; then
 fi
 
 wget -O- --timeout=120 --no-cache "${redis_apt_repo_url}/gpg" | gpg --dearmor --yes -o "$redis_gpg_key_file"
-if [ $? -ne 0 ]; then
-    log_error 'redis gpg key download failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'redis gpg key download failed, quit now'
+}
 
 codename=$(get_system_version_codename)
 update_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
 
 install_software 'redis'
 redis-server --version
-if [ $? -ne 0 ]; then
-    log_error 'redis-server install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'redis-server install failed, quit now'
+}
 
 redis_gen_ssl_cert
 

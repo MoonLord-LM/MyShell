@@ -84,17 +84,15 @@ if [ "$ss_download_url" == '' ]; then
 fi
 
 wget -O "$tmp_file" --timeout=120 --no-cache "$ss_download_url"
-if [ $? -ne 0 ]; then
-    log_error 'shadowsocks-rust download failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'shadowsocks-rust download failed, quit now'
+}
 
 mkdir -p $(dirname "$ss_server_location")
 tar -xf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
-if [ $? -ne 0 ]; then
-    log_error 'shadowsocks-rust extract failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'shadowsocks-rust extract failed, quit now'
+}
 
 chmod +x "$ss_server_location"
 rm -f "$tmp_file"
@@ -103,10 +101,9 @@ update_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
 systemctl daemon-reload
 
 update_file "$ss_server_config_file" "$(ss_config_json)" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'ssserver write config failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'ssserver write config failed, quit now'
+}
 cat "$ss_server_config_file"
 
 ss_server_ip=$(hostname -I | awk '{print $1}')

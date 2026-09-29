@@ -48,10 +48,9 @@ EOF
 function cockpit_gen_ssl_cert(){
     mkdir -p $(dirname "$cockpit_ssl_key")
     openssl req -newkey rsa:4096 -nodes -keyout "$cockpit_ssl_key" -x509 -days 365000 -out "$cockpit_ssl_cert" -subj '/CN=Cockpit'
-    if [ $? -ne 0 ]; then
-        log_error 'cockpit_gen_ssl_cert failed, quit now'
-        exit 1
-    fi
+    {
+        if_error_then_exit 'cockpit_gen_ssl_cert failed, quit now'
+    }
 
     chown "$run_uid_gid" "$cockpit_ssl_key"
     chmod 600 "$cockpit_ssl_key"
@@ -96,16 +95,14 @@ install_software cockpit-doc
 install_software cockpit-machines
 
 check_command_exist 'cockpit-bridge'
-if [ $? -ne 0 ]; then
-    log_error 'cockpit install failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'cockpit install failed, quit now'
+}
 
 cockpit-bridge --version
-if [ $? -ne 0 ]; then
-    log_error 'cockpit version check failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'cockpit version check failed, quit now'
+}
 
 update_file "${cockpit_conf_file}" "$(cockpit_config_conf)"
 update_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"

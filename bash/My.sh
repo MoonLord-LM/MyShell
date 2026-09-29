@@ -6,7 +6,7 @@
 
 
 
-# 检查入参（最多9个）必须全都不为空字符串，否则报错
+# 检查函数入参（最多9个）必须全都不为空字符串，否则报错
 function check_parameter(){
     if [ "${FUNCNAME[1]}" != '' ]; then
         local current_function="${FUNCNAME[1]}"
@@ -88,11 +88,13 @@ function log_notice(){
 
 
 
-# 结束运行，并输出红色的错误信息（$1）
-function error_exit() {
-    check_parameter "$1" || return 1
-    log_error "$1"
-    exit 1
+# 如果上一个命令执行异常，那么结束运行，并输出红色的错误信息（$1）
+function if_error_then_exit() {
+    if [ $? -ne 0 ]; then
+        check_parameter "$1" || return 1
+        log_error "$1"
+        exit 1
+    fi
 }
 
 

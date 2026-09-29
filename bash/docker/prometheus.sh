@@ -124,10 +124,9 @@ fi
 
 # ———————————————————————— Install ————————————————————————
 check_command_exist 'docker'
-if [ $? -ne 0 ]; then
-    log_error 'docker not installed, please install docker first'
-    exit 1
-fi
+{
+    if_error_then_exit 'docker not installed, please install docker first'
+}
 
 log_warn 'require $MYSQL_PASSWORD and $REDIS_PASSWORD, run these first:'
 log_warn 'export MYSQL_PASSWORD="<password>"'
@@ -145,10 +144,9 @@ log_attention "docker host ip: ${docker_host_ip}"
 log_attention "containers run as uid:gid: ${run_uid_gid}"
 
 prepare_dir "$prometheus_config_dir" "$run_uid_gid"
-if [ $? -ne 0 ]; then
-    log_error 'prometheus config dir create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'prometheus config dir create failed, quit now'
+}
 
 prometheus_server_name=$(hostname)
 prometheus_server_ip=$(hostname -I | awk '{print $1}')
@@ -163,21 +161,18 @@ web_config_content="basic_auth_users:
 "
 
 update_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'prometheus web config file create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'prometheus web config file create failed, quit now'
+}
 update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
-if [ $? -ne 0 ]; then
-    log_error 'prometheus scrape password file create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'prometheus scrape password file create failed, quit now'
+}
 
 update_file "$prometheus_config_file" "$(prometheus_config_yml)"
-if [ $? -ne 0 ]; then
-    log_error 'prometheus config file create failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'prometheus config file create failed, quit now'
+}
 chown "$run_uid_gid" "$prometheus_config_file"
 chmod 644 "$prometheus_config_file"
 
