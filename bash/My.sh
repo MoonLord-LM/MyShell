@@ -434,7 +434,38 @@ function backup_file(){
 
     log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
-# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：归属用户，传递时执行 chown 和 chmod 600）
+# 准备数据目录（$1 目录路径；$2 可选参数：归属用户；$3 可选参数：目录权限）
+function prepare_data_dir(){
+    check_parameter "$1" || return 1
+    local target_dir=$1
+    local target_user=$2
+    local target_mode=$3
+
+    mkdir -p "$target_dir"
+    if [ $? -ne 0 ]; then
+        log_error "prepare_data_dir failed, mkdir \"$target_dir\" error"
+        return 1
+    fi
+
+    if [ "$target_user" != '' ]; then
+        chown "$target_user" "$target_dir"
+        if [ $? -ne 0 ]; then
+            log_error "prepare_data_dir failed, chown \"$target_dir\" to \"$target_user\" error"
+            return 1
+        fi
+    fi
+
+    if [ "$target_mode" != '' ]; then
+        chmod "$target_mode" "$target_dir"
+        if [ $? -ne 0 ]; then
+            log_error "prepare_data_dir failed, chmod $target_mode \"$target_dir\" error"
+            return 1
+        fi
+    fi
+
+    log_info "prepare_data_dir ok, \"$target_dir\" is ready"
+}
+# 写入配置文件（$1 文件路径；$2 文件内容；$3 可选参数：归属用户）
 function update_config_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
