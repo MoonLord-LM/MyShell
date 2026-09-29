@@ -104,29 +104,6 @@ scrape_configs:
 EOF
 }
 
-function create_secrets_dir(){
-    local dir="$1"
-
-    mkdir -p "$dir"
-    local rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chown "$run_uid_gid" "$dir"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chmod 755 "$dir"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-    return 0
-}
-
 
 
 
@@ -167,7 +144,7 @@ fi
 log_attention "docker host ip: ${docker_host_ip}"
 log_attention "containers run as uid:gid: ${run_uid_gid}"
 
-create_secrets_dir "$prometheus_config_dir"
+prepare_data_dir "$prometheus_config_dir" "$run_uid_gid" '755'
 if [ $? -ne 0 ]; then
     log_error 'prometheus config dir create failed, quit now'
     exit 1
@@ -204,10 +181,7 @@ fi
 chown "$run_uid_gid" "$prometheus_config_file"
 chmod 644 "$prometheus_config_file"
 
-if [ ! -d "$prometheus_data_dir" ]; then
-    mkdir -p "$prometheus_data_dir"
-fi
-chown "$run_uid_gid" "$prometheus_data_dir"
+prepare_data_dir "$prometheus_data_dir" "$run_uid_gid" '755'
 
 docker inspect "$prometheus_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then

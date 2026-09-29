@@ -25,30 +25,6 @@ grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64
 
 run_uid_gid='472:472'
 
-function create_secrets_dir(){
-    local dir="$1"
-
-    mkdir -p "$dir"
-    local rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chown "$run_uid_gid" "$dir"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-
-    chmod 755 "$dir"
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        return $rc
-    fi
-    return 0
-}
-
-
 
 
 
@@ -80,10 +56,13 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-mkdir -p "$grafana_data_dir"
-chown -R "$run_uid_gid" "$grafana_data_dir"
+prepare_data_dir "$grafana_data_dir" "$run_uid_gid"
+if [ $? -ne 0 ]; then
+    log_error 'grafana data dir create failed, quit now'
+    exit 1
+fi
 
-create_secrets_dir "$grafana_secrets_dir"
+prepare_data_dir "$grafana_secrets_dir" "$run_uid_gid" '755'
 if [ $? -ne 0 ]; then
     log_error 'grafana secrets dir create failed, quit now'
     exit 1

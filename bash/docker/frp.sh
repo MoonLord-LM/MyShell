@@ -117,12 +117,11 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-mkdir -p "$frp_data_dir"
+prepare_data_dir "$frp_data_dir" "$run_uid_gid" '755'
 if [ $? -ne 0 ]; then
     log_error 'frp data directory creation failed, quit now'
     exit 1
 fi
-chown "$run_uid_gid" "$frp_data_dir"
 
 update_config_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid"
 if [ $? -ne 0 ]; then
