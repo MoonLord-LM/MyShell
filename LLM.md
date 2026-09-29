@@ -6,13 +6,15 @@ OpenList 如何修改默认端口和路径
 
 ## 新增 root 密码重设函数
 
-新增 root 密码重设函数，使用 256 bit 随机数  
+新增 root 密码重设函数，使用 256 bit 随机数
 
 ```shell
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ```
 
 ## 系统更新后，源没有跟随更新的问题
+
+update_software
 
     Hit:1 http://security.debian.org/debian-security trixie-security InRelease
     Hit:2 http://deb.debian.org/debian trixie InRelease
@@ -29,7 +31,7 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 ## 对各种 WEB UI 指定 URL 的根路径
 
-分配各自的相对路径，方便绑定到同一个域名上访问  
+分配各自的相对路径，方便绑定到同一个域名上访问
 
     http://103.233.74.96:19090/Prometheus
     http://103.233.74.96:13000/Grafana
