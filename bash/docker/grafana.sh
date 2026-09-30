@@ -96,8 +96,8 @@ docker run -d \
     --name "$grafana_container_name" \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
-    -v "${grafana_ssl_key_file}:/etc/grafana/certs/grafana.key:ro"
-    -v "${grafana_ssl_cert_file}:/etc/grafana/certs/grafana.crt:ro"
+    -v "${grafana_ssl_key_file}:/etc/grafana/certs/grafana.key:ro" \
+    -v "${grafana_ssl_cert_file}:/etc/grafana/certs/grafana.crt:ro" \
     -v "$grafana_data_dir:/var/lib/grafana" \
     -v "${grafana_admin_password_file}:/run/secrets/grafana_admin_password:ro" \
     -e "GF_SERVER_PROTOCOL=https" \
