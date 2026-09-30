@@ -94,6 +94,10 @@ server {
 	location / {
 		try_files \$uri \$uri/ =404;
 	}
+
+    location /nginx_status {
+		stub_status;
+	}
 EOF
     if [ "$php_fpm_listen" != '' ]; then
         cat <<EOF
