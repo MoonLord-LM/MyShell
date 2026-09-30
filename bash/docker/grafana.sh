@@ -19,11 +19,25 @@ grafana_data_dir='/var/lib/grafana'
 
 grafana_admin_password_file='/etc/grafana/secrets/admin_password'
 
+grafana_ssl_key_file='/etc/grafana/certs/grafana.key'
+grafana_ssl_cert_file='/etc/grafana/certs/grafana.crt'
+
 grafana_port=13000
 grafana_admin_user='admin'
 grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
 run_uid_gid='472:472'
+
+function grafana_gen_ssl_cert(){
+    mkdir -p "$(dirname "$grafana_ssl_key_file")"
+    openssl req -newkey rsa:4096 -nodes -keyout "$grafana_ssl_key_file" -x509 -days 365000 -out "$grafana_ssl_cert_file" -subj '/CN=Grafana'
+    {
+        if_error_then_exit 'grafana_gen_ssl_cert failed, quit now'
+    }
+    chown "$run_uid_gid" "$grafana_ssl_key_file" "$grafana_ssl_cert_file"
+    chmod 600 "$grafana_ssl_key_file"
+}
+
 
 
 
@@ -75,13 +89,19 @@ docker pull "$grafana_image"
     if_error_then_exit 'grafana image pull failed, quit now'
 }
 
+grafana_gen_ssl_cert
+
 docker run -d \
     --user "$run_uid_gid" \
     --name "$grafana_container_name" \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
+    -v "$(dirname "$grafana_ssl_key_file"):/etc/grafana/certs:ro" \
     -v "$grafana_data_dir:/var/lib/grafana" \
     -v "${grafana_admin_password_file}:/run/secrets/grafana_admin_password:ro" \
+    -e "GF_SERVER_PROTOCOL=https" \
+    -e "GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt" \
+    -e "GF_SERVER_CERT_KEY_FILE=/etc/grafana/certs/grafana.key" \
     -e "GF_SECURITY_ADMIN_USER=$grafana_admin_user" \
     -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
     -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel" \
@@ -97,7 +117,7 @@ log_attention "grafana server name: ${grafana_server_name}"
 log_attention "grafana server ip: ${grafana_server_ip}"
 log_attention "grafana server port: ${grafana_port}"
 
-log_attention "grafana dashboard url: http://${grafana_server_ip}:${grafana_port}"
+log_attention "grafana dashboard url: https://${grafana_server_ip}:${grafana_port}"
 log_attention "grafana user: ${grafana_admin_user}"
 log_attention "grafana password: ${grafana_admin_password}"
 

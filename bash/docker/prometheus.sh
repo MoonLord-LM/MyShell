@@ -26,6 +26,9 @@ prometheus_port=19090
 prometheus_user='admin'
 prometheus_password="${PROMETHEUS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
+prometheus_ssl_key_file='/etc/prometheus/certs/prometheus.key'
+prometheus_ssl_cert_file='/etc/prometheus/certs/prometheus.crt'
+
 node_exporter_container_name='prometheus_node_exporter'
 node_exporter_image='prom/node-exporter:latest'
 node_exporter_port=19100
@@ -109,6 +112,15 @@ scrape_configs:
 EOF
 }
 
+function prometheus_gen_ssl_cert(){
+    mkdir -p "$(dirname "$prometheus_ssl_key_file")"
+    openssl req -newkey rsa:4096 -nodes -keyout "$prometheus_ssl_key_file" -x509 -days 365000 -out "$prometheus_ssl_cert_file" -subj '/CN=Prometheus'
+    {
+        if_error_then_exit 'prometheus_gen_ssl_cert failed, quit now'
+    }
+    chown "$run_uid_gid" "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file"
+    chmod 600 "$prometheus_ssl_key_file"
+}
 
 
 
@@ -167,14 +179,21 @@ if [ -z "$prometheus_password_hash" ]; then
     log_error 'prometheus password hash generate failed, quit now'
     exit 1
 fi
+
+prometheus_gen_ssl_cert
+
 web_config_content="basic_auth_users:
   ${prometheus_user}: ${prometheus_password_hash}
+tls_server_config:
+  cert_file: /etc/prometheus/certs/prometheus.crt
+  key_file: /etc/prometheus/certs/prometheus.key
 "
 
 update_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid" '600'
 {
     if_error_then_exit 'prometheus web config file create failed, quit now'
 }
+
 update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
 {
     if_error_then_exit 'prometheus scrape password file create failed, quit now'
@@ -200,6 +219,7 @@ docker run -d \
     --restart unless-stopped \
     --add-host host.docker.internal:${docker_host_ip} \
     -p "$prometheus_port:9090" \
+    -v "$(dirname "$prometheus_ssl_key_file"):/etc/prometheus/certs:ro" \
     -v "$prometheus_config_file:/etc/prometheus/prometheus.yml:ro" \
     -v "$prometheus_web_config_file:/etc/prometheus/prometheus-web.yml:ro" \
     -v "$prometheus_scrape_password_file:/etc/prometheus/prometheus-scrape-password:ro" \
@@ -216,7 +236,7 @@ log_attention "prometheus server name: ${prometheus_server_name}"
 log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
 
-log_attention "prometheus dashboard url: http://${prometheus_server_ip}:${prometheus_port}"
+log_attention "prometheus dashboard url: https://${prometheus_server_ip}:${prometheus_port}"
 log_attention "prometheus user: ${prometheus_user}"
 log_attention "prometheus password: ${prometheus_password}"
 
