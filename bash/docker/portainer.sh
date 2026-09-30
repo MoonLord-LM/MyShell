@@ -2,6 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
+# export PORTAINER_PASSWORD="<password>"
 # docker rm -f portainer && docker volume rm portainer_data
 
 # Portainer CE
@@ -20,20 +21,15 @@ portainer_volume_name='portainer_data'
 portainer_server_port=19443
 portainer_docker_socket_file='/var/run/docker.sock'
 
+portainer_admin_user='admin'
+portainer_admin_password="${PORTAINER_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
+
 portainer_sslkey='/etc/portainer/certs/portainer.key'
 portainer_sslcert='/etc/portainer/certs/portainer.crt'
 
 run_uid_gid='root:root'
 
 
-
-function generate_portainer_warning(){
-    cat <<EOF
-Portainer CE is installed.
-Open https://${portainer_server_ip}:${portainer_server_port} in your browser to finish the initial setup.
-You will be asked to create an admin user, then choose the "Local" environment to manage the host.
-EOF
-}
 
 function portainer_gen_ssl_cert(){
     mkdir -p $(dirname "$portainer_sslkey")
@@ -68,6 +64,9 @@ check_command_exist 'docker'
     if_error_then_exit 'docker not installed, please install docker first'
 }
 
+log_warn 'if $PORTAINER_PASSWORD is not set, a random password will be generated:'
+log_warn 'export PORTAINER_PASSWORD="<password>"'
+
 if [ ! -S "$portainer_docker_socket_file" ]; then
     log_error 'docker socket not found, quit now'
     exit 1
@@ -101,6 +100,12 @@ docker pull "$portainer_image"
 
 portainer_gen_ssl_cert
 
+portainer_admin_password_hash=$(htpasswd -nbB "$portainer_admin_user" "$portainer_admin_password" | cut -d: -f2)
+if [ -z "$portainer_admin_password_hash" ]; then
+    log_error 'portainer admin password hash generate failed, quit now'
+    exit 1
+fi
+
 docker run -d \
     --user "$run_uid_gid" \
     --name "$portainer_container_name" \
@@ -112,6 +117,7 @@ docker run -d \
     -v "$portainer_sslkey:/certs/portainer.key:ro" \
     --sslcert /certs/portainer.crt \
     --sslkey /certs/portainer.key \
+    --admin-password "$portainer_admin_password_hash" \
     "$portainer_image"
 {
     if_error_then_exit 'portainer container start failed, quit now'
@@ -126,12 +132,11 @@ log_attention "portainer web https port: ${portainer_server_port}"
 log_attention "portainer volume: ${portainer_volume_name}"
 log_attention "portainer ssl cert: ${portainer_sslcert}"
 log_attention "portainer ssl key: ${portainer_sslkey}"
+log_attention "portainer user: ${portainer_admin_user}"
+log_attention "portainer password: ${portainer_admin_password}"
 
 portainer_web_url="https://${portainer_server_ip}:${portainer_server_port}"
 log_success "portainer web url: ${portainer_web_url}"
-
-echo
-log_attention "$(generate_portainer_warning)"
 
 
 
