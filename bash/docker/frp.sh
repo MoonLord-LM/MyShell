@@ -38,14 +38,10 @@ frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 
 run_uid_gid='65534:65534'
 
 function frp_gen_ssl_cert(){
-    mkdir -p $(dirname "$frp_ssl_key")
-    openssl req -newkey rsa:4096 -nodes -keyout "$frp_ssl_key" -x509 -days 365000 -out "$frp_ssl_cert" -subj '/CN=Frp'
+    generate_ssl_cert 'Frp' "$frp_ssl_key" "$frp_ssl_cert" '65534'
     {
         if_error_then_exit 'frp_gen_ssl_cert failed, quit now'
     }
-
-    chown "$run_uid_gid" "$frp_ssl_key" "$frp_ssl_cert"
-    chmod 600 "$frp_ssl_key"
 }
 
 function generate_frp_server_config(){
@@ -172,7 +168,7 @@ docker run -d \
 }
 
 frp_server_name=$(hostname)
-frp_server_ip=$(hostname -I | awk '{print $1}')
+frp_server_ip=$(get_system_ip)
 
 log_attention "frp server name: ${frp_server_name}"
 log_attention "frp server ip: ${frp_server_ip}"

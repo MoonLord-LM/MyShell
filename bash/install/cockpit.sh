@@ -46,14 +46,10 @@ EOF
 }
 
 function cockpit_gen_ssl_cert(){
-    mkdir -p $(dirname "$cockpit_ssl_key")
-    openssl req -newkey rsa:4096 -nodes -keyout "$cockpit_ssl_key" -x509 -days 365000 -out "$cockpit_ssl_cert" -subj '/CN=Cockpit'
+    generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert"
     {
         if_error_then_exit 'cockpit_gen_ssl_cert failed, quit now'
     }
-
-    chown "$run_uid_gid" "$cockpit_ssl_key"
-    chmod 600 "$cockpit_ssl_key"
 }
 
 
@@ -107,7 +103,7 @@ echo > /etc/cockpit/disallowed-users
 
 cockpit_gen_ssl_cert
 
-cockpit_server_ip=$(hostname -I | awk '{print $1}')
+cockpit_server_ip=$(get_system_ip)
 log_attention "cockpit server ip: ${cockpit_server_ip}"
 log_attention "cockpit server port: ${cockpit_server_port}"
 log_attention "cockpit dashboard url: https://${cockpit_server_ip}:${cockpit_server_port}"

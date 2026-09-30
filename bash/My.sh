@@ -16,44 +16,17 @@ function check_parameter(){
     else
         local current_function="${FUNCNAME[0]}"
     fi
-    local red_color='\e[1;31m'
-    local color_end='\e[0m'
-    if [ "$#" -ge '1' ] && [ "$1" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $1 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '2' ] && [ "$2" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $2 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '3' ] && [ "$3" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $3 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '4' ] && [ "$4" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $4 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '5' ] && [ "$5" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $5 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '6' ] && [ "$6" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $6 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '7' ] && [ "$7" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $7 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '8' ] && [ "$8" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $8 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
-    if [ "$#" -ge '9' ] && [ "$9" == '' ]; then
-        echo -ne "$red_color" && echo "$current_function"': parameter [ $9 ] is empty' && echo -ne "$color_end"
-        return 1
-    fi
+    local color_red='1;31'
+    for i in $(seq 1 "$#"); do
+        if [ "${!i}" == '' ]; then
+            if [ -t 2 ]; then
+                printf '\033[s%m%s: parameter [ ${!i} ] is empty\033[0m\n' "$color_red" "$current_function" >&2
+            else
+                printf '%s: parameter [ ${!i} ] is empty\n' "$current_function" >&2
+            fi
+            return 1
+        fi
+    done
 }
 
 
@@ -167,22 +140,22 @@ function get_system_version_codename(){
 }
 # 判断系统是否是 Ubuntu
 function check_system_is_ubuntu(){
-    get_system_name | grep 'Ubuntu' > '/dev/null' 2>&1
+    local name=$(get_system_name)
+    echo "$name" | grep 'Ubuntu' > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_ubuntu: false'
         return 1
     fi
-    local name=$(get_system_name)
     log_info "check_system_is_ubuntu: $name"
 }
 # 判断系统是否是 Debian
 function check_system_is_debian(){
-    get_system_name | grep 'Debian' > '/dev/null' 2>&1
+    local name=$(get_system_name)
+    echo "$name" | grep 'Debian' > '/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_debian: false'
         return 1
     fi
-    local name=$(get_system_name)
     log_info "check_system_is_debian: $name"
 }
 # 获取系统的 IP

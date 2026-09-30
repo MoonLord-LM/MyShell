@@ -116,13 +116,10 @@ EOF
 }
 
 function prometheus_gen_ssl_cert(){
-    mkdir -p "$(dirname "$prometheus_ssl_key_file")"
-    openssl req -newkey rsa:4096 -nodes -keyout "$prometheus_ssl_key_file" -x509 -days 365000 -out "$prometheus_ssl_cert_file" -subj '/CN=Prometheus'
+    generate_ssl_cert 'Prometheus' "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file" '65534'
     {
         if_error_then_exit 'prometheus_gen_ssl_cert failed, quit now'
     }
-    chown "$run_uid_gid" "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file"
-    chmod 600 "$prometheus_ssl_key_file"
 }
 
 function prometheus_web_config_yml(){
@@ -185,7 +182,7 @@ prepare_dir "$prometheus_config_dir" "$run_uid_gid"
 }
 
 prometheus_server_name=$(hostname)
-prometheus_server_ip=$(hostname -I | awk '{print $1}')
+prometheus_server_ip=$(get_system_ip)
 
 prometheus_password_hash=$(htpasswd -nbB "$prometheus_user" "$prometheus_password" | cut -d: -f2)
 if [ -z "$prometheus_password_hash" ]; then

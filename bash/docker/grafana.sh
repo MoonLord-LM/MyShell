@@ -29,13 +29,10 @@ grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64
 run_uid_gid='472:472'
 
 function grafana_gen_ssl_cert(){
-    mkdir -p "$(dirname "$grafana_ssl_key_file")"
-    openssl req -newkey rsa:4096 -nodes -keyout "$grafana_ssl_key_file" -x509 -days 365000 -out "$grafana_ssl_cert_file" -subj '/CN=Grafana'
+    generate_ssl_cert 'Grafana' "$grafana_ssl_key_file" "$grafana_ssl_cert_file" '472'
     {
         if_error_then_exit 'grafana_gen_ssl_cert failed, quit now'
     }
-    chown "$run_uid_gid" "$grafana_ssl_key_file" "$grafana_ssl_cert_file"
-    chmod 600 "$grafana_ssl_key_file"
 }
 
 
@@ -112,7 +109,7 @@ docker run -d \
 }
 
 grafana_server_name=$(hostname)
-grafana_server_ip=$(hostname -I | awk '{print $1}')
+grafana_server_ip=$(get_system_ip)
 
 log_attention "grafana server name: ${grafana_server_name}"
 log_attention "grafana server ip: ${grafana_server_ip}"

@@ -112,7 +112,7 @@ update_file "$ss_server_config_file" "$(ss_config_json)" "$run_uid_gid" '600'
 }
 cat "$ss_server_config_file"
 
-ss_server_ip=$(hostname -I | awk '{print $1}')
+ss_server_ip=$(get_system_ip)
 log_attention "shadowsocks server ip: ${ss_server_ip}"
 log_attention "shadowsocks port: ${ss_server_port}"
 log_attention "shadowsocks method: ${ss_method}"

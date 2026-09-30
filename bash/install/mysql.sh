@@ -52,14 +52,10 @@ EOF
 }
 
 function mysql_gen_ssl_cert(){
-    mkdir -p $(dirname "$mysql_ssl_key")
-    openssl req -newkey rsa:4096 -nodes -keyout "$mysql_ssl_key" -x509 -days 365000 -out "$mysql_ssl_cert" -subj '/CN=MySQL'
+    generate_ssl_cert 'MySQL' "$mysql_ssl_key" "$mysql_ssl_cert" 'mysql'
     {
         if_error_then_exit 'mysql_gen_ssl_cert failed, quit now'
     }
-
-    chown "$run_uid_gid" "$mysql_ssl_key" "$mysql_ssl_cert"
-    chmod 600 "$mysql_ssl_key"
 }
 
 function allow_remote_access(){
@@ -144,7 +140,7 @@ mysqld --validate-config
 
 allow_remote_access
 
-mysql_server_ip=$(hostname -I | awk '{print $1}')
+mysql_server_ip=$(get_system_ip)
 log_attention "mysql server ip: ${mysql_server_ip}"
 log_attention "mysql server port: ${mysql_server_port}"
 log_attention "mysql user: ${mysql_user}"

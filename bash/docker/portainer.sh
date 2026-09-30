@@ -32,14 +32,10 @@ run_uid_gid='0:0'
 
 
 function portainer_gen_ssl_cert(){
-    mkdir -p $(dirname "$portainer_sslkey")
-    openssl req -newkey rsa:4096 -nodes -keyout "$portainer_sslkey" -x509 -days 365000 -out "$portainer_sslcert" -subj '/CN=Portainer'
+    generate_ssl_cert 'Portainer' "$portainer_sslkey" "$portainer_sslcert" 'root'
     {
         if_error_then_exit 'portainer_gen_ssl_cert failed, quit now'
     }
-
-    chown "$run_uid_gid" "$portainer_sslkey" "$portainer_sslcert"
-    chmod 600 "$portainer_sslkey"
 }
 
 
@@ -124,7 +120,7 @@ docker run -d \
 }
 
 portainer_server_name=$(hostname)
-portainer_server_ip=$(hostname -I | awk '{print $1}')
+portainer_server_ip=$(get_system_ip)
 
 log_attention "portainer server name: ${portainer_server_name}"
 log_attention "portainer server ip: ${portainer_server_ip}"

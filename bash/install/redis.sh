@@ -58,14 +58,10 @@ EOF
 }
 
 function redis_gen_ssl_cert(){
-    mkdir -p $(dirname "$redis_ssl_key")
-    openssl req -newkey rsa:4096 -nodes -keyout "$redis_ssl_key" -x509 -days 365000 -out "$redis_ssl_cert" -subj '/CN=Redis'
+    generate_ssl_cert 'Redis' "$redis_ssl_key" "$redis_ssl_cert" 'redis'
     {
         if_error_then_exit 'redis_gen_ssl_cert failed, quit now'
     }
-
-    chown "$run_uid_gid" "$redis_ssl_key" "$redis_ssl_cert"
-    chmod 600 "$redis_ssl_key"
 }
 
 
@@ -116,7 +112,7 @@ redis_gen_ssl_cert
 
 update_file "$redis_conf_file" "$(redis_config_cnf)" "$run_uid_gid" '600'
 
-redis_server_ip=$(hostname -I | awk '{print $1}')
+redis_server_ip=$(get_system_ip)
 log_attention "redis server ip: ${redis_server_ip}"
 log_attention "redis server port: ${redis_server_port}"
 log_attention "redis password: ${redis_password}"
