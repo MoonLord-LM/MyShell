@@ -27,7 +27,7 @@ portainer_admin_password="${PORTAINER_PASSWORD:-$(head -c 32 '/dev/urandom' | ba
 portainer_sslkey='/etc/portainer/certs/portainer.key'
 portainer_sslcert='/etc/portainer/certs/portainer.crt'
 
-run_uid_gid='root:root'
+run_uid_gid='0:0'
 
 
 
