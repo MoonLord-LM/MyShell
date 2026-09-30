@@ -28,13 +28,6 @@ grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64
 
 run_uid_gid='472:472'
 
-function grafana_gen_ssl_cert(){
-    generate_ssl_cert 'Grafana' "$grafana_ssl_key_file" "$grafana_ssl_cert_file" '472'
-    {
-        if_error_then_exit 'grafana_gen_ssl_cert failed, quit now'
-    }
-}
-
 
 
 
@@ -86,7 +79,10 @@ docker pull "$grafana_image"
     if_error_then_exit 'grafana image pull failed, quit now'
 }
 
-grafana_gen_ssl_cert
+generate_ssl_cert 'Grafana' "$grafana_ssl_key_file" "$grafana_ssl_cert_file" "$run_uid_gid"
+{
+    if_error_then_exit 'grafana ssl cert generate failed, quit now'
+}
 
 docker run -d \
     --user "$run_uid_gid" \

@@ -842,28 +842,4 @@ function show_tcp_listening(){
 
 
 
-
-
-#### 环境准备 ####
-# update_software
-# update_software_aggressive
-# prepare_common_command
-
-#### 系统设置 ####
-# set_timezone_china
-# set_tcp_congestion_control_bbr
-# set_tcp_network_buffer
-# set_tcp_fastopen
-# set_memory_swap_to_4GB
-# set_root_password
-
-#### 文件操作 ####
-# update_file
-
-#### 查看信息 ####
-# get_system_name
-# get_system_version_codename
-# show_software_list
-# show_tcp_listening
-
-log_info 'My.sh is loaded'
+log_success 'My.sh is loaded'

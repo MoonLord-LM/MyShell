@@ -31,15 +31,6 @@ run_uid_gid='0:0'
 
 
 
-function portainer_gen_ssl_cert(){
-    generate_ssl_cert 'Portainer' "$portainer_sslkey" "$portainer_sslcert" 'root'
-    {
-        if_error_then_exit 'portainer_gen_ssl_cert failed, quit now'
-    }
-}
-
-
-
 
 
 # ———————————————————————— Init ————————————————————————
@@ -94,7 +85,10 @@ docker pull "$portainer_image"
     if_error_then_exit 'portainer image pull failed, quit now'
 }
 
-portainer_gen_ssl_cert
+generate_ssl_cert 'Portainer' "$portainer_sslkey" "$portainer_sslcert" "$run_uid_gid"
+{
+    if_error_then_exit 'portainer ssl cert generate failed, quit now'
+}
 
 portainer_admin_password_hash=$(htpasswd -nbB "$portainer_admin_user" "$portainer_admin_password" | cut -d: -f2)
 if [ -z "$portainer_admin_password_hash" ]; then

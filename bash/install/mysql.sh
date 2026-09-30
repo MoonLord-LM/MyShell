@@ -51,13 +51,6 @@ connection_control_max_connection_delay = 2147483000
 EOF
 }
 
-function mysql_gen_ssl_cert(){
-    generate_ssl_cert 'MySQL' "$mysql_ssl_key" "$mysql_ssl_cert" 'mysql'
-    {
-        if_error_then_exit 'mysql_gen_ssl_cert failed, quit now'
-    }
-}
-
 function allow_remote_access(){
     mysql -h 'localhost' -u 'root' --batch <<EOF
         create user if not exists '$mysql_user'@'%' identified by '$mysql_password_sql_escaped';
@@ -129,7 +122,10 @@ mysqld --version
     if_error_then_exit 'mysql-community-server version check failed, quit now'
 }
 
-mysql_gen_ssl_cert
+generate_ssl_cert 'MySQL' "$mysql_ssl_key" "$mysql_ssl_cert" "$run_uid_gid"
+{
+    if_error_then_exit 'mysql ssl cert generate failed, quit now'
+}
 
 update_file "$mysql_conf_file" "$(mysql_config_cnf)"
 

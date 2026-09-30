@@ -57,13 +57,6 @@ stop-writes-on-bgsave-error yes
 EOF
 }
 
-function redis_gen_ssl_cert(){
-    generate_ssl_cert 'Redis' "$redis_ssl_key" "$redis_ssl_cert" 'redis'
-    {
-        if_error_then_exit 'redis_gen_ssl_cert failed, quit now'
-    }
-}
-
 
 
 
@@ -108,7 +101,10 @@ redis-server --version
     if_error_then_exit 'redis version check failed, quit now'
 }
 
-redis_gen_ssl_cert
+generate_ssl_cert 'Redis' "$redis_ssl_key" "$redis_ssl_cert" "$run_uid_gid"
+{
+    if_error_then_exit 'redis ssl cert generate failed, quit now'
+}
 
 update_file "$redis_conf_file" "$(redis_config_cnf)" "$run_uid_gid" '600'
 

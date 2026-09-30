@@ -45,13 +45,6 @@ ListenStream=[::]:${cockpit_server_port}
 EOF
 }
 
-function cockpit_gen_ssl_cert(){
-    generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert"
-    {
-        if_error_then_exit 'cockpit_gen_ssl_cert failed, quit now'
-    }
-}
-
 
 
 
@@ -101,7 +94,10 @@ systemctl daemon-reload
 
 echo > /etc/cockpit/disallowed-users
 
-cockpit_gen_ssl_cert
+generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert" "$run_uid_gid"
+{
+    if_error_then_exit 'cockpit ssl certificate generation failed, quit now'
+}
 
 cockpit_server_ip=$(get_system_ip)
 log_attention "cockpit server ip: ${cockpit_server_ip}"

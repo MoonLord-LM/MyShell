@@ -115,13 +115,6 @@ scrape_configs:
 EOF
 }
 
-function prometheus_gen_ssl_cert(){
-    generate_ssl_cert 'Prometheus' "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file" '65534'
-    {
-        if_error_then_exit 'prometheus_gen_ssl_cert failed, quit now'
-    }
-}
-
 function prometheus_web_config_yml(){
     cat <<EOF
 basic_auth_users:
@@ -190,7 +183,10 @@ if [ -z "$prometheus_password_hash" ]; then
     exit 1
 fi
 
-prometheus_gen_ssl_cert
+generate_ssl_cert 'Prometheus' "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file" "$run_uid_gid"
+{
+    if_error_then_exit 'prometheus ssl cert generate failed, quit now'
+}
 
 update_file "$prometheus_web_config_file" "$(prometheus_web_config_yml)" "$run_uid_gid" '600'
 {

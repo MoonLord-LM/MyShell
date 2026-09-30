@@ -37,13 +37,6 @@ frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 
 
 run_uid_gid='65534:65534'
 
-function frp_gen_ssl_cert(){
-    generate_ssl_cert 'Frp' "$frp_ssl_key" "$frp_ssl_cert" '65534'
-    {
-        if_error_then_exit 'frp_gen_ssl_cert failed, quit now'
-    }
-}
-
 function generate_frp_server_config(){
     cat <<EOF
 bindAddr = "::"
@@ -139,7 +132,10 @@ prepare_dir "$frp_data_dir" "$run_uid_gid"
     if_error_then_exit 'frp data directory creation failed, quit now'
 }
 
-frp_gen_ssl_cert
+generate_ssl_cert 'Frp' "$frp_ssl_key" "$frp_ssl_cert" "$run_uid_gid"
+{
+    if_error_then_exit 'frp ssl cert generate failed, quit now'
+}
 
 update_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '600'
 {
