@@ -280,7 +280,7 @@ if [ $? -ne 0 ]; then
         -p "${docker_host_ip}:${nginx_exporter_port}:9113" \
         "$nginx_exporter_image" \
         --nginx.scrape-uri="https://${nginx_host}:${nginx_port}/nginx_status" \
-        --nginx.ssl-verify=false
+        --no-nginx.ssl-verify
     if [ $? -ne 0 ]; then
         log_error 'nginx_exporter container start failed, skip'
     else
