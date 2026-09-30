@@ -47,7 +47,7 @@ vhostHTTPSCertFile = "${frp_ssl_cert}"
 
 auth.method = "token"
 auth.token = "${frp_token_escaped}"
-s
+
 transport.tls.force = true
 transport.tls.keyFile = "${frp_ssl_key}"
 transport.tls.certFile = "${frp_ssl_cert}"
