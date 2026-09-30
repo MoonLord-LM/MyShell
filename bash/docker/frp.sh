@@ -82,11 +82,11 @@ transport.heartbeatInterval = 60
 transport.tls.enable = true
 
 [[proxies]]
-name = "local-8080-to-server-${frp_vhost_https_port}"
-type = "http"
+name = "local-8443-to-server-${frp_vhost_https_port}"
+type = "https"
 
 localIP = "127.0.0.1"
-localPort = 8080
+localPort = 8443
 
 customDomains = ["${frp_server_ip}"]
 locations = ["/"]
