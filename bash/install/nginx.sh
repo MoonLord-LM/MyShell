@@ -10,6 +10,9 @@
 
 
 # ———————————————————————— Config ————————————————————————
+nginx_ssl_key='/etc/nginx/ssl/server-key.pem'
+nginx_ssl_cert='/etc/nginx/ssl/server-cert.pem'
+
 run_uid_gid='www-data:www-data'
 
 
@@ -43,6 +46,11 @@ install_software 'nginx'
 nginx -v
 {
     if_error_then_exit 'nginx version check failed, quit now'
+}
+
+generate_ssl_cert 'Nginx' "$nginx_ssl_key" "$nginx_ssl_cert"
+{
+    if_error_then_exit 'nginx ssl cert generate failed, quit now'
 }
 
 

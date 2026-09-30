@@ -4,6 +4,7 @@
 
 # export V2RAY_CLIENT_ID="<uuid>"
 # export V2RAY_WS_PATH="<path>"
+# bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' ) --remove && rm -rf '/usr/local/etc/v2ray/'
 
 # V2Ray
 # https://github.com/v2fly/v2ray-core
@@ -15,6 +16,7 @@
 # ———————————————————————— Config ————————————————————————
 v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 v2ray_server_port=10010
+
 v2ray_client_id="${V2RAY_CLIENT_ID:-$(cat '/proc/sys/kernel/random/uuid')}"
 v2ray_client_id_escaped=$(printf '%s' "$v2ray_client_id" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 v2ray_ws_path="${V2RAY_WS_PATH:-/ws/$(cat '/proc/sys/kernel/random/uuid')}"

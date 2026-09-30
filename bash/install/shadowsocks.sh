@@ -3,6 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
 # export SS_PASSWORD="<password>"
+# systemctl disable --now 'ssserver' && rm -f '/usr/local/bin/ssserver' "$ss_server_service_file" && rm -rf '/usr/local/etc/ssserver/'
 
 # Shadowsocks
 # https://github.com/shadowsocks/shadowsocks-rust
@@ -16,6 +17,8 @@ ss_server_api_release_url='https://api.github.com/repos/shadowsocks/shadowsocks-
 
 ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
+ss_server_service_file='/etc/systemd/system/ssserver.service'
+
 ss_server_port=10000
 ss_password="${SS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 ss_password_escaped=$(printf '%s' "$ss_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
@@ -103,7 +106,7 @@ tar -xf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
 chmod +x "$ss_server_location"
 rm -f "$tmp_file"
 
-update_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
+update_file "$ss_server_service_file" "$(ss_service_file)"
 {
     if_error_then_exit 'ssserver service file write failed, quit now'
 }
