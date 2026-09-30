@@ -16,10 +16,31 @@ nginx_ssl_key='/etc/nginx/ssl/server-key.pem'
 nginx_ssl_cert='/etc/nginx/ssl/server-cert.pem'
 
 nginx_default_config_file='/etc/nginx/sites-available/default'
+nginx_web_root='/var/www/html'
 
 run_uid_gid='www-data:www-data'
 
+function get_php_fpm_listen(){
+    local php_fpm_service=$(systemctl list-units --type=service --state=active --no-legend --no-pager 'php*-fpm.service' 2> '/dev/null' | awk '{print $1}' | head -n 1)
+    if [ "$php_fpm_service" == '' ]; then
+        log_info 'php-fpm not found, nginx config without php support'
+        return 1
+    fi
+    local php_fpm_listen=$(find '/run/php' -maxdepth 1 -name 'php*-fpm.sock' 2> '/dev/null' | sort | head -n 1)
+    if [ "$php_fpm_listen" == '' ]; then
+        log_info "php-fpm \"${php_fpm_service}\" is running but socket not found, nginx config without php support"
+        return 1
+    fi
+    log_attention "php-fpm detected: \"${php_fpm_service}\", fastcgi_pass unix:${php_fpm_listen}"
+    echo "$php_fpm_listen"
+}
+
 function nginx_ssl_config(){
+    local php_fpm_listen=$(get_php_fpm_listen)
+    local nginx_index='index.html index.htm index.nginx-debian.html'
+    if [ "$php_fpm_listen" != '' ]; then
+        nginx_index='index.php index.html index.htm'
+    fi
     cat <<EOF
 server {
 	listen 80 default_server;
@@ -31,15 +52,26 @@ server {
 	ssl_certificate_key "${nginx_ssl_key}";
 	ssl_certificate "${nginx_ssl_cert}";
 
-	root /var/www/html;
+	root ${nginx_web_root};
 
-	index index.html index.htm index.nginx-debian.html;
+	index ${nginx_index};
 
 	server_name _;
 
 	location / {
 		try_files \$uri \$uri/ =404;
 	}
+EOF
+    if [ "$php_fpm_listen" != '' ]; then
+        cat <<EOF
+
+	location ~ \.php\$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:${php_fpm_listen};
+	}
+EOF
+    fi
+    cat <<EOF
 }
 EOF
 }
@@ -81,6 +113,16 @@ generate_ssl_cert 'Nginx' "$nginx_ssl_key" "$nginx_ssl_cert"
 {
     if_error_then_exit 'nginx ssl cert generate failed, quit now'
 }
+
+if [ "$(get_php_fpm_listen)" != '' ]; then
+    if [ ! -f "${nginx_web_root}/index.php" ]; then
+        update_file "${nginx_web_root}/index.php" '<?php phpinfo(); ?>' "$run_uid_gid"
+        {
+            if_error_then_exit 'nginx phpinfo index.php write failed, quit now'
+        }
+    fi
+    rm -f "${nginx_web_root}/index.nginx-debian.html"
+fi
 
 update_file "$nginx_default_config_file" "$(nginx_ssl_config)"
 {
