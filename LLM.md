@@ -29,5 +29,3 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 参考：
 https://github.com/awesome-selfhosted/awesome-selfhosted
-https://github.com/photoprism/photoprism
-https://writefreely.org
