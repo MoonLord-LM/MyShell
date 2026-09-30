@@ -115,10 +115,10 @@ docker run -d \
     -v "$portainer_volume_name:/data" \
     -v "$portainer_sslcert:/certs/portainer.crt:ro" \
     -v "$portainer_sslkey:/certs/portainer.key:ro" \
+    "$portainer_image" \
     --sslcert /certs/portainer.crt \
     --sslkey /certs/portainer.key \
-    --admin-password "$portainer_admin_password_hash" \
-    "$portainer_image"
+    --admin-password "$portainer_admin_password_hash"
 {
     if_error_then_exit 'portainer container start failed, quit now'
 }
