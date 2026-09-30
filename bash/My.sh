@@ -58,35 +58,48 @@ function check_parameter(){
 
 
 
+# 输出日志（$1 颜色代码；$2 日志内容）
+function my_log(){
+    check_parameter "$1" || return 1
+    check_parameter "$2" || return 1
+    local color_code="$1"
+    local message="$2"
+
+    if [ -t 2 ]; then
+        printf '\033[%sm%s\033[0m\n' "$color_code" "$message" >&2
+    else
+        printf '%s\n' "$message" >&2
+    fi
+}
 # 输出红色的错误信息（$1）
 function log_error(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;31m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;31' "$1"
 }
 # 输出绿色的成功信息（$1）
 function log_success(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;32m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;32' "$1"
 }
 # 输出黄色的警告信息（$1）
 function log_warn(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;33m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;33' "$1"
 }
 # 输出深蓝色的提示信息（$1）
 function log_info(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;34m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;34' "$1"
 }
 # 输出紫色的提示信息（$1）
 function log_attention(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;35m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;35' "$1"
 }
 # 输出浅蓝色的提示信息（$1）
 function log_notice(){
     check_parameter "$1" || return 1
-    echo -ne '\e[1;36m' && echo "$1" && echo -ne '\e[0m'
+    my_log '1;36' "$1"
 }
 
 
@@ -180,6 +193,7 @@ function get_system_ip(){
         return 0
     fi
     log_error 'get_system_ip failed'
+    echo '127.0.0.1'
     return 1
 }
 
