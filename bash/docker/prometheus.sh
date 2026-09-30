@@ -55,6 +55,7 @@ redis_exporter_port=19121
 redis_exporter_password_file="${prometheus_config_dir}/redis-exporter-password"
 redis_host='host.docker.internal'
 redis_port=16379
+redis_scheme='rediss'
 redis_password="${REDIS_PASSWORD:-}"
 redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
@@ -336,7 +337,7 @@ fi
 if [ "$redis_password" != '' ]; then
     redis_exporter_password_content=$(cat <<EOF
 {
-  "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"
+  "${redis_scheme}://${redis_host}:${redis_port}": "${redis_password_escaped}"
 }
 EOF
 )
@@ -357,8 +358,9 @@ EOF
                 -p "${docker_host_ip}:${redis_exporter_port}:9121" \
                 -v "$redis_exporter_password_file:/run/secrets/redis_password:ro" \
                 "$redis_exporter_image" \
-                --redis.addr="redis://${redis_host}:${redis_port}" \
-                --redis.password-file="/run/secrets/redis_password"
+                --redis.addr="${redis_scheme}://${redis_host}:${redis_port}" \
+                --redis.password-file="/run/secrets/redis_password" \
+                --skip-tls-verification
             if [ $? -ne 0 ]; then
                 log_error 'redis_exporter container start failed, skip'
             else
@@ -384,5 +386,9 @@ fi
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
 log_info "docker logs $prometheus_container_name:" && docker logs "$prometheus_container_name"
+log_info "docker logs $node_exporter_container_name:" && docker logs "$node_exporter_container_name"
+log_info "docker logs $nginx_exporter_container_name:" && docker logs "$nginx_exporter_container_name"
+log_info "docker logs $mysqld_exporter_container_name:" && docker logs "$mysqld_exporter_container_name"
+log_info "docker logs $redis_exporter_container_name:" && docker logs "$redis_exporter_container_name"
 
 show_tcp_listening
