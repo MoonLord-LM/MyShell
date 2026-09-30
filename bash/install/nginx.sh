@@ -18,6 +18,8 @@ nginx_ssl_cert='/etc/nginx/ssl/server-cert.pem'
 nginx_default_config_file='/etc/nginx/sites-available/default'
 nginx_web_root='/var/www/html'
 
+v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
+
 run_uid_gid='www-data:www-data'
 
 function get_php_fpm_listen(){
@@ -35,8 +37,29 @@ function get_php_fpm_listen(){
     echo "$php_fpm_listen"
 }
 
+function get_v2ray_ws_forward(){
+    local v2ray_service=$(systemctl list-units --type=service --state=active --no-legend --no-pager 'v2ray.service' 2> '/dev/null' | awk '{print $1}' | head -n 1)
+    if [ "$v2ray_service" == '' ]; then
+        log_info 'v2ray not found, nginx config without v2ray ws forward'
+        return 1
+    fi
+    if [ ! -f "$v2ray_server_config_file" ]; then
+        log_info "v2ray config file not found: \"${v2ray_server_config_file}\", nginx config without v2ray ws forward"
+        return 1
+    fi
+    local v2ray_port=$(sed -n 's/.*"port": \([0-9]*\).*/\1/p' "$v2ray_server_config_file" | head -n 1)
+    local v2ray_path=$(sed -n 's/.*"path": "\([^"]*\)".*/\1/p' "$v2ray_server_config_file" | head -n 1)
+    if [ "$v2ray_port" == '' ] || [ "$v2ray_path" == '' ]; then
+        log_info "v2ray port or ws path not found in \"${v2ray_server_config_file}\", nginx config without v2ray ws forward"
+        return 1
+    fi
+    log_attention "v2ray detected: location ${v2ray_path} -> proxy_pass http://127.0.0.1:${v2ray_port}"
+    echo "${v2ray_port}:${v2ray_path}"
+}
+
 function nginx_ssl_config(){
     local php_fpm_listen=$(get_php_fpm_listen)
+    local v2ray_forward=$(get_v2ray_ws_forward)
     local nginx_index='index.html index.htm index.nginx-debian.html'
     if [ "$php_fpm_listen" != '' ]; then
         nginx_index='index.php index.html index.htm'
@@ -70,6 +93,21 @@ EOF
 	location ~ \.php\$ {
 		include snippets/fastcgi-php.conf;
 		fastcgi_pass unix:${php_fpm_listen};
+	}
+EOF
+    fi
+    if [ "$v2ray_forward" != '' ]; then
+        local v2ray_port="${v2ray_forward%%:*}"
+        local v2ray_path="${v2ray_forward#*:}"
+        cat <<EOF
+
+	location ${v2ray_path} {
+		proxy_pass http://127.0.0.1:${v2ray_port};
+		proxy_http_version 1.1;
+		proxy_set_header Host \$http_host;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Upgrade \$http_upgrade;
+		proxy_redirect off;
 	}
 EOF
     fi
