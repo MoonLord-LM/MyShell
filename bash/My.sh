@@ -110,9 +110,9 @@ function reset_root_password(){
         return 1
     fi
 
-    echo "$root_password" | passwd 'root'
+    echo "root:${root_password}" | chpasswd
     if [ $? -ne 0 ]; then
-        log_error 'reset_root_password failed, passwd error'
+        log_error 'reset_root_password failed, chpasswd error'
         return 1
     fi
 
