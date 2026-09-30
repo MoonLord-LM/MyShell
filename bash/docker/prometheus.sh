@@ -296,7 +296,7 @@ else
     docker restart "$nginx_exporter_container_name"
 fi
 
-if [ -n "$mysql_password" ]; then
+if [ "$mysql_password" != '' ]; then
     mysqld_exporter_config_content=$(cat <<EOF
 [client]
 user = ${mysql_user}
@@ -340,7 +340,7 @@ else
     log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
-if [ -n "$redis_password" ]; then
+if ["$redis_password" != '' ]; then
     redis_exporter_password_content=$(cat <<EOF
 {
   "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"

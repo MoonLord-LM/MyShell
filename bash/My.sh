@@ -539,6 +539,56 @@ function update_file(){
 
     log_info "update_file ok, \"$target_file\" is updated"
 }
+# 生成 SSL 证书文件（$1 证书名称；$2 私钥文件路径；$3 证书文件路径；$4 可选参数：设置归属用户）
+function generate_ssl_cert(){
+    check_parameter "$1" || return 1
+    check_parameter "$2" || return 1
+    check_parameter "$3" || return 1
+    local ssl_subject_name="$1"
+    local ssl_key_file="$2"
+    local ssl_cert_file="$3"
+    local target_user="$4"
+
+    mkdir -p "$(dirname "$ssl_key_file")"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed, mkdir \"$(dirname "$ssl_key_file")\" error"
+        return 1
+    fi
+    mkdir -p "$(dirname "$ssl_cert_file")"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed, mkdir \"$(dirname "$ssl_cert_file")\" error"
+        return 1
+    fi
+
+    openssl req \
+        -newkey rsa:4096 -nodes -keyout "$ssl_key_file" \
+        -x509 -days 365000 -out "$ssl_cert_file" \
+        -subj "/CN=$ssl_subject_name" \
+        -addext "subjectAltName=DNS:$(hostname),IP:$(hostname -I | awk '{print $1}')"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed"
+        return 1
+    fi
+
+    if [ "$target_user" != '' ]; then
+        chown "$target_user" "$ssl_key_file"
+        if [ $? -ne 0 ]; then
+            log_error "generate_ssl_cert failed, chown \"$ssl_key_file\" to \"$target_user\" error"
+            return 1
+        fi
+        chown "$target_user" "$ssl_cert_file"
+        if [ $? -ne 0 ]; then
+            log_error "generate_ssl_cert failed, chown \"$ssl_cert_file\" to \"$target_user\" error"
+            return 1
+        fi
+    fi
+    
+    chmod 600 "$ssl_key_file"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed, chmod 600 \"$ssl_key_file\" error"
+        return 1
+    fi
+}
 
 
 

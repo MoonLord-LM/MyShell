@@ -101,7 +101,7 @@ docker run -d \
     -v "$grafana_data_dir:/var/lib/grafana" \
     -v "${grafana_admin_password_file}:/run/secrets/grafana_admin_password:ro" \
     -e "GF_SERVER_PROTOCOL=https" \
-    -e "GF_SERVER_CERT_KEY_FILE=/etc/grafana/certs/grafana.key" \
+    -e "GF_SERVER_CERT_KEY=/etc/grafana/certs/grafana.key" \
     -e "GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt" \
     -e "GF_SECURITY_ADMIN_USER=$grafana_admin_user" \
     -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
