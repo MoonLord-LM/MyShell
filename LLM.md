@@ -1,13 +1,5 @@
 # TODO
 
-## 新增 root 密码重设函数
-
-新增 root 密码重设函数，使用 256 bit 随机数
-
-```shell
-password=$(head -c 32 '/dev/urandom' | base64 -w 0)
-```
-
 ## OpenList 的音乐播放器界面高度太小
 
 ```html

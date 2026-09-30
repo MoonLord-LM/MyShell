@@ -99,6 +99,28 @@ function if_error_then_exit() {
 
 
 
+# 重设 root 密码为 256 bit 随机数，并显示新密码
+function reset_root_password(){
+    log_info 'reset_root_password begin'
+
+    local root_password=''
+    root_password=$(head -c 32 '/dev/urandom' | base64 -w 0)
+    if [ "$root_password" == '' ]; then
+        log_error 'reset_root_password failed, generate random password error'
+        return 1
+    fi
+
+    echo "$root_password" | passwd 'root'
+    if [ $? -ne 0 ]; then
+        log_error 'reset_root_password failed, passwd error'
+        return 1
+    fi
+
+    log_attention "reset_root_password ok, new root password is: ${root_password}"
+}
+
+
+
 # 获取系统的名称
 function get_system_name(){
     local os_release_file='/etc/os-release'
@@ -783,6 +805,7 @@ function show_tcp_listening(){
 # set_tcp_network_buffer
 # set_tcp_fastopen
 # set_memory_swap_to_4GB
+# set_root_password
 
 #### 文件操作 ####
 # update_file
