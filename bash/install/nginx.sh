@@ -51,6 +51,8 @@ server {
 
 	ssl_certificate_key "${nginx_ssl_key}";
 	ssl_certificate "${nginx_ssl_cert}";
+	ssl_protocols TLSv1.2 TLSv1.3;
+	gzip off;
 
 	root ${nginx_web_root};
 
