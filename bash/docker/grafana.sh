@@ -17,8 +17,7 @@ grafana_container_name='grafana'
 grafana_image='grafana/grafana:latest'
 grafana_data_dir='/var/lib/grafana'
 
-grafana_secrets_dir='/etc/grafana/secrets'
-grafana_admin_password_file="${grafana_secrets_dir}/admin_password"
+grafana_admin_password_file='/etc/grafana/secrets/admin_password'
 
 grafana_port=13000
 grafana_admin_user='admin'
@@ -61,7 +60,7 @@ prepare_dir "$grafana_data_dir" "$run_uid_gid"
     if_error_then_exit 'grafana data dir create failed, quit now'
 }
 
-prepare_dir "$grafana_secrets_dir" "$run_uid_gid"
+prepare_dir "$(dirname "$grafana_admin_password_file")" "$run_uid_gid"
 {
     if_error_then_exit 'grafana secrets dir create failed, quit now'
 }
