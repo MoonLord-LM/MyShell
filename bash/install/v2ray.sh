@@ -16,7 +16,9 @@
 v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 v2ray_server_port=10010
 v2ray_client_id="${V2RAY_CLIENT_ID:-$(cat '/proc/sys/kernel/random/uuid')}"
+v2ray_client_id_escaped=$(printf '%s' "$v2ray_client_id" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 v2ray_ws_path="${V2RAY_WS_PATH:-/ws/$(cat '/proc/sys/kernel/random/uuid')}"
+v2ray_ws_path_escaped=$(printf '%s' "$v2ray_ws_path" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 run_uid_gid='65534:65534'
 
@@ -30,7 +32,7 @@ function v2ray_server_config(){
       "settings": {
         "clients": [
           {
-            "id": "${v2ray_client_id}",
+            "id": "${v2ray_client_id_escaped}",
             "alterId": 0
           }
         ]
@@ -38,7 +40,7 @@ function v2ray_server_config(){
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "${v2ray_ws_path}"
+          "path": "${v2ray_ws_path_escaped}"
         }
       }
     }
@@ -60,13 +62,13 @@ function v2ray_client_config(){
   "ps": "${v2ray_server_ip}",
   "add": "${v2ray_server_ip}",
   "port": "${v2ray_server_port}",
-  "id": "${v2ray_client_id}",
+  "id": "${v2ray_client_id_escaped}",
   "aid": "0",
   "scy": "auto",
   "net": "ws",
   "type": "none",
   "host": "${v2ray_server_ip}",
-  "path": "${v2ray_ws_path}",
+  "path": "${v2ray_ws_path_escaped}",
   "tls": "",
   "sni": "",
   "alpn": "",

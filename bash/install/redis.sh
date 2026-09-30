@@ -23,6 +23,7 @@ redis_ssl_cert='/etc/redis/ssl/server-cert.pem'
 
 redis_server_port=16379
 redis_password="${REDIS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
+redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 run_uid_gid='redis:redis'
 
@@ -42,7 +43,7 @@ tls-cert-file $redis_ssl_cert
 tls-auth-clients no
 tls-protocols "TLSv1.2 TLSv1.3"
 
-requirepass $redis_password
+requirepass "$redis_password_escaped"
 protected-mode yes
 
 maxmemory 2gb

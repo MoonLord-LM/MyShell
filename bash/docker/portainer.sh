@@ -90,7 +90,7 @@ if [ $volume_exists -eq 0 ]; then
     }
     log_info "portainer volume created: ${portainer_volume_name}"
 else
-    log_info "portainer volume reused (already exists): ${portainer_volume_name}"
+    log_info "portainer volume reuse: ${portainer_volume_name}"
 fi
 
 docker pull "$portainer_image"
