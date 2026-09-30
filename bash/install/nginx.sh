@@ -20,6 +20,9 @@ nginx_web_root='/var/www/html'
 
 v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 
+nginx_forward_server_and_port='frp:17500 prometheus:19090 grafana:13000 portainer:19443 cockpit:19190'
+nginx_forward_server_ip='127.0.0.1'
+
 run_uid_gid='www-data:www-data'
 
 function get_php_fpm_listen(){
@@ -65,6 +68,8 @@ function nginx_server_config(){
         nginx_index='index.php index.html index.htm'
     fi
     cat <<EOF
+map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
+
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
@@ -105,7 +110,7 @@ EOF
 		proxy_pass http://127.0.0.1:${v2ray_port};
 		proxy_http_version 1.1;
 		proxy_set_header Host \$http_host;
-		proxy_set_header Connection 'upgrade';
+		proxy_set_header Connection \$connection_upgrade;
 		proxy_set_header Upgrade \$http_upgrade;
 		proxy_redirect off;
 	}
@@ -114,6 +119,36 @@ EOF
     cat <<EOF
 }
 EOF
+    for forward in $nginx_forward_server_and_port; do
+        local forward_key="${forward%%:*}"
+        local forward_port="${forward#*:}"
+        cat <<EOF
+
+server {
+	listen 80;
+	listen [::]:80;
+
+	listen 443 ssl;
+	listen [::]:443 ssl;
+
+	ssl_certificate_key "${nginx_ssl_key}";
+	ssl_certificate "${nginx_ssl_cert}";
+	ssl_protocols TLSv1.2 TLSv1.3;
+
+	server_name ~^[^.]*${forward_key}[^.]*\.[^.]+\.[^.]+;
+
+	location / {
+		proxy_pass https://${nginx_forward_server_ip}:${forward_port};
+		proxy_http_version 1.1;
+		proxy_set_header Host \$http_host;
+		proxy_set_header Connection \$connection_upgrade;
+		proxy_set_header Upgrade \$http_upgrade;
+		proxy_ssl_verify off;
+		proxy_redirect off;
+	}
+}
+EOF
+    done
 }
 
 
