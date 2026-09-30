@@ -27,6 +27,7 @@ frp_ssl_cert="${frp_config_dir}/frp.crt"
 
 frp_bind_port=17000
 frp_vhost_http_port=17080
+frp_vhost_https_port=17443
 frp_dashboard_port=17500
 
 frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
@@ -42,6 +43,7 @@ function generate_frp_server_config(){
 bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
+vhostHTTPSPort = ${frp_vhost_https_port}
 
 auth.method = "token"
 auth.token = "${frp_token_escaped}"
