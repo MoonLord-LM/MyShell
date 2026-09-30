@@ -145,7 +145,6 @@ if [ -z "$docker_host_ip" ]; then
     exit 1
 fi
 log_attention "docker host ip: ${docker_host_ip}"
-log_attention "containers run as uid:gid: ${run_uid_gid}"
 
 prepare_dir "$prometheus_config_dir" "$run_uid_gid"
 {
