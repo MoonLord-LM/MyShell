@@ -141,6 +141,12 @@ log_warn 'export REDIS_PASSWORD="<password>"'
 log_warn 'if $PROMETHEUS_PASSWORD is not set, a random password will be generated:'
 log_warn 'export PROMETHEUS_PASSWORD="<password>"'
 
+docker inspect "$prometheus_container_name" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    log_info 'prometheus container already exists, quit now'
+    exit 0
+fi
+
 docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null)
 if [ -z "$docker_host_ip" ]; then
     log_error 'cannot detect docker bridge gateway, quit now'
@@ -183,32 +189,28 @@ chmod 644 "$prometheus_config_file"
 
 prepare_dir "$prometheus_data_dir" "$run_uid_gid"
 
-docker inspect "$prometheus_container_name" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    docker pull "$prometheus_image"
-    docker run -d \
-        --user "$run_uid_gid" \
-        --name "$prometheus_container_name" \
-        --restart unless-stopped \
-        --add-host host.docker.internal:${docker_host_ip} \
-        -p "$prometheus_port:9090" \
-        -v "$prometheus_config_file:/etc/prometheus/prometheus.yml:ro" \
-        -v "$prometheus_web_config_file:/etc/prometheus/prometheus-web.yml:ro" \
-        -v "$prometheus_scrape_password_file:/etc/prometheus/prometheus-scrape-password:ro" \
-        -v "$prometheus_data_dir:/prometheus" \
-        "$prometheus_image" \
-        --config.file=/etc/prometheus/prometheus.yml \
-        --storage.tsdb.path=/prometheus \
-        --web.config.file=/etc/prometheus/prometheus-web.yml
-    if [ $? -ne 0 ]; then
-        log_error 'prometheus container start failed, skip'
-    else
-        log_attention "prometheus installed on port $prometheus_port (public, basic auth)"
-    fi
-else
-    log_info 'prometheus container already exists, restart'
-    docker restart "$prometheus_container_name"
-fi
+docker pull "$prometheus_image"
+{
+    if_error_then_exit 'prometheus image pull failed, quit now'
+}
+
+docker run -d \
+    --user "$run_uid_gid" \
+    --name "$prometheus_container_name" \
+    --restart unless-stopped \
+    --add-host host.docker.internal:${docker_host_ip} \
+    -p "$prometheus_port:9090" \
+    -v "$prometheus_config_file:/etc/prometheus/prometheus.yml:ro" \
+    -v "$prometheus_web_config_file:/etc/prometheus/prometheus-web.yml:ro" \
+    -v "$prometheus_scrape_password_file:/etc/prometheus/prometheus-scrape-password:ro" \
+    -v "$prometheus_data_dir:/prometheus" \
+    "$prometheus_image" \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --storage.tsdb.path=/prometheus \
+    --web.config.file=/etc/prometheus/prometheus-web.yml
+{
+    if_error_then_exit 'prometheus container start failed, quit now'
+}
 
 log_attention "prometheus server name: ${prometheus_server_name}"
 log_attention "prometheus server ip: ${prometheus_server_ip}"
