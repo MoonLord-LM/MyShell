@@ -97,12 +97,12 @@ grafana_server_ip=$(hostname -I | awk '{print $1}')
 log_attention "grafana server name: ${grafana_server_name}"
 log_attention "grafana server ip: ${grafana_server_ip}"
 log_attention "grafana server port: ${grafana_port}"
-log_attention "grafana data dir: ${grafana_data_dir}"
+
+log_attention "grafana dashboard url: http://${grafana_server_ip}:${grafana_port}"
 log_attention "grafana user: ${grafana_admin_user}"
 log_attention "grafana password: ${grafana_admin_password}"
 
-grafana_server_url="http://${grafana_server_ip}:${grafana_port}"
-log_attention "grafana server url: ${grafana_server_url}"
+log_attention "grafana data dir: ${grafana_data_dir}"
 
 
 

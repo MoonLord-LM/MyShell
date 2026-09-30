@@ -128,15 +128,15 @@ portainer_server_ip=$(hostname -I | awk '{print $1}')
 
 log_attention "portainer server name: ${portainer_server_name}"
 log_attention "portainer server ip: ${portainer_server_ip}"
-log_attention "portainer web https port: ${portainer_server_port}"
-log_attention "portainer volume: ${portainer_volume_name}"
-log_attention "portainer ssl cert: ${portainer_sslcert}"
-log_attention "portainer ssl key: ${portainer_sslkey}"
+log_attention "portainer server port: ${portainer_server_port}"
+
+log_attention "portainer dashboard url: https://${portainer_server_ip}:${portainer_server_port}"
 log_attention "portainer user: ${portainer_admin_user}"
 log_attention "portainer password: ${portainer_admin_password}"
 
-portainer_web_url="https://${portainer_server_ip}:${portainer_server_port}"
-log_success "portainer web url: ${portainer_web_url}"
+log_attention "portainer volume: ${portainer_volume_name}"
+log_attention "portainer ssl cert: ${portainer_sslcert}"
+log_attention "portainer ssl key: ${portainer_sslkey}"
 
 
 

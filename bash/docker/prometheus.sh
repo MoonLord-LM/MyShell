@@ -211,15 +211,15 @@ fi
 log_attention "prometheus server name: ${prometheus_server_name}"
 log_attention "prometheus server ip: ${prometheus_server_ip}"
 log_attention "prometheus server port: ${prometheus_port}"
+
+log_attention "prometheus dashboard url: http://${prometheus_server_ip}:${prometheus_port}"
+log_attention "prometheus user: ${prometheus_user}"
+log_attention "prometheus password: ${prometheus_password}"
+
 log_attention "prometheus config dir: ${prometheus_config_dir}"
 log_attention "prometheus config file: ${prometheus_config_file}"
 log_attention "prometheus web config file: ${prometheus_web_config_file}"
 log_attention "prometheus data dir: ${prometheus_data_dir}"
-log_attention "prometheus user: ${prometheus_user}"
-log_attention "prometheus password: ${prometheus_password}"
-
-prometheus_server_url="http://${prometheus_server_ip}:${prometheus_port}"
-log_attention "prometheus server url: ${prometheus_server_url}"
 
 docker inspect "$node_exporter_container_name" > /dev/null 2>&1
 if [ $? -ne 0 ]; then
