@@ -256,6 +256,7 @@ if [ $? -ne 0 ]; then
         -v '/:/host:ro,rslave' \
         -v '/proc:/host/proc:ro' \
         -v '/sys:/host/sys:ro' \
+        -v '/run/udev:/run/udev:ro' \
         "$node_exporter_image" \
         --path.rootfs=/host \
         --web.listen-address="${docker_host_ip}:${node_exporter_port}"
