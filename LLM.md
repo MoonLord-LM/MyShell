@@ -1,9 +1,5 @@
 # TODO
 
-## OpenList 如何修改默认端口和路径
-
-OpenList 如何修改默认端口和路径
-
 ## 新增 root 密码重设函数
 
 新增 root 密码重设函数，使用 256 bit 随机数
@@ -11,11 +7,6 @@ OpenList 如何修改默认端口和路径
 ```shell
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ```
-
-## 考虑增加一个文件管理的 WEB UI
-
-    FileBrowser‑Quantum
-    OpenList
 
 ## 对各种 WEB UI 指定 URL 的根路径
 
@@ -47,8 +38,5 @@ password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 
 参考：
 https://github.com/awesome-selfhosted/awesome-selfhosted
-https://github.com/louislam/uptime-kuma
 https://github.com/photoprism/photoprism
 https://writefreely.org
-https://github.com/open-webui/open-webui
-https://github.com/portainer/portainer

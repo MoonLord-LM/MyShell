@@ -112,7 +112,6 @@ EOF
 
 
 
-
 # ———————————————————————— Init ————————————————————————
 source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
 if [ $? -ne 0 ]; then
