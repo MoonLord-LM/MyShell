@@ -16,7 +16,7 @@
 
 # ———————————————————————— Config ————————————————————————
 frp_container_name='frp'
-frp_image='fatedier/frps:latest'
+frp_image='fatedier/frps:v0.71.0'
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
