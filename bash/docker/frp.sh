@@ -44,6 +44,8 @@ bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 vhostHTTPSPort = ${frp_vhost_https_port}
+vhostHTTPSKeyFile = "${frp_ssl_key}"
+vhostHTTPSCertFile = "${frp_ssl_cert}"
 
 auth.method = "token"
 auth.token = "${frp_token_escaped}"
@@ -84,7 +86,7 @@ transport.heartbeatInterval = 60
 transport.tls.enable = true
 
 [[proxies]]
-name = "local-8080-http"
+name = "local-8080-to-server-${frp_vhost_http_port}"
 type = "http"
 
 localIP = "127.0.0.1"
