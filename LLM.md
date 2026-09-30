@@ -8,15 +8,6 @@
 password=$(head -c 32 '/dev/urandom' | base64 -w 0)
 ```
 
-## 对各种 WEB UI 指定 URL 的根路径
-
-分配各自的相对路径，方便绑定到同一个域名上访问
-
-    http://103.233.74.96:19090/Prometheus
-    http://103.233.74.96:13000/Grafana
-    http://103.233.74.96:17500/Frp
-    https://103.233.74.96:19190/Cockpit
-
 ## OpenList 的音乐播放器界面高度太小
 
 ```html
