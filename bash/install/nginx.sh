@@ -73,10 +73,7 @@ map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
-	return 301 https://\$host\$request_uri;
-}
 
-server {
 	listen 443 ssl default_server;
 	listen [::]:443 ssl default_server;
 
