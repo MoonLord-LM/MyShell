@@ -26,7 +26,6 @@ frp_ssl_key="${frp_config_dir}/frp.key"
 frp_ssl_cert="${frp_config_dir}/frp.crt"
 
 frp_bind_port=17000
-frp_vhost_http_port=17080
 frp_vhost_https_port=17443
 frp_dashboard_port=17500
 
@@ -42,14 +41,13 @@ function generate_frp_server_config(){
     cat <<EOF
 bindAddr = "::"
 bindPort = ${frp_bind_port}
-vhostHTTPPort = ${frp_vhost_http_port}
 vhostHTTPSPort = ${frp_vhost_https_port}
 vhostHTTPSKeyFile = "${frp_ssl_key}"
 vhostHTTPSCertFile = "${frp_ssl_cert}"
 
 auth.method = "token"
 auth.token = "${frp_token_escaped}"
-
+s
 transport.tls.force = true
 transport.tls.keyFile = "${frp_ssl_key}"
 transport.tls.certFile = "${frp_ssl_cert}"
@@ -86,7 +84,7 @@ transport.heartbeatInterval = 60
 transport.tls.enable = true
 
 [[proxies]]
-name = "local-8080-to-server-${frp_vhost_http_port}"
+name = "local-8080-to-server-${frp_vhost_https_port}"
 type = "http"
 
 localIP = "127.0.0.1"
@@ -173,7 +171,7 @@ frp_server_ip=$(get_system_ip)
 log_attention "frp server name: ${frp_server_name}"
 log_attention "frp server ip: ${frp_server_ip}"
 log_attention "frp server bind port: ${frp_bind_port}"
-log_attention "frp server vhost http port: ${frp_vhost_http_port}"
+log_attention "frp server vhost https port: ${frp_vhost_https_port}"
 log_attention "frp server token: ${frp_token}"
 
 log_attention "frp server dashboard url: https://${frp_server_ip}:${frp_dashboard_port}"
@@ -195,7 +193,7 @@ echo
 
 log_attention "client run command: frpc.exe -c frpc.toml"
 log_attention "client example local url: http://127.0.0.1:8080"
-log_attention "client example publish url: http://${frp_server_ip}:${frp_vhost_http_port}"
+log_attention "client example publish url: https://${frp_server_ip}:${frp_vhost_https_port}"
 
 
 
