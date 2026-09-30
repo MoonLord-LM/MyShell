@@ -3,7 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
 # export PORTAINER_PASSWORD="<password>"
-# docker rm -f portainer && docker volume -f portainer_data
+# docker rm -f portainer && docker volume rm -f portainer_data
 
 # Portainer CE
 # https://github.com/portainer/portainer
