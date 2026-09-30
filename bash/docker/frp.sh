@@ -190,7 +190,7 @@ log_success "==================== frpc.toml example - end ===================="
 echo
 
 log_attention "client run command: frpc.exe -c frpc.toml"
-log_attention "client example local url: http://127.0.0.1:8443"
+log_attention "client example local url: https://127.0.0.1:8443"
 log_attention "client example publish url: https://${frp_server_ip}:${frp_vhost_https_port}"
 
 
