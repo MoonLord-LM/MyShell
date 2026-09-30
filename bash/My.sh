@@ -172,6 +172,16 @@ function check_system_is_debian(){
     local name=$(get_system_name)
     log_info "check_system_is_debian: $name"
 }
+# 获取系统的 IP
+function get_system_ip(){
+    local ip=$(hostname -I | awk '{print $1}')
+    if [ "$ip" != '' ]; then
+        echo "$ip"
+        return 0
+    fi
+    log_error 'get_system_ip failed'
+    return 1
+}
 
 
 
@@ -564,7 +574,7 @@ function generate_ssl_cert(){
         -newkey rsa:4096 -nodes -keyout "$ssl_key_file" \
         -x509 -days 365000 -out "$ssl_cert_file" \
         -subj "/CN=$ssl_subject_name" \
-        -addext "subjectAltName=DNS:$(hostname),IP:$(hostname -I | awk '{print $1}')"
+        -addext "subjectAltName=DNS:$(hostname),IP:$(get_system_ip)"
     if [ $? -ne 0 ]; then
         log_error "generate_ssl_cert failed"
         return 1
