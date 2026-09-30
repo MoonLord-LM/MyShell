@@ -42,8 +42,6 @@ function generate_frp_server_config(){
 bindAddr = "::"
 bindPort = ${frp_bind_port}
 vhostHTTPSPort = ${frp_vhost_https_port}
-vhostHTTPSKeyFile = "${frp_ssl_key}"
-vhostHTTPSCertFile = "${frp_ssl_cert}"
 
 auth.method = "token"
 auth.token = "${frp_token_escaped}"
