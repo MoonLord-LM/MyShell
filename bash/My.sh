@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+
 # MyShell
-# 开源地址：https://github.com/MoonLord-LM/MyShell
-# 加载函数：source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+# https://github.com/MoonLord-LM/MyShell
+
+
 
 
 
