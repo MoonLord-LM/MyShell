@@ -174,7 +174,7 @@ function check_system_is_debian(){
 }
 # 获取系统的 IP
 function get_system_ip(){
-    local ip=$(hostname -I | awk '{print $1}')
+    local ip=$(hostname -I 2>'/dev/null' | awk '{print $1}')
     if [ "$ip" != '' ]; then
         echo "$ip"
         return 0
@@ -197,7 +197,7 @@ function check_command_exist(){
     fi
 
     local cmd_file_path="$(command -v "$cmd")"
-    local pkg_info="$(dpkg -S "$cmd_file_path" 2>/dev/null)"
+    local pkg_info="$(dpkg -S "$cmd_file_path" 2>'/dev/null')"
 
     if [ "$pkg_info" != '' ] ; then
         log_info "check_command_exist: \"$cmd\" exists in \"$pkg_info\""

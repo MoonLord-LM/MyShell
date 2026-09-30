@@ -63,7 +63,7 @@ check_command_exist 'docker'
 log_warn 'if $GRAFANA_PASSWORD is not set, a random password will be generated:'
 log_warn 'export GRAFANA_PASSWORD="<password>"'
 
-docker inspect "$grafana_container_name" > /dev/null 2>&1
+docker inspect "$grafana_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'grafana container already exists, quit now'
     exit 0

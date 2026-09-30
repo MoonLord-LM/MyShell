@@ -132,7 +132,7 @@ log_warn 'export FRP_TOKEN="<token>"'
 log_warn 'if $FRP_DASHBOARD_PASSWORD is not set, a random password will be generated:'
 log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
 
-docker inspect "$frp_container_name" > /dev/null 2>&1
+docker inspect "$frp_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'frp server container already exists, quit now'
     exit 0

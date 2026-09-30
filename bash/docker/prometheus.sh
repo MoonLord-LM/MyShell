@@ -166,13 +166,13 @@ log_warn 'export REDIS_PASSWORD="<password>"'
 log_warn 'if $PROMETHEUS_PASSWORD is not set, a random password will be generated:'
 log_warn 'export PROMETHEUS_PASSWORD="<password>"'
 
-docker inspect "$prometheus_container_name" > /dev/null 2>&1
+docker inspect "$prometheus_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'prometheus container already exists, quit now'
     exit 0
 fi
 
-docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null)
+docker_host_ip=$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>'/dev/null')
 if [ -z "$docker_host_ip" ]; then
     log_error 'cannot detect docker bridge gateway, quit now'
     exit 1
@@ -251,7 +251,7 @@ log_attention "prometheus config file: ${prometheus_config_file}"
 log_attention "prometheus web config file: ${prometheus_web_config_file}"
 log_attention "prometheus data dir: ${prometheus_data_dir}"
 
-docker inspect "$node_exporter_container_name" > /dev/null 2>&1
+docker inspect "$node_exporter_container_name" >'/dev/null' 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$node_exporter_image"
     docker run -d \
@@ -275,7 +275,7 @@ else
     docker restart "$node_exporter_container_name"
 fi
 
-docker inspect "$nginx_exporter_container_name" > /dev/null 2>&1
+docker inspect "$nginx_exporter_container_name" >'/dev/null' 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$nginx_exporter_image"
     docker run -d \
@@ -309,7 +309,7 @@ EOF
     else
         log_info "mysqld_exporter config file: ${mysqld_exporter_config_file} (mode 600, owner ${run_uid_gid})"
 
-        docker inspect "$mysqld_exporter_container_name" > /dev/null 2>&1
+        docker inspect "$mysqld_exporter_container_name" >'/dev/null' 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$mysqld_exporter_image"
             docker run -d \
@@ -353,7 +353,7 @@ EOF
     else
         log_info "redis_exporter password file: ${redis_exporter_password_file} (mode 600, owner ${run_uid_gid})"
 
-        docker inspect "$redis_exporter_container_name" > /dev/null 2>&1
+        docker inspect "$redis_exporter_container_name" >'/dev/null' 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$redis_exporter_image"
             docker run -d \

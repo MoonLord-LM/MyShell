@@ -72,14 +72,14 @@ if [ ! -S "$portainer_docker_socket_file" ]; then
     exit 1
 fi
 
-docker inspect "$portainer_container_name" > /dev/null 2>&1
+docker inspect "$portainer_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'portainer container already exists, quit now'
     exit 0
 fi
 
 volume_exists=0
-docker volume inspect "$portainer_volume_name" > /dev/null 2>&1
+docker volume inspect "$portainer_volume_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     volume_exists=1
 fi
