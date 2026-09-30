@@ -20,7 +20,7 @@ nginx_web_root='/var/www/html'
 
 v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 
-nginx_forward_server_and_port='frp:17500 prometheus:19090 grafana:13000 portainer:19443 cockpit:19190'
+nginx_forward_server_and_port='frp:17500 prometheus:19090 grafana:13000 portainer:19443 cockpit:19190 openlist:17080'
 nginx_forward_server_ip='127.0.0.1'
 
 run_uid_gid='www-data:www-data'
