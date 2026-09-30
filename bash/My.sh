@@ -141,7 +141,7 @@ function get_system_version_codename(){
 # 判断系统是否是 Ubuntu
 function check_system_is_ubuntu(){
     local name=$(get_system_name)
-    echo "$name" | grep 'Ubuntu' > '/dev/null' 2>&1
+    echo "$name" | grep 'Ubuntu' >'/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_ubuntu: false'
         return 1
@@ -151,7 +151,7 @@ function check_system_is_ubuntu(){
 # 判断系统是否是 Debian
 function check_system_is_debian(){
     local name=$(get_system_name)
-    echo "$name" | grep 'Debian' > '/dev/null' 2>&1
+    echo "$name" | grep 'Debian' >'/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info 'check_system_is_debian: false'
         return 1
@@ -177,7 +177,7 @@ function check_command_exist(){
     check_parameter "$1" || return 1
     local cmd="$1"
 
-    command -v "$cmd" > '/dev/null' 2>&1
+    command -v "$cmd" >'/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_info "check_command_exist: \"$cmd\" does not exist"
         return 1
@@ -256,7 +256,7 @@ function install_software(){
         return 1
     fi
 
-    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
+    dpkg-query -W -f='${Status}' "$software" 2>'/dev/null' | grep -q 'install ok installed'
     if [ $? -ne 0 ]; then
         apt update -y
         if [ $? -ne 0 ]; then
@@ -285,7 +285,7 @@ function remove_software(){
         return 1
     fi
 
-    dpkg-query -W -f='${Status}' "$software" 2> '/dev/null' | grep -q 'install ok installed'
+    dpkg-query -W -f='${Status}' "$software" 2>'/dev/null' | grep -q 'install ok installed'
     if [ $? -ne 0 ]; then
         log_info "remove_software skip, \"$software\" is already removed"
         return 0
@@ -336,7 +336,7 @@ function show_software_list(){
     fi
 
     log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
-    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
+    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2>'/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
 }
 # 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述等），显示名称和版本
 function search_software(){
@@ -350,11 +350,11 @@ function search_software(){
     fi
 
     local result=''
-    result=$(dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2> '/dev/null' \
+    result=$(dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2>'/dev/null' \
         | grep 'install ok installed' | awk '{print $1" "$2}' | grep -i "$keyword")
     if [ "$result" == '' ]; then
         # 包名没匹配到时，再按软件描述搜索
-        result=$(dpkg-query -W -f='${binary:Package}|${Version}|${Status}|${Description}\n' 2> '/dev/null' \
+        result=$(dpkg-query -W -f='${binary:Package}|${Version}|${Status}|${Description}\n' 2>'/dev/null' \
             | grep 'install ok installed' | grep -i "$keyword" | awk -F'|' '{print $1" "$2}')
     fi
     if [ "$result" == '' ]; then
@@ -616,8 +616,8 @@ function set_tcp_congestion_control_bbr(){
     sysctl 'net.core.default_qdisc'
 
     # 尝试加载 bbr 模块，并试探当前内核是否支持 bbr
-    modprobe 'tcp_bbr' > '/dev/null' 2>&1
-    sysctl -w 'net.ipv4.tcp_congestion_control=bbr' > '/dev/null' 2>&1
+    modprobe 'tcp_bbr' >'/dev/null' 2>&1
+    sysctl -w 'net.ipv4.tcp_congestion_control=bbr' >'/dev/null' 2>&1
     if [ $? -ne 0 ]; then
         log_error 'set_tcp_congestion_control_bbr failed, kernel does not support bbr'
         return 1
@@ -790,7 +790,7 @@ function set_memory_swap_to_4GB(){
         log_info "set_memory_swap remove old swap file: \"$swap_path\""
         echo "$active_swap_files" | grep -q -F -x "$swap_path"
         if [ $? -eq 0 ]; then
-            swapoff "$swap_path" > '/dev/null' 2>&1
+            swapoff "$swap_path" >'/dev/null' 2>&1
             if [ $? -ne 0 ]; then
                 log_warn "set_memory_swap skip, swapoff \"$swap_path\" error, keep it"
                 continue
@@ -827,10 +827,10 @@ function set_memory_swap_to_4GB(){
 
 # 获取系统正在监听的 TCP 端口
 function show_tcp_listening(){
-    if command -v 'ss' &> '/dev/null'; then
+    if command -v 'ss' &>'/dev/null'; then
         log_info 'ss --tcp --listening --numeric --processes'
         ss -tlnp
-    elif command -v 'netstat' &> '/dev/null'; then
+    elif command -v 'netstat' &>'/dev/null'; then
         log_info 'netstat --all --tcp --listening --numeric --programs | grep '"'"'LISTEN'"'"''
         netstat -atlnp | grep 'LISTEN'
     else

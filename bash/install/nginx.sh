@@ -23,7 +23,7 @@ v2ray_server_config_file='/usr/local/etc/v2ray/config.json'
 run_uid_gid='www-data:www-data'
 
 function get_php_fpm_listen(){
-    local php_fpm_listen=$(find '/run/php' -maxdepth 1 -name 'php*-fpm.sock' 2> '/dev/null' | sort | head -n 1)
+    local php_fpm_listen=$(find '/run/php' -maxdepth 1 -name 'php*-fpm.sock' 2>'/dev/null' | sort | head -n 1)
     if [ "$php_fpm_listen" == '' ]; then
         log_info 'php-fpm not found, nginx config without php support'
         return 1
@@ -33,7 +33,7 @@ function get_php_fpm_listen(){
 }
 
 function get_v2ray_ws_forward(){
-    local v2ray_service=$(systemctl list-units --type=service --state=active --no-legend --no-pager 'v2ray.service' 2> '/dev/null' | awk '{print $1}' | head -n 1)
+    local v2ray_service=$(systemctl list-units --type=service --state=active --no-legend --no-pager 'v2ray.service' 2>'/dev/null' | awk '{print $1}' | head -n 1)
     if [ "$v2ray_service" == '' ]; then
         log_info 'v2ray not found, nginx config without v2ray ws forward'
         return 1
@@ -46,7 +46,7 @@ function get_v2ray_ws_forward(){
 import json, sys
 inbound = json.load(open(sys.argv[1]))["inbounds"][0]
 print(str(inbound["port"]) + ":" + inbound["streamSettings"]["wsSettings"]["path"])
-' "$v2ray_server_config_file" 2> '/dev/null')
+' "$v2ray_server_config_file" 2>'/dev/null')
     if [ "$v2ray_forward" == '' ]; then
         log_info "v2ray port or ws path not found in \"${v2ray_server_config_file}\", nginx config without v2ray ws forward"
         return 1
