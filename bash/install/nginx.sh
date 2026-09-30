@@ -15,7 +15,34 @@
 nginx_ssl_key='/etc/nginx/ssl/server-key.pem'
 nginx_ssl_cert='/etc/nginx/ssl/server-cert.pem'
 
+nginx_default_config_file='/etc/nginx/sites-available/default'
+
 run_uid_gid='www-data:www-data'
+
+function nginx_ssl_config(){
+    cat <<EOF
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+
+	ssl_certificate_key "${nginx_ssl_key}";
+	ssl_certificate "${nginx_ssl_cert}";
+
+	root /var/www/html;
+
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+
+	location / {
+		try_files \$uri \$uri/ =404;
+	}
+}
+EOF
+}
 
 
 
@@ -54,6 +81,12 @@ generate_ssl_cert 'Nginx' "$nginx_ssl_key" "$nginx_ssl_cert"
 {
     if_error_then_exit 'nginx ssl cert generate failed, quit now'
 }
+
+update_file "$nginx_default_config_file" "$(nginx_ssl_config)"
+{
+    if_error_then_exit 'nginx default config write failed, quit now'
+}
+cat "$nginx_default_config_file"
 
 
 
