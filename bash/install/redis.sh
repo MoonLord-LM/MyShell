@@ -107,6 +107,9 @@ generate_ssl_cert 'Redis' "$redis_ssl_key" "$redis_ssl_cert" "$run_uid_gid"
 }
 
 update_file "$redis_conf_file" "$(redis_config_cnf)" "$run_uid_gid" '600'
+{
+    if_error_then_exit 'redis config file write failed, quit now'
+}
 
 redis_server_ip=$(get_system_ip)
 log_attention "redis server ip: ${redis_server_ip}"

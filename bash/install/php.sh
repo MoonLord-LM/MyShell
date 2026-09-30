@@ -53,6 +53,9 @@ wget -O "$php_gpg_key_file" --timeout=120 --no-cache "$php_apt_repo_url/apt.gpg"
 }
 codename=$(get_system_version_codename)
 update_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
+{
+    if_error_then_exit 'php apt source setup failed, quit now'
+}
 
 for component_suffix in $php_components; do
     component="php${php_version}-${component_suffix}"

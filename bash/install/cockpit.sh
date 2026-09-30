@@ -89,7 +89,13 @@ cockpit-bridge --version
 }
 
 update_file "${cockpit_conf_file}" "$(cockpit_config_conf)"
+{
+    if_error_then_exit 'cockpit config file write failed, quit now'
+}
 update_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
+{
+    if_error_then_exit 'cockpit socket config file write failed, quit now'
+}
 systemctl daemon-reload
 
 echo > /etc/cockpit/disallowed-users

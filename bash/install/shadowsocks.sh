@@ -104,6 +104,9 @@ chmod +x "$ss_server_location"
 rm -f "$tmp_file"
 
 update_file '/etc/systemd/system/ssserver.service' "$(ss_service_file)"
+{
+    if_error_then_exit 'ssserver service file write failed, quit now'
+}
 systemctl daemon-reload
 
 update_file "$ss_server_config_file" "$(ss_config_json)" "$run_uid_gid" '600'

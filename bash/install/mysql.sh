@@ -128,6 +128,9 @@ generate_ssl_cert 'MySQL' "$mysql_ssl_key" "$mysql_ssl_cert" "$run_uid_gid"
 }
 
 update_file "$mysql_conf_file" "$(mysql_config_cnf)"
+{
+    if_error_then_exit 'mysql config file write failed, quit now'
+}
 
 mysqld --validate-config
 {

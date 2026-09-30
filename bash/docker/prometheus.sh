@@ -333,7 +333,7 @@ else
     log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
-if ["$redis_password" != '' ]; then
+if [ "$redis_password" != '' ]; then
     redis_exporter_password_content=$(cat <<EOF
 {
   "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"
