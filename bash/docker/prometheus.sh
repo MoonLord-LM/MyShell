@@ -68,6 +68,9 @@ global:
 
 scrape_configs:
   - job_name: prometheus
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
     basic_auth:
       username: ${prometheus_user}
       password_file: /etc/prometheus/prometheus-scrape-password
