@@ -44,6 +44,7 @@ mysql_host='host.docker.internal'
 mysql_port=13306
 mysql_user='admin'
 mysql_password="${MYSQL_PASSWORD:-}"
+mysql_password_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 redis_exporter_container_name='prometheus_redis_exporter'
 redis_exporter_image='oliver006/redis_exporter:latest'
@@ -52,6 +53,7 @@ redis_exporter_password_file="${prometheus_config_dir}/redis-exporter-password"
 redis_host='host.docker.internal'
 redis_port=16379
 redis_password="${REDIS_PASSWORD:-}"
+redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 run_uid_gid='65534:65534'
 
@@ -267,7 +269,6 @@ else
 fi
 
 if [ -n "$mysql_password" ]; then
-    mysql_password_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     mysqld_exporter_config_content=$(cat <<EOF
 [client]
 user = ${mysql_user}
@@ -312,7 +313,6 @@ else
 fi
 
 if [ -n "$redis_password" ]; then
-    redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
     redis_exporter_password_content=$(cat <<EOF
 {
   "redis://${redis_host}:${redis_port}": "${redis_password_escaped}"

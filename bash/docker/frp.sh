@@ -16,7 +16,7 @@
 
 # ———————————————————————— Config ————————————————————————
 frp_container_name='frp'
-frp_image='fatedier/frps:v0.71.0'
+frp_image='fatedier/frps:latest'
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
@@ -27,8 +27,10 @@ frp_vhost_http_port=17080
 frp_dashboard_port=17500
 
 frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
+frp_token_escaped=$(printf '%s' "$frp_token" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 frp_dashboard_user='admin'
 frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
+frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 run_uid_gid='65534:65534'
 
@@ -39,7 +41,7 @@ bindPort = ${frp_bind_port}
 vhostHTTPPort = ${frp_vhost_http_port}
 
 auth.method = "token"
-auth.token = "${frp_token}"
+auth.token = "${frp_token_escaped}"
 
 transport.tls.force = true
 transport.maxPoolCount = 20
@@ -54,7 +56,7 @@ log.maxDays = 3
 webServer.addr = "::"
 webServer.port = ${frp_dashboard_port}
 webServer.user = "${frp_dashboard_user}"
-webServer.password = "${frp_dashboard_password}"
+webServer.password = "${frp_dashboard_password_escaped}"
 EOF
 }
 
@@ -64,7 +66,7 @@ serverAddr = "${frp_server_ip}"
 serverPort = ${frp_bind_port}
 
 auth.method = "token"
-auth.token = "${frp_token}"
+auth.token = "${frp_token_escaped}"
 
 transport.poolCount = 20
 transport.dialServerKeepalive = 60

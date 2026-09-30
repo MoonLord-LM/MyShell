@@ -85,10 +85,9 @@ check_system_is_ubuntu || check_system_is_debian
 }
 
 codename=$(get_system_version_codename)
-if [ -z "${codename}" ]; then
-    log_error 'get codename failed, quit now'
-    exit 1
-fi
+{
+    if_error_then_exit 'get codename failed, quit now'
+}
 
 install_software cockpit cockpit-doc cockpit-machines
 {

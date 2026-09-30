@@ -18,6 +18,7 @@ ss_server_location='/usr/local/bin/ssserver'
 ss_server_config_file='/usr/local/etc/ssserver/config.json'
 ss_server_port=10000
 ss_password="${SS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
+ss_password_escaped=$(printf '%s' "$ss_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 ss_method='2022-blake3-aes-256-gcm'
 
 run_uid_gid='root:root'
@@ -27,7 +28,7 @@ function ss_config_json(){
 {
     "server": "::",
     "server_port": ${ss_server_port},
-    "password": "${ss_password}",
+    "password": "${ss_password_escaped}",
     "method": "${ss_method}"
 }
 EOF

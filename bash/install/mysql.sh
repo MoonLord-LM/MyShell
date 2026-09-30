@@ -23,6 +23,7 @@ mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
 mysql_user='admin'
 mysql_server_port=13306
 mysql_password="${MYSQL_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
+mysql_password_sql_escaped=$(printf '%s' "$mysql_password" | sed "s/'/''/g")
 
 run_uid_gid='mysql:mysql'
 
@@ -63,8 +64,8 @@ function mysql_gen_ssl_cert(){
 
 function allow_remote_access(){
     mysql -h 'localhost' -u 'root' --batch <<EOF
-        create user if not exists '$mysql_user'@'%' identified by '$mysql_password';
-        alter user '$mysql_user'@'%' identified by '$mysql_password';
+        create user if not exists '$mysql_user'@'%' identified by '$mysql_password_sql_escaped';
+        alter user '$mysql_user'@'%' identified by '$mysql_password_sql_escaped';
         grant all privileges on *.* to '$mysql_user'@'%' with grant option;
         select user, host, plugin from mysql.user;
         flush privileges;
