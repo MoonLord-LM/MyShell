@@ -16,7 +16,7 @@
 mysql_apt_config_url='https://dev.mysql.com/get/mysql-apt-config_0.8.40-1_all.deb'
 mysql_apt_config_select='mysql-8.4-lts'
 
-mysql_conf_file='/etc/mysql/conf.d/mysqld.cnf'
+mysql_conf_file='/etc/mysql/mysql.conf.d/mysqld.cnf'
 mysql_ssl_key='/etc/mysql/ssl/server-key.pem'
 mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
 
@@ -123,7 +123,6 @@ search_software 'mysql-apt-config'
 }
 
 install_software 'mysql-community-server'
-mysqld --version
 {
     if_error_then_exit 'mysql-community-server install failed, quit now'
 }
