@@ -96,12 +96,13 @@ docker run -d \
     --name "$grafana_container_name" \
     --restart unless-stopped \
     -p "$grafana_port:3000" \
-    -v "$(dirname "$grafana_ssl_key_file"):/etc/grafana/certs:ro" \
+    -v "${grafana_ssl_key_file}:/etc/grafana/certs/grafana.key:ro"
+    -v "${grafana_ssl_cert_file}:/etc/grafana/certs/grafana.crt:ro"
     -v "$grafana_data_dir:/var/lib/grafana" \
     -v "${grafana_admin_password_file}:/run/secrets/grafana_admin_password:ro" \
     -e "GF_SERVER_PROTOCOL=https" \
-    -e "GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt" \
     -e "GF_SERVER_CERT_KEY_FILE=/etc/grafana/certs/grafana.key" \
+    -e "GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt" \
     -e "GF_SECURITY_ADMIN_USER=$grafana_admin_user" \
     -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
     -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel" \
