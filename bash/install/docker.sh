@@ -102,8 +102,8 @@ log_info 'docker ps -a:' && docker ps -a
 
 hello_world_container_ids=$(docker ps -a -q --filter ancestor=hello-world)
 if [ -n "$hello_world_container_ids" ]; then
-    docker rm "$hello_world_container_ids"
-    docker image rm 'hello-world'
+    docker rm -f "$hello_world_container_ids"
+    docker rm -f 'hello-world'
 fi
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
