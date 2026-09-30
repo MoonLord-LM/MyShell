@@ -560,8 +560,7 @@ function generate_ssl_cert(){
     openssl req \
         -newkey rsa:4096 -nodes -keyout "$ssl_key_file" \
         -x509 -days 365000 -out "$ssl_cert_file" \
-        -subj "/CN=$ssl_subject_name" \
-        -addext "subjectAltName=DNS:$(hostname),IP:$(get_system_ip)"
+        -subj "/CN=$ssl_subject_name"
     if [ $? -ne 0 ]; then
         log_error "generate_ssl_cert failed"
         return 1
