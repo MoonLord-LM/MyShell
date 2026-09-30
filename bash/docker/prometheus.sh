@@ -122,6 +122,16 @@ function prometheus_gen_ssl_cert(){
     chmod 600 "$prometheus_ssl_key_file"
 }
 
+function prometheus_web_config_yml(){
+    cat <<EOF
+basic_auth_users:
+  ${prometheus_user}: ${prometheus_password_hash}
+tls_server_config:
+  cert_file: /etc/prometheus/certs/prometheus.crt
+  key_file: /etc/prometheus/certs/prometheus.key
+EOF
+}
+
 
 
 
@@ -182,14 +192,7 @@ fi
 
 prometheus_gen_ssl_cert
 
-web_config_content="basic_auth_users:
-  ${prometheus_user}: ${prometheus_password_hash}
-tls_server_config:
-  cert_file: /etc/prometheus/certs/prometheus.crt
-  key_file: /etc/prometheus/certs/prometheus.key
-"
-
-update_file "$prometheus_web_config_file" "$web_config_content" "$run_uid_gid" '600'
+update_file "$prometheus_web_config_file" "$(prometheus_web_config_yml)" "$run_uid_gid" '600'
 {
     if_error_then_exit 'prometheus web config file create failed, quit now'
 }
