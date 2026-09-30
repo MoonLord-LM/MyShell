@@ -182,9 +182,8 @@ log_attention "client example publish url: http://${frp_server_ip}:${frp_vhost_h
 
 
 # ———————————————————————— Start ————————————————————————
-show_tcp_listening
-
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
-
 log_info "docker logs $frp_container_name:" && docker logs "$frp_container_name"
+
+show_tcp_listening
