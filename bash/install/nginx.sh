@@ -73,7 +73,10 @@ map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
+	return 301 https://\$host\$request_uri;
+}
 
+server {
 	listen 443 ssl default_server;
 	listen [::]:443 ssl default_server;
 
@@ -100,6 +103,16 @@ EOF
         cat <<EOF
 
 	location ~ \.php\$ {
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Access-Control-Allow-Origin "*" always;
+        add_header Access-Control-Allow-Methods "GET,POST,OPTIONS,HEAD,PUT,DELETE" always;
+        add_header Access-Control-Allow-Headers "Content-Type,X-Requested-With" always;
+        add_header X-Content-Type-Options nosniff always;
+
+        if (\$request_method = OPTIONS) {
+            return 204;
+        }
+
 		include snippets/fastcgi-php.conf;
 		fastcgi_pass unix:${php_fpm_listen};
 	}
