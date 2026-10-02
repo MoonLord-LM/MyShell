@@ -37,7 +37,7 @@ nginx_exporter_container_name='prometheus_nginx_exporter'
 nginx_exporter_image='nginx/nginx-prometheus-exporter:latest'
 nginx_exporter_port=19113
 nginx_host='host.docker.internal'
-nginx_port=80
+nginx_port=443
 
 mysqld_exporter_container_name='prometheus_mysql_exporter'
 mysqld_exporter_image='prom/mysqld-exporter:latest'

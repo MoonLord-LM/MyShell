@@ -65,7 +65,7 @@ function nginx_server_config(){
     local v2ray_forward=$(get_v2ray_ws_forward)
     local nginx_index='index.html index.htm index.nginx-debian.html'
     if [ "$php_fpm_listen" != '' ]; then
-        nginx_index='index.php index.html index.htm'
+        nginx_index='index.php index.html'
     fi
     cat <<EOF
 map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
@@ -95,7 +95,11 @@ server {
         try_files \$uri \$uri/ =404;
     }
 
-    location /nginx_status {
+    location = /nginx_status {
+        allow 127.0.0.1;
+        allow 172.17.0.1;
+        deny all;
+        error_page 403 =404 /404_not_found;
         stub_status;
     }
 EOF

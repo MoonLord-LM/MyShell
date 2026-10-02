@@ -53,10 +53,18 @@ else
 fi
 
 mkdir -p "$(dirname "$docker_gpg_key_file")"
-wget -O- --timeout=120 --no-cache "${docker_repo_url}/gpg" | gpg --dearmor --yes -o "$docker_gpg_key_file"
+
+tmp_file="/tmp/docker-gpg-key_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.asc"
+wget -O "$tmp_file" --timeout=120 --no-cache "${docker_repo_url}/gpg"
 {
     if_error_then_exit 'docker gpg key download failed, quit now'
 }
+
+gpg --dearmor --yes -o "$docker_gpg_key_file" "$tmp_file"
+{
+    if_error_then_exit 'docker gpg key dearmor failed, quit now'
+}
+rm -f "$tmp_file"
 
 codename=$(get_system_version_codename)
 system_arch="$(dpkg --print-architecture)"
@@ -102,7 +110,8 @@ log_info 'docker ps -a:' && docker ps -a
 
 hello_world_container_ids=$(docker ps -a -q --filter ancestor=hello-world)
 if [ "$hello_world_container_ids" != '' ]; then
-    docker rm -f 'hello-world'
+    docker rm -f $hello_world_container_ids
 fi
+docker rmi 'hello-world'
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a

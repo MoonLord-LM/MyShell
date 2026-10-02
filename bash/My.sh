@@ -20,9 +20,9 @@ function check_parameter(){
     for i in $(seq 1 "$#"); do
         if [ "${!i}" == '' ]; then
             if [ -t 2 ]; then
-                printf '\033[s%m%s: parameter [ ${!i} ] is empty\033[0m\n' "$color_red" "$current_function" >&2
+                printf '\033[s%m%s: parameter [ %s ] is empty\033[0m\n' "$color_red" "$current_function" "${!i}" >&2
             else
-                printf '%s: parameter [ ${!i} ] is empty\n' "$current_function" >&2
+                printf '%s: parameter [ %s ] is empty\n' "$current_function" "${!i}" >&2
             fi
             return 1
         fi

@@ -20,6 +20,8 @@ cockpit_ssl_cert='/etc/cockpit/ws-certs.d/1-self-signed.cert'
 cockpit_server_port=19190
 cockpit_allow_groups='root'
 
+cockpit_components='cockpit cockpit-doc cockpit-machines'
+
 cockpit_idle_timeout=1800
 cockpit_allow_multi_host=false
 
@@ -78,10 +80,12 @@ codename=$(get_system_version_codename)
     if_error_then_exit 'get codename failed, quit now'
 }
 
-install_software cockpit cockpit-doc cockpit-machines
-{
-    if_error_then_exit 'cockpit install failed, quit now'
-}
+for cockpit_component in $cockpit_components; do
+    install_software "$cockpit_component"
+    {
+        if_error_then_exit "cockpit component install failed: $cockpit_component, quit now"
+    }
+done
 
 cockpit-bridge --version
 {
