@@ -501,7 +501,8 @@ function update_file(){
 
     if [ -f "$target_file" ]; then
         local old_content=$(cat "$target_file")
-        if [ "$old_content" == "$target_content" ]; then
+        local new_content=$(printf '%s' "$target_content")
+        if [ "$old_content" == "$new_content" ]; then
             log_info "update_file skip, \"$target_file\" is not changed"
             return 0
         fi
@@ -512,7 +513,7 @@ function update_file(){
         fi
     fi
 
-    printf '%s' "$target_content" > "$target_file"
+    printf '%s\n' "$target_content" > "$target_file"
     if [ $? -ne 0 ]; then
         log_error "update_file failed, write file \"$target_file\" error"
         return 1
