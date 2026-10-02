@@ -1,54 +1,129 @@
 # MyShell
 
-A function library for the Linux Shell.  
-Linux Shell 常用脚本和函数库.  
+A function library for the Linux Shell  
 
-## [测试系统]
+Linux Shell 常用脚本和函数库  
+在 Ubuntu / Debian 服务器上，提供常用软件的一键安装配置脚本，以及一些实用的函数  
 
-Ubuntu 22.04 / Debian 11  
+## [目录结构]
+
+```
+MyShell/
+├── bash/
+│   ├── My.sh              # 核心函数库
+│   ├── install/
+│   │   ├── cockpit.sh     # Cockpit 安装
+│   │   ├── docker.sh      # Docker 安装
+│   │   ├── mysql.sh       # MySQL 安装
+│   │   ├── nginx.sh       # Nginx 安装
+│   │   ├── php.sh         # PHP 8.4 安装
+│   │   ├── redis.sh       # Redis 安装
+│   │   ├── shadowsocks.sh # Shadowsocks 安装
+│   │   └── v2ray.sh       # V2Ray 安装
+│   └── docker/
+│       ├── frp.sh         # Frp 服务端安装
+│       ├── grafana.sh     # Grafana 安装
+│       ├── portainer.sh   # Portainer CE 安装
+│       └── prometheus.sh  # Prometheus 安装
+├── resource/
+│   ├── grafana/dashboard/ # Grafana 仪表盘 JSON 示例
+│   └── nginx/config/      # Nginx 配置示例
+├── self-check.sh          # 自检脚本
+├── LLM.md                 # 提示信息
+└── README.md              # 工程说明
+```
 
 ## [使用说明]
 
-    # 加载函数
-    source <( wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+### 部署脚本
 
-    # 常用函数
-    set_timezone_china
-    set_tcp_congestion_control_bbr
-    update_software
-    prepare_common_command
-    get_system_name
-    get_system_version_codename
-    show_tcp_listening
+脚本可重复执行，已安装则直接退出  
+安装过程优先使用 export 环境参数，无参数时，自动生成随机参数，并在日志中显示  
 
-    # 可选函数
-    set_memory_swap_to_4GB
+```bash
+# 安装 Docker
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
 
-    # 安装 Docker
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
+# 安装 MySQL（监听端口 13306，开启 SSL）
+export MYSQL_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
-    # 安装 MySQL
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
+# 安装 Redis（监听端口 16379，开启 SSL）
+export REDIS_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
-    # 安装 Redis
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
+# 安装 Nginx
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
 
-    # 安装 Nginx
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
+# 安装 PHP
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
 
-    # 安装 PHP
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
+# 安装 Cockpit
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/cockpit.sh' | bash
 
-    # 安装 Shadowsocks
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
+# 安装 Shadowsocks
+export SS_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
-    # 安装 V2Ray
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
+# 安装 V2Ray
+export V2RAY_CLIENT_ID="<预设客户端ID>"
+export V2RAY_WS_PATH="<预设路径>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
+
+# 安装 Frp 服务端
+export FRP_TOKEN="<预设连接Token>"
+export FRP_DASHBOARD_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
+
+# 安装 Grafana
+export GRAFANA_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
+
+# 安装 Portainer CE
+export PORTAINER_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
+
+# 安装 Prometheus
+export MYSQL_PASSWORD="<预设密码>"
+export REDIS_PASSWORD="<预设密码>"
+export PROMETHEUS_PASSWORD="<预设密码>"
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh' | bash
+```
+
+### 功能函数
+
+需要先执行 source 命令，加载 My.sh 之后，才可以执行函数  
+
+```bash
+source <( wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+```
+
+| 分类 | 函数 | 说明 |
+| --- | --- | --- |
+| 设置 | `reset_root_password`            | 重设 root 密码为 Base64 编码的 256 bit 随机数，并显示新密码 |
+| 设置 | `set_timezone_china`             | 设置系统时区为中国时区（Asia/Shanghai GMT+08:00） |
+| 设置 | `set_tcp_congestion_control_bbr` | 设置 TCP 拥塞控制算法为 BBR |
+| 设置 | `set_tcp_network_buffer`         | 设置 TCP 收发缓冲区上限为 16MB |
+| 设置 | `set_tcp_fastopen`               | 设置 TCP Fast Open 为 3（客户端+服务端） |
+| 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
+| 设置 | `update_software`                | 更新软件 |
+| 设置 | `update_software_aggressive`     | 更新软件，更激进 |
+| 设置 | `update_system`                  | 系统版本升级 |
+| 查看 | `get_system_name`                | 获取系统名称 |
+| 查看 | `get_system_version_codename`    | 获取系统版本代号 |
+| 查看 | `get_system_ip`                  | 获取系统的 IP |
+| 查看 | `prepare_common_command`         | 安装常用命令 |
+| 查看 | `show_tcp_listening`             | 展示系统正在监听的 TCP 端口 |
