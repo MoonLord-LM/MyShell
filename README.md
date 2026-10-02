@@ -28,7 +28,7 @@ export REDIS_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
-# 安装 Nginx（监听端口 80、443，开启 SSL）
+# 安装 Nginx（监听端口 80、443，开启 Http 强制跳转 Https）
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
 
@@ -36,7 +36,7 @@ wget -O- --timeout=10 --no-cache \
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
 
-# 安装 Cockpit（监听端口 19190，开启 SSL）
+# 安装 Cockpit（面板端口 19190，开启 Https）
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/cockpit.sh' | bash
 
@@ -51,23 +51,23 @@ export V2RAY_WS_PATH="<预设路径>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
 
-# 安装 Frp 服务端（监听端口 17000，Https 服务端口 17443，看板端口 17500，开启 SSL）
+# 安装 Frp 服务端（监听端口 17000，Https 服务端口 17443，面板端口 17500，开启 SSL）
 export FRP_TOKEN="<预设连接Token>"
 export FRP_DASHBOARD_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
-# 安装 Grafana（监听端口 13000，开启 SSL）
+# 安装 Grafana（面板端口 13000，开启 Https）
 export GRAFANA_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
-# 安装 Portainer CE（监听端口 19443，开启 SSL）
+# 安装 Portainer CE（面板端口 19443，开启 Https）
 export PORTAINER_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
-# 安装 Prometheus（监听端口 19090，开启 SSL）
+# 安装 Prometheus（面板端口 19090，开启 Https）
 export MYSQL_PASSWORD="<预设密码>"
 export REDIS_PASSWORD="<预设密码>"
 export PROMETHEUS_PASSWORD="<预设密码>"
