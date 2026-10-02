@@ -10,7 +10,7 @@ One-click installation and configuration scripts for common software on Ubuntu /
 
 ### 部署脚本
 
-脚本可重复执行，已安装则直接退出  
+脚本可重复执行，已安装时直接退出  
 优先使用 export 的环境参数，无参数时，使用高强度的随机数，并在日志中显示  
 
 ```bash
