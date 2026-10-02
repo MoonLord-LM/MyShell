@@ -80,8 +80,11 @@ function log_notice(){
 # 如果上一个命令执行异常，那么结束运行，并输出红色的错误信息（$1）
 function if_error_then_exit() {
     if [ $? -ne 0 ]; then
-        check_parameter "$1" || return 1
-        log_error "$1"
+        if [ "$1" == '' ]; then
+            log_warn 'if_error_then_exit: error message is empty'
+        else
+            log_error "$1"
+        fi
         exit 1
     fi
 }
