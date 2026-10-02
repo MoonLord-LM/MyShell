@@ -51,7 +51,7 @@ wget -O- --timeout=10 --no-cache \
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
 
-# 安装 Frp 服务端（依赖 Docker 部署，监听端口 17000，Https 服务端口 17443，面板端口 17500，开启 SSL）
+# 安装 Frp 服务端（依赖 Docker 部署，监听端口 17000，Https 服务端口 17443，面板端口 17500，开启 SSL/Https）
 export FRP_TOKEN="<预设连接Token>"
 export FRP_DASHBOARD_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
