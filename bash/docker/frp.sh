@@ -88,8 +88,7 @@ type = "https"
 localIP = "127.0.0.1"
 localPort = 8443
 
-customDomains = ["${frp_server_ip}"]
-locations = ["/"]
+customDomains = ["*"]
 EOF
 }
 
