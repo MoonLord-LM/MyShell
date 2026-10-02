@@ -71,38 +71,38 @@ function nginx_server_config(){
 map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
 
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	return 301 https://\$host\$request_uri;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    return 301 https://\$host\$request_uri;
 }
 
 server {
-	listen 443 ssl default_server;
-	listen [::]:443 ssl default_server;
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
 
-	ssl_certificate_key "${nginx_ssl_key}";
-	ssl_certificate "${nginx_ssl_cert}";
-	ssl_protocols TLSv1.2 TLSv1.3;
-	gzip off;
+    ssl_certificate_key "${nginx_ssl_key}";
+    ssl_certificate "${nginx_ssl_cert}";
+    ssl_protocols TLSv1.2 TLSv1.3;
+    gzip off;
 
-	root ${nginx_web_root};
+    root ${nginx_web_root};
 
-	index ${nginx_index};
+    index ${nginx_index};
 
-	server_name _;
+    server_name _;
 
-	location / {
-		try_files \$uri \$uri/ =404;
-	}
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
 
     location /nginx_status {
-		stub_status;
-	}
+        stub_status;
+    }
 EOF
     if [ "$php_fpm_listen" != '' ]; then
         cat <<EOF
 
-	location ~ \.php\$ {
+    location ~ \.php\$ {
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header Access-Control-Allow-Origin "*" always;
         add_header Access-Control-Allow-Methods "GET,POST,OPTIONS,HEAD,PUT,DELETE" always;
@@ -113,9 +113,9 @@ EOF
             return 204;
         }
 
-		include snippets/fastcgi-php.conf;
-		fastcgi_pass unix:${php_fpm_listen};
-	}
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:${php_fpm_listen};
+    }
 EOF
     fi
     if [ "$v2ray_forward" != '' ]; then
@@ -123,14 +123,14 @@ EOF
         local v2ray_path="${v2ray_forward#*:}"
         cat <<EOF
 
-	location ${v2ray_path} {
-		proxy_pass http://127.0.0.1:${v2ray_port};
-		proxy_http_version 1.1;
-		proxy_set_header Host \$http_host;
-		proxy_set_header Connection \$connection_upgrade;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_redirect off;
-	}
+    location ${v2ray_path} {
+        proxy_pass http://127.0.0.1:${v2ray_port};
+        proxy_http_version 1.1;
+        proxy_set_header Host \$http_host;
+        proxy_set_header Connection \$connection_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_redirect off;
+    }
 EOF
     fi
     cat <<EOF
@@ -142,24 +142,24 @@ EOF
         cat <<EOF
 
 server {
-	listen 443 ssl;
-	listen [::]:443 ssl;
+    listen 443 ssl;
+    listen [::]:443 ssl;
 
-	ssl_certificate_key "${nginx_ssl_key}";
-	ssl_certificate "${nginx_ssl_cert}";
-	ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_certificate_key "${nginx_ssl_key}";
+    ssl_certificate "${nginx_ssl_cert}";
+    ssl_protocols TLSv1.2 TLSv1.3;
 
-	server_name ~^[^.]*${forward_key}[^.]*\.[^.]+\.[^.]+;
+    server_name ~^[^.]*${forward_key}[^.]*\.[^.]+\.[^.]+;
 
-	location / {
-		proxy_pass https://${nginx_forward_server_ip}:${forward_port};
-		proxy_http_version 1.1;
-		proxy_set_header Host \$http_host;
-		proxy_set_header Connection \$connection_upgrade;
-		proxy_set_header Upgrade \$http_upgrade;
-		proxy_ssl_verify off;
-		proxy_redirect off;
-	}
+    location / {
+        proxy_pass https://${nginx_forward_server_ip}:${forward_port};
+        proxy_http_version 1.1;
+        proxy_set_header Host \$http_host;
+        proxy_set_header Connection \$connection_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_ssl_verify off;
+        proxy_redirect off;
+    }
 }
 EOF
     done
