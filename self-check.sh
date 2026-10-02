@@ -16,6 +16,18 @@ for file in $(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*"
         sed -i 's/\r//g' "$file"
         echo "Fixed line endings in $file"
     fi
+
+    # 检查并确保第一行是 #!/bin/bash
+    if [[ "$(head -n1 "$file")" != '#!/bin/bash' ]]; then
+        sed -i '1i#!/bin/bash' "$file"
+        echo "Added #!/bin/bash to $file"
+    fi
+
+    # 检查并确保第二行是空行
+    if [[ "$(head -n2 "$file" | tail -n1 2>/dev/null)" != '' ]]; then
+        sed -i '1a\' "$file"
+        echo "Added empty line after #!/bin/bash in $file"
+    fi
 done
 
 echo 'MyShell self-check end'

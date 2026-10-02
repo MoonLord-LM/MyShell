@@ -22,6 +22,10 @@
 参考：
 https://github.com/awesome-selfhosted/awesome-selfhosted
 
+# 优化默认设置
+
+考虑增加 set -o nounset; set -o pipefail; set +o errexit; 代码
+
 ## 待整理函数，考虑增加到 My.sh 中
 
 ```bash
