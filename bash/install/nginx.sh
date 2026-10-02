@@ -145,12 +145,12 @@ EOF
     fi
     cat <<EOF
 }
+
 EOF
     for forward in $nginx_forward_server_and_port; do
         local forward_key="${forward%%:*}"
         local forward_port="${forward#*:}"
         cat <<EOF
-
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -158,6 +158,7 @@ server {
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
     ssl_protocols TLSv1.2 TLSv1.3;
+    gzip off;
 
     server_name ~^[^.]*${forward_key}[^.]*\.[^.]+\.[^.]+;
 
@@ -173,6 +174,7 @@ server {
         proxy_redirect off;
     }
 }
+
 EOF
     done
 }
