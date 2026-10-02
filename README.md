@@ -1,4 +1,5 @@
 # MyShell
+[![self-check](https://github.com/MoonLord-LM/MyShell/actions/workflows/self-check.yml/badge.svg)](https://github.com/MoonLord-LM/MyShell/actions/workflows/self-check.yml)
 
 Common Linux Shell scripts and functions  
 One-click installation and configuration scripts for common software on Ubuntu / Debian servers, along with some practical functions  
