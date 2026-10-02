@@ -13,21 +13,30 @@ One-click installation and configuration scripts for common software on Ubuntu /
 脚本可重复执行，已安装时直接退出  
 优先使用 export 的环境参数，无参数时，使用高强度的随机数，并在日志中显示  
 
+#### 安装 MySQL（监听端口 13306，开启 SSL）
+
 ```bash
-# 安装 MySQL（监听端口 13306，开启 SSL）
 export MYSQL_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
+```
 
-# 安装 Redis（监听端口 16379，开启 SSL）
+#### 安装 Redis（监听端口 16379，开启 SSL）
+
+```bash
 export REDIS_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
+```
 
-# 安装 Nginx（监听端口 80、443，开启 Http 强制跳转 Https）
+#### 安装 Nginx（监听端口 80、443，开启 Http 强制跳转 Https）
+
+```bash
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
+```
 
+```bash
 # 安装 PHP
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
