@@ -52,10 +52,3 @@ Ubuntu 22.04 / Debian 11
     # 安装 V2Ray
     wget -O- --timeout=10 --no-cache \
     'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
-
-    # 配置 WEB 站点
-    wget -O- --timeout=10 --no-cache \
-    'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/web/config.sh' | bash
-
-
-
