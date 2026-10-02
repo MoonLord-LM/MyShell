@@ -203,10 +203,21 @@ update_file "$prometheus_config_file" "$(prometheus_config_yml)"
 {
     if_error_then_exit 'prometheus config file create failed, quit now'
 }
+
 chown "$run_uid_gid" "$prometheus_config_file"
+{
+    if_error_then_exit 'prometheus config file chown failed, quit now'
+}
+
 chmod 644 "$prometheus_config_file"
+{
+    if_error_then_exit 'prometheus config file chmod failed, quit now'
+}
 
 prepare_dir "$prometheus_data_dir" "$run_uid_gid"
+{
+    if_error_then_exit 'prometheus data dir create failed, quit now'
+}
 
 docker pull "$prometheus_image"
 {

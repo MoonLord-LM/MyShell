@@ -816,9 +816,21 @@ function set_memory_swap_to_4GB(){
     fi
 
     local sysctl_conf_file='/etc/sysctl.conf'
+    backup_file "$sysctl_conf_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, backup sysctl.conf error'
+        return 1
+    fi
+
     sed -i '/vm.swappiness/d' "$sysctl_conf_file"
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
+
+    log_info 'set_memory_swap changed config, now reload'
     sysctl --load
+    if [ $? -ne 0 ]; then
+        log_error 'set_memory_swap failed, sysctl --load error'
+        return 1
+    fi
 
     log_info 'set_memory_swap end, show current value'
     free -m
