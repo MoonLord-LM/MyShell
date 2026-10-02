@@ -23,7 +23,7 @@ mysql_ssl_cert='/etc/mysql/ssl/server-cert.pem'
 mysql_user='admin'
 mysql_server_port=13306
 mysql_password="${MYSQL_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
-mysql_password_sql_escaped=$(printf '%s' "$mysql_password" | sed "s/'/''/g")
+mysql_password_sql_escaped=$(printf '%s' "$mysql_password" | sed -e 's/\\/\\\\/g' -e "s/'/''/g")
 
 run_uid_gid='mysql:mysql'
 
