@@ -14,10 +14,6 @@ One-click installation and configuration scripts for common software on Ubuntu /
 优先使用 export 的环境参数，无参数时，使用高强度的随机数，并在日志中显示  
 
 ```bash
-# 安装 Docker
-wget -O- --timeout=10 --no-cache \
-'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
-
 # 安装 MySQL（监听端口 13306，开启 SSL）
 export MYSQL_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
@@ -51,23 +47,27 @@ export V2RAY_WS_PATH="<预设路径>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
 
-# 安装 Frp 服务端（监听端口 17000，Https 服务端口 17443，面板端口 17500，开启 SSL）
+# 安装 Docker
+wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/docker.sh' | bash
+
+# 安装 Frp 服务端（依赖 Docker 部署，监听端口 17000，Https 服务端口 17443，面板端口 17500，开启 SSL）
 export FRP_TOKEN="<预设连接Token>"
 export FRP_DASHBOARD_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
-# 安装 Grafana（面板端口 13000，开启 Https）
+# 安装 Grafana（依赖 Docker 部署，面板端口 13000，开启 Https）
 export GRAFANA_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
-# 安装 Portainer CE（面板端口 19443，开启 Https）
+# 安装 Portainer CE（依赖 Docker 部署，面板端口 19443，开启 Https）
 export PORTAINER_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
-# 安装 Prometheus（面板端口 19090，开启 Https）
+# 安装 Prometheus（依赖 Docker 部署，面板端口 19090，开启 Https）
 export MYSQL_PASSWORD="<预设密码>"
 export REDIS_PASSWORD="<预设密码>"
 export PROMETHEUS_PASSWORD="<预设密码>"
