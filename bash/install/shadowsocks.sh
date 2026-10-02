@@ -97,8 +97,8 @@ wget -O "$tmp_file" --timeout=120 --no-cache "$ss_download_url"
     if_error_then_exit 'shadowsocks-rust download failed, quit now'
 }
 
-mkdir -p $(dirname "$ss_server_location")
-tar -xf "$tmp_file" -C $(dirname "$ss_server_location") 'ssserver'
+mkdir -p "$(dirname "$ss_server_location")"
+tar -xf "$tmp_file" -C "$(dirname "$ss_server_location")" 'ssserver'
 {
     if_error_then_exit 'shadowsocks-rust extract failed, quit now'
 }
