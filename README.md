@@ -1,44 +1,17 @@
 # MyShell
 
-A function library for the Linux Shell  
+Common Linux Shell scripts and functions  
+One-click installation and configuration scripts for common software on Ubuntu / Debian servers, along with some practical functions  
 
-Linux Shell 常用脚本和函数库  
-在 Ubuntu / Debian 服务器上，提供常用软件的一键安装配置脚本，以及一些实用的函数  
-
-## [目录结构]
-
-```
-MyShell/
-├── bash/
-│   ├── My.sh              # 核心函数库
-│   ├── install/
-│   │   ├── cockpit.sh     # Cockpit 安装
-│   │   ├── docker.sh      # Docker 安装
-│   │   ├── mysql.sh       # MySQL 安装
-│   │   ├── nginx.sh       # Nginx 安装
-│   │   ├── php.sh         # PHP 8.4 安装
-│   │   ├── redis.sh       # Redis 安装
-│   │   ├── shadowsocks.sh # Shadowsocks 安装
-│   │   └── v2ray.sh       # V2Ray 安装
-│   └── docker/
-│       ├── frp.sh         # Frp 服务端安装
-│       ├── grafana.sh     # Grafana 安装
-│       ├── portainer.sh   # Portainer CE 安装
-│       └── prometheus.sh  # Prometheus 安装
-├── resource/
-│   ├── grafana/dashboard/ # Grafana 仪表盘 JSON 示例
-│   └── nginx/config/      # Nginx 配置示例
-├── self-check.sh          # 自检脚本
-├── LLM.md                 # 提示信息
-└── README.md              # 工程说明
-```
+常用的 Linux Shell 脚本和函数库  
+在 Ubuntu / Debian 服务器上，提供常用软件的一键安装配置脚本，以及一些实用的功能函数  
 
 ## [使用说明]
 
 ### 部署脚本
 
 脚本可重复执行，已安装则直接退出  
-安装过程优先使用 export 环境参数，无参数时，自动生成随机参数，并在日志中显示  
+优先使用 export 的环境参数，无参数时，使用高强度的随机数，并在日志中显示  
 
 ```bash
 # 安装 Docker
@@ -55,7 +28,7 @@ export REDIS_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
-# 安装 Nginx
+# 安装 Nginx（监听端口 80、443，开启 SSL）
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/nginx.sh' | bash
 
@@ -63,38 +36,38 @@ wget -O- --timeout=10 --no-cache \
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/php.sh' | bash
 
-# 安装 Cockpit
+# 安装 Cockpit（监听端口 19190，开启 SSL）
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/cockpit.sh' | bash
 
-# 安装 Shadowsocks
+# 安装 Shadowsocks（监听端口 10000，加密算法 2022-blake3-aes-256-gcm）
 export SS_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
-# 安装 V2Ray
+# 安装 V2Ray（监听端口 10010）
 export V2RAY_CLIENT_ID="<预设客户端ID>"
 export V2RAY_WS_PATH="<预设路径>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
 
-# 安装 Frp 服务端
+# 安装 Frp 服务端（监听端口 17000，Https 服务端口 17443，看板端口 17500，开启 SSL）
 export FRP_TOKEN="<预设连接Token>"
 export FRP_DASHBOARD_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
-# 安装 Grafana
+# 安装 Grafana（监听端口 13000，开启 SSL）
 export GRAFANA_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
-# 安装 Portainer CE
+# 安装 Portainer CE（监听端口 19443，开启 SSL）
 export PORTAINER_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
-# 安装 Prometheus
+# 安装 Prometheus（监听端口 19090，开启 SSL）
 export MYSQL_PASSWORD="<预设密码>"
 export REDIS_PASSWORD="<预设密码>"
 export PROMETHEUS_PASSWORD="<预设密码>"
@@ -127,3 +100,31 @@ source <( wget -O- --timeout=10 --no-cache \
 | 查看 | `get_system_ip`                  | 获取系统的 IP |
 | 查看 | `prepare_common_command`         | 安装常用命令 |
 | 查看 | `show_tcp_listening`             | 展示系统正在监听的 TCP 端口 |
+
+## [目录结构]
+
+```
+MyShell/
+├── bash/
+│   ├── My.sh              # 核心函数库
+│   ├── install/
+│   │   ├── cockpit.sh     # Cockpit 安装
+│   │   ├── docker.sh      # Docker 安装
+│   │   ├── mysql.sh       # MySQL 安装
+│   │   ├── nginx.sh       # Nginx 安装
+│   │   ├── php.sh         # PHP 安装
+│   │   ├── redis.sh       # Redis 安装
+│   │   ├── shadowsocks.sh # Shadowsocks 安装
+│   │   └── v2ray.sh       # V2Ray 安装
+│   └── docker/
+│       ├── frp.sh         # Frp 服务端安装
+│       ├── grafana.sh     # Grafana 安装
+│       ├── portainer.sh   # Portainer CE 安装
+│       └── prometheus.sh  # Prometheus 安装
+├── resource/
+│   ├── grafana/dashboard/ # Grafana 仪表盘配置示例
+│   └── nginx/config/      # Nginx 配置示例
+├── self-check.sh          # 自检脚本
+├── LLM.md                 # 提示信息
+└── README.md              # 工程说明
+```
