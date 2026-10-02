@@ -34,8 +34,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           git add -A
-          git diff --cached --quiet
-          if [ $? -ne 0 ]; then
+          if ! git diff --cached --quiet; then
             git config --local user.name "github-actions[bot]"
             git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "auto-fix by [ self-check.sh ]"
