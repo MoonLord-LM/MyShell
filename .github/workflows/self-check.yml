@@ -1,0 +1,45 @@
+name: self-check
+
+on:
+  schedule:
+    - cron: '57 23 * * *'
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['**/*.sh', 'self-check.sh', '.github/workflows/self-check.yml']
+  pull_request:
+    branches: [master]
+    paths: ['**/*.sh', 'self-check.sh', '.github/workflows/self-check.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: self-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  self-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run self-check.sh
+        run: |
+          chmod +x self-check.sh
+          bash self-check.sh
+
+      - name: Commit and push
+        if: github.event_name != 'pull_request'
+        run: |
+          git add -A
+          git diff --cached --quiet
+          if [ $? -ne 0 ]; then
+            git config --local user.name "github-actions[bot]"
+            git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "auto-fix by [ self-check.sh ]"
+            git push origin HEAD
+          else
+            echo 'No changes after self-check.'
+          fi
