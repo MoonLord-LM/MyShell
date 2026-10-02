@@ -64,8 +64,10 @@ function nginx_server_config(){
     local php_fpm_listen=$(get_php_fpm_listen)
     local v2ray_forward=$(get_v2ray_ws_forward)
     local nginx_index='index.html index.htm index.nginx-debian.html'
+    local nginx_not_found_files='/404.html'
     if [ "$php_fpm_listen" != '' ]; then
         nginx_index='index.php index.html'
+        nginx_not_found_files='/404.php /404.html'
     fi
     cat <<EOF
 map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
@@ -85,11 +87,17 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;
     gzip off;
 
+    server_name _;
+
     root ${nginx_web_root};
 
     index ${nginx_index};
 
-    server_name _;
+    error_page 404 =404 @not_found;
+
+    location @not_found {
+        try_files ${nginx_not_found_files} =404;
+    }
 
     location / {
         try_files \$uri \$uri/ =404;
@@ -99,8 +107,6 @@ server {
         allow 127.0.0.1;
         allow 172.17.0.1;
         deny all;
-        error_page 403 =404 /404_not_found;
-        stub_status;
     }
 EOF
     if [ "$php_fpm_listen" != '' ]; then
