@@ -83,13 +83,23 @@ fi
 log_warn 'if $REDIS_PASSWORD is not set, a random password will be generated:'
 log_warn 'export REDIS_PASSWORD="<password>"'
 
-wget -O- --timeout=120 --no-cache "${redis_apt_repo_url}/gpg" | gpg --dearmor --yes -o "$redis_gpg_key_file"
+tmp_file="/tmp/redis-gpg-key_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.asc"
+wget -O "$tmp_file" --timeout=120 --no-cache "${redis_apt_repo_url}/gpg"
 {
     if_error_then_exit 'redis gpg key download failed, quit now'
 }
 
+gpg --dearmor --yes -o "$redis_gpg_key_file" "$tmp_file"
+{
+    if_error_then_exit 'redis gpg key dearmor failed, quit now'
+}
+rm -f "$tmp_file"
+
 codename=$(get_system_version_codename)
 update_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
+{
+    if_error_then_exit 'redis apt source setup failed, quit now'
+}
 
 install_software 'redis'
 {
