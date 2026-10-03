@@ -134,7 +134,8 @@ source <( wget -O- --timeout=10 --no-cache \
 | 查看 | `get_system_version_codename`    | 获取系统版本代号 |
 | 查看 | `get_system_ip`                  | 获取系统的 IP |
 | 查看 | `prepare_common_command`         | 安装常用命令 |
-| 查看 | `show_tcp_listening`             | 展示系统正在监听的 TCP 端口 |
+| 查看 | `show_tcp_listening`             | 展示正在监听的 TCP 端口 |
+| 查看 | `show_disk_usage`                | 展示磁盘使用 |
 
 ## [目录结构]
 
