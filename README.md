@@ -159,7 +159,7 @@ MyShell/
 ├── resource/
 │   ├── grafana/dashboard/ # Grafana 仪表盘配置示例
 │   └── nginx/config/      # Nginx 配置示例
-├── self-check.sh          # 自检脚本
 ├── LLM.md                 # 提示信息
 └── README.md              # 工程说明
+├── self-check.sh          # 自检脚本
 ```
