@@ -4,7 +4,7 @@
 
 echo 'MyShell self-check begin'
 
-local shell_files=$(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*")
+shell_files=$(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*")
 
 while IFS= read -r file; do
     # 替换制表符为 4 个空格
