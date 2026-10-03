@@ -43,13 +43,17 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-if check_system_is_ubuntu; then
+check_system_is_ubuntu
+if [ $? -eq 0 ]; then
     docker_repo_url="$docker_apt_repo_url/ubuntu"
-elif check_system_is_debian; then
-    docker_repo_url="$docker_apt_repo_url/debian"
 else
-    log_error 'docker install failed, unknown system'
-    exit 1
+    check_system_is_debian
+    if [ $? -eq 0 ]; then
+        docker_repo_url="$docker_apt_repo_url/debian"
+    else
+        log_error 'docker install failed, unknown system'
+        exit 1
+    fi
 fi
 
 mkdir -p "$(dirname "$docker_gpg_key_file")"

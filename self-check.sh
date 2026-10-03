@@ -4,7 +4,9 @@
 
 echo 'MyShell self-check begin'
 
-for file in $(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*"); do
+local shell_files=$(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*")
+
+while IFS= read -r file; do
     # 替换制表符为 4 个空格
     if grep -q $'\t' "$file"; then
         sed -i 's/\t/    /g' "$file"
@@ -24,6 +26,13 @@ for file in $(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*"
         mv "$file.tmp" "$file"
         echo "Added #!/bin/bash to $file"
     fi
-done
+
+    # 检查 bash 语法错误
+    bash -n "$file"
+    if [ $? -ne 0 ]; then
+        echo "Syntax check failed in $file"
+        exit 1
+    fi
+done <<< "$shell_files"
 
 echo 'MyShell self-check end'

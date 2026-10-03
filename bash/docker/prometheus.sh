@@ -126,6 +126,17 @@ tls_server_config:
 EOF
 }
 
+# 显示指定容器（$1）的日志（容器不存在时跳过）
+function show_container_logs(){
+    check_parameter "$1" || return 1
+    docker inspect "$1" >'/dev/null' 2>&1
+    if [ $? -ne 0 ]; then
+        return 0
+    fi
+    log_info "docker logs $1:"
+    docker logs "$1"
+}
+
 
 
 
@@ -199,19 +210,9 @@ update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_
     if_error_then_exit 'prometheus scrape password file create failed, quit now'
 }
 
-update_file "$prometheus_config_file" "$(prometheus_config_yml)"
+update_file "$prometheus_config_file" "$(prometheus_config_yml)" "$run_uid_gid" '644'
 {
     if_error_then_exit 'prometheus config file create failed, quit now'
-}
-
-chown "$run_uid_gid" "$prometheus_config_file"
-{
-    if_error_then_exit 'prometheus config file chown failed, quit now'
-}
-
-chmod 644 "$prometheus_config_file"
-{
-    if_error_then_exit 'prometheus config file chmod failed, quit now'
 }
 
 prepare_dir "$prometheus_data_dir" "$run_uid_gid"
@@ -398,10 +399,10 @@ fi
 # ———————————————————————— Start ————————————————————————
 log_info 'docker images:' && docker images
 log_info 'docker ps -a:' && docker ps -a
-log_info "docker logs $prometheus_container_name:" && docker logs "$prometheus_container_name"
-log_info "docker logs $node_exporter_container_name:" && docker logs "$node_exporter_container_name"
-log_info "docker logs $nginx_exporter_container_name:" && docker logs "$nginx_exporter_container_name"
-log_info "docker logs $mysqld_exporter_container_name:" && docker logs "$mysqld_exporter_container_name"
-log_info "docker logs $redis_exporter_container_name:" && docker logs "$redis_exporter_container_name"
+show_container_logs "$prometheus_container_name"
+show_container_logs "$node_exporter_container_name"
+show_container_logs "$nginx_exporter_container_name"
+show_container_logs "$mysqld_exporter_container_name"
+show_container_logs "$redis_exporter_container_name"
 
 show_tcp_listening
