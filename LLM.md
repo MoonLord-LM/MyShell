@@ -22,11 +22,11 @@
 参考：
 https://github.com/awesome-selfhosted/awesome-selfhosted
 
-# 优化默认设置
+## 优化默认设置
 
 考虑增加 set -o nounset; set -o pipefail; set +o errexit; 代码
 
-# 部署 MySpringBoot 项目
+## 部署 MySpringBoot 项目
 
 ```
 function deploy_myspringboot(){
