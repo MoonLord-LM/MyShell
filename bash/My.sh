@@ -854,29 +854,10 @@ function show_tcp_listening(){
         return 1
     fi
 }
-# 获取磁盘使用信息
+# 获取物理磁盘使用信息
 function show_disk_usage(){
-    local dir=''
-    dir=$(pwd)
-    if [ "$1" != '' ]; then
-        dir="$1"
-    fi
-
-    cd "$dir"
-    if [ $? -ne 0 ]; then
-        log_error "show_disk_usage failed, cd \"$dir\" error"
-        return 1
-    fi
-
-    log_info "du -h --max-depth=1 \"$dir\" | sort -rh | head -n 10"
-    du -h --max-depth=1 | sort -rh | head -n 10
-    echo
-
     log_info "df -h | grep '^/dev/'"
     df -h | grep '^/dev/'
-    echo
-
-    cd - >'/dev/null'
 }
 
 
