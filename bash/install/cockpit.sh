@@ -12,15 +12,15 @@
 
 
 # ———————————————————————— Config ————————————————————————
+cockpit_components='cockpit cockpit-doc cockpit-machines'
+
 cockpit_conf_file='/etc/cockpit/cockpit.conf'
 cockpit_socket_conf_file='/etc/systemd/system/cockpit.socket.d/override.conf'
 cockpit_ssl_key='/etc/cockpit/ws-certs.d/1-self-signed.key'
 cockpit_ssl_cert='/etc/cockpit/ws-certs.d/1-self-signed.cert'
 
-cockpit_components='cockpit cockpit-doc cockpit-machines'
-
 cockpit_server_port=19190
-cockpit_allow_groups='root'
+
 cockpit_idle_timeout=1440
 
 run_uid_gid='root:root'
@@ -32,7 +32,6 @@ AllowUnencrypted = false
 AllowMultiHost = false
 
 [Session]
-AllowGroups = ${cockpit_allow_groups}
 IdleTimeout = ${cockpit_idle_timeout}
 EOF
 }
