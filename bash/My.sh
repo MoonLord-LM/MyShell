@@ -64,10 +64,23 @@ function log_info(){
     check_parameter "$1" || return 1
     my_log '1;34' "$1"
 }
-# 输出紫色的重要信息（$1），为保证安全，仅在终端展示
+# 输出紫色的重要信息（$1），为保证安全，仅在交互模式中完整展示，在非交互模式中隐藏英文冒号之后的敏感内容
 function log_important(){
     check_parameter "$1" || return 1
-    my_log '1;35' "$1"
+    local message="$1"
+    local hidden_tag='/*** (hidden in non-interactive mode) ***/'
+
+    if [ -t 2 ]; then
+        my_log '1;35' "$message"
+        return 0
+    fi
+
+    local prefix="${message%%':'*}"
+    if [ "$prefix" == "$message" ]; then
+        my_log '1;35' "$hidden_tag"
+    else
+        my_log '1;35' "${prefix}: ${hidden_tag}"
+    fi
 }
 # 输出浅蓝色的信息（$1）
 function log_notice(){

@@ -174,22 +174,22 @@ docker run -d \
 frp_server_name=$(hostname)
 frp_server_ip=$(get_system_ip)
 
-log_important "frp server name: ${frp_server_name}"
-log_important "frp server ip: ${frp_server_ip}"
-log_important "frp server bind port: ${frp_bind_port}"
-log_important "frp server vhost https port: ${frp_vhost_https_port}"
+log_attention "frp server name: ${frp_server_name}"
+log_attention "frp server ip: ${frp_server_ip}"
+log_attention "frp server bind port: ${frp_bind_port}"
+log_attention "frp server vhost https port: ${frp_vhost_https_port}"
 log_important "frp server token: ${frp_token}"
 
-log_important "frp server dashboard url: https://${frp_server_ip}:${frp_dashboard_port}"
-log_important "frp server dashboard user: ${frp_dashboard_user}"
+log_attention "frp server dashboard url: https://${frp_server_ip}:${frp_dashboard_port}"
+log_attention "frp server dashboard user: ${frp_dashboard_user}"
 log_important "frp server dashboard password: ${frp_dashboard_password}"
 
-log_important "frp config directory: ${frp_config_dir}"
-log_important "frp data directory: ${frp_data_dir}"
-log_important "frp config file: ${frp_config_file}"
-log_important "frp log file: ${frp_log_file}"
-log_important "frp ssl key file: ${frp_ssl_key}"
-log_important "frp ssl cert file: ${frp_ssl_cert}"
+log_attention "frp config directory: ${frp_config_dir}"
+log_attention "frp data directory: ${frp_data_dir}"
+log_attention "frp config file: ${frp_config_file}"
+log_attention "frp log file: ${frp_log_file}"
+log_attention "frp ssl key file: ${frp_ssl_key}"
+log_attention "frp ssl cert file: ${frp_ssl_cert}"
 
 echo
 log_success "==================== frpc.toml example - begin ===================="

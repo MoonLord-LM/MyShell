@@ -31,7 +31,7 @@ function get_php_fpm_listen(){
         log_info 'php-fpm not found, nginx config without php support'
         return 1
     fi
-    log_important "php-fpm detected: fastcgi_pass unix:${php_fpm_listen}"
+    log_attention "php-fpm detected: fastcgi_pass unix:${php_fpm_listen}"
     echo "$php_fpm_listen"
 }
 
@@ -56,7 +56,7 @@ print(str(inbound["port"]) + ":" + inbound["streamSettings"]["wsSettings"]["path
     fi
     local v2ray_port="${v2ray_forward%%:*}"
     local v2ray_path="${v2ray_forward#*:}"
-    log_important "v2ray detected: location ${v2ray_path} -> proxy_pass http://127.0.0.1:${v2ray_port}"
+    log_attention "v2ray detected: location ${v2ray_path} -> proxy_pass http://127.0.0.1:${v2ray_port}"
     echo "${v2ray_port}:${v2ray_path}"
 }
 
