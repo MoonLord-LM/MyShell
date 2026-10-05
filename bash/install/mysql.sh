@@ -100,17 +100,27 @@ log_warn "export MYSQL_PASSWORD='<password>'"
 search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then
     echo "mysql-apt-config mysql-apt-config/select-server select $mysql_apt_config_select" | debconf-set-selections
+    {
+        if_error_then_exit 'mysql-apt-config debconf-set-selections failed, quit now'
+    }
 
     tmp_file="/tmp/mysql-apt-config_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.deb"
     wget -O "$tmp_file" --timeout=120 --no-cache "$mysql_apt_config_url"
     {
         if_error_then_exit 'mysql-apt-config download failed, quit now'
     }
-
     dpkg --configure -a
+    {
+        if_error_then_exit 'dpkg configure failed, quit now'
+    }
     dpkg --install "$tmp_file"
+    {
+        if_error_then_exit 'mysql-apt-config dpkg install failed, quit now'
+    }
     update_software
-
+    {
+        if_error_then_exit 'mysql-apt-config update_software failed, quit now'
+    }
     rm -f "$tmp_file"
 fi
 

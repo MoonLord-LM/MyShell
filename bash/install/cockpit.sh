@@ -84,11 +84,6 @@ check_system_is_ubuntu || check_system_is_debian
     if_error_then_exit 'cockpit install failed, unknown system'
 }
 
-codename=$(get_system_version_codename)
-{
-    if_error_then_exit 'get codename failed, quit now'
-}
-
 for cockpit_component in $cockpit_components; do
     install_software "$cockpit_component"
     {
