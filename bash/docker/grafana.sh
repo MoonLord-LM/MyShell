@@ -124,7 +124,7 @@ log_important "grafana server port: ${grafana_port}"
 
 log_important "grafana dashboard url: https://${grafana_server_ip}:${grafana_port}"
 log_important "grafana user: ${grafana_admin_user}"
-log_important "grafana password: ${grafana_admin_password}"
+log_secret "grafana password: ${grafana_admin_password}"
 
 log_important "grafana data dir: ${grafana_data_dir}"
 

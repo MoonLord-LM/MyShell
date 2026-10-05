@@ -178,11 +178,11 @@ log_important "frp server name: ${frp_server_name}"
 log_important "frp server ip: ${frp_server_ip}"
 log_important "frp server bind port: ${frp_bind_port}"
 log_important "frp server vhost https port: ${frp_vhost_https_port}"
-log_important "frp server token: ${frp_token}"
+log_secret "frp server token: ${frp_token}"
 
 log_important "frp server dashboard url: https://${frp_server_ip}:${frp_dashboard_port}"
 log_important "frp server dashboard user: ${frp_dashboard_user}"
-log_important "frp server dashboard password: ${frp_dashboard_password}"
+log_secret "frp server dashboard password: ${frp_dashboard_password}"
 
 log_important "frp config directory: ${frp_config_dir}"
 log_important "frp data directory: ${frp_data_dir}"

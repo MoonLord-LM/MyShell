@@ -133,7 +133,7 @@ update_file "$redis_conf_file" "$(redis_config_cnf)" "$run_uid_gid" '600'
 redis_server_ip=$(get_system_ip)
 log_important "redis server ip: ${redis_server_ip}"
 log_important "redis server port: ${redis_server_port}"
-log_important "redis password: ${redis_password}"
+log_secret "redis password: ${redis_password}"
 log_important "redis ssl cert: ${redis_ssl_cert}"
 
 

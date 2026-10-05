@@ -27,6 +27,12 @@ while IFS= read -r file; do
         echo "Added #!/bin/bash to $file"
     fi
 
+    # 删除行末尾的空格
+    if grep -qE '[[:space:]]+$' "$file"; then
+        sed -i -E 's/[[:space:]]+$//' "$file"
+        echo "Fixed trailing spaces in $file"
+    fi
+
     # 替换 \r\n 为 \n
     if grep -q $'\r' "$file"; then
         sed -i 's/\r//g' "$file"

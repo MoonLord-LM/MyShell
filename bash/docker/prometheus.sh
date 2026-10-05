@@ -265,7 +265,7 @@ log_important "prometheus server port: ${prometheus_port}"
 
 log_important "prometheus dashboard url: https://${prometheus_server_ip}:${prometheus_port}"
 log_important "prometheus user: ${prometheus_user}"
-log_important "prometheus password: ${prometheus_password}"
+log_secret "prometheus password: ${prometheus_password}"
 
 log_important "prometheus config dir: ${prometheus_config_dir}"
 log_important "prometheus config file: ${prometheus_config_file}"
