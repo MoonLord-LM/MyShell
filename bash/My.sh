@@ -320,7 +320,7 @@ function prepare_common_command(){
     check_command_exist 'htpasswd' || install_software 'apache2-utils'
 
     check_command_exist 'python3' || install_software 'python3'
-    check_command_exist 'java' || install_software 'openjdk'
+    check_command_exist 'java' || install_software 'openjdk-17-jre-headless'
 
     check_command_exist 'git' || install_software 'git'
     check_command_exist 'mvn' || install_software 'maven'
