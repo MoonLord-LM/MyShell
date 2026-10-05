@@ -591,7 +591,7 @@ function generate_ssl_cert(){
             return 1
         fi
     fi
-    
+
     chmod 600 "$ssl_key_file"
     if [ $? -ne 0 ]; then
         log_error "generate_ssl_cert failed, chmod 600 \"$ssl_key_file\" error"
