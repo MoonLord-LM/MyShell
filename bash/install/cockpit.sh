@@ -21,7 +21,7 @@ cockpit_ssl_cert='/etc/cockpit/ws-certs.d/1-self-signed.cert'
 
 cockpit_server_port=19190
 
-# IdleTimeout unit is minute
+# 1440 minutes = 24 hours
 cockpit_idle_timeout=1440
 
 run_uid_gid='root:root'
