@@ -37,17 +37,15 @@ log-error = /var/log/mysql/error.log
 
 bind-address = *
 port = $mysql_server_port
+
+require_secure_transport = ON
 ssl-key = $mysql_ssl_key
 ssl-cert = $mysql_ssl_cert
 tls_version = TLSv1.2,TLSv1.3
 
-require_secure_transport = ON
-mysqlx = OFF
+max_connect_errors = 10
 
-plugin-load-add = connection_control.so
-connection_control_failed_connections_threshold = 5
-connection_control_min_connection_delay = 2147483000
-connection_control_max_connection_delay = 2147483000
+mysqlx = OFF
 EOF
 }
 
