@@ -1,9 +1,14 @@
 # Issue
 
-## My.sh - generate_ssl_cert 安全性
+## My.sh - generate_ssl_cert 已知问题
 
-证书算法 RSA-4096，有效期 1000 年，不添加 subjectAltName 设置  
+证书算法 RSA-4096，有效期 1000 年，不设置 subjectAltName 参数  
 安全性有限，仅用于临时证书，或前端额外有 CloudFlare 等 CDN 保护的场景  
+
+## My.sh - prepare_common_command 已知问题
+
+会安装大量软件，有些可能不是服务器需要的  
+但是为了代码的简洁性，和操作的简单，仍然按照现有的方案  
 
 
 
