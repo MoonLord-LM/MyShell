@@ -83,14 +83,14 @@ update_file "$grafana_admin_password_file" "$grafana_admin_password" "$run_uid_g
     if_error_then_exit 'grafana password file create failed, quit now'
 }
 
-docker pull "$grafana_image"
-{
-    if_error_then_exit 'grafana image pull failed, quit now'
-}
-
 generate_ssl_cert 'Grafana' "$grafana_ssl_key_file" "$grafana_ssl_cert_file" "$run_uid_gid"
 {
     if_error_then_exit 'grafana ssl cert generate failed, quit now'
+}
+
+docker pull "$grafana_image"
+{
+    if_error_then_exit 'grafana image pull failed, quit now'
 }
 
 docker run -d \

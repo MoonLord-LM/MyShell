@@ -275,6 +275,10 @@ log_attention "prometheus data dir: ${prometheus_data_dir}"
 docker inspect "$node_exporter_container_name" >'/dev/null' 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$node_exporter_image"
+    {
+        if_error_then_exit 'node_exporter image pull failed, quit now'
+    }
+
     docker run -d \
         --user "$run_uid_gid" \
         --name "$node_exporter_container_name" \
@@ -300,6 +304,10 @@ fi
 docker inspect "$nginx_exporter_container_name" >'/dev/null' 2>&1
 if [ $? -ne 0 ]; then
     docker pull "$nginx_exporter_image"
+    {
+        if_error_then_exit 'nginx_exporter image pull failed, quit now'
+    }
+
     docker run -d \
         --user "$run_uid_gid" \
         --name "$nginx_exporter_container_name" \
@@ -335,6 +343,10 @@ EOF
         docker inspect "$mysqld_exporter_container_name" >'/dev/null' 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$mysqld_exporter_image"
+            {
+                if_error_then_exit 'mysqld_exporter image pull failed, quit now'
+            }
+
             docker run -d \
                 --user "$run_uid_gid" \
                 --name "$mysqld_exporter_container_name" \
@@ -382,6 +394,10 @@ EOF
         docker inspect "$redis_exporter_container_name" >'/dev/null' 2>&1
         if [ $? -ne 0 ]; then
             docker pull "$redis_exporter_image"
+            {
+                if_error_then_exit 'redis_exporter image pull failed, quit now'
+            }
+
             docker run -d \
                 --user "$run_uid_gid" \
                 --name "$redis_exporter_container_name" \

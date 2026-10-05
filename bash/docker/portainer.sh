@@ -3,7 +3,7 @@
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
 # export PORTAINER_PASSWORD="<password>"
-# docker rm -f portainer && docker volume rm -f portainer_data
+# docker rm -f portainer && docker volume rm portainer_data
 
 # Portainer CE
 # https://github.com/portainer/portainer
@@ -95,11 +95,6 @@ else
     log_info "portainer volume reuse: ${portainer_volume_name}"
 fi
 
-docker pull "$portainer_image"
-{
-    if_error_then_exit 'portainer image pull failed, quit now'
-}
-
 generate_ssl_cert 'Portainer' "$portainer_sslkey" "$portainer_sslcert" "$run_uid_gid"
 {
     if_error_then_exit 'portainer ssl cert generate failed, quit now'
@@ -110,6 +105,11 @@ if [ -z "$portainer_admin_password_hash" ]; then
     log_error 'portainer admin password hash generate failed, quit now'
     exit 1
 fi
+
+docker pull "$portainer_image"
+{
+    if_error_then_exit 'portainer image pull failed, quit now'
+}
 
 docker run -d \
     --user "$run_uid_gid" \
