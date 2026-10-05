@@ -5,6 +5,8 @@
 # export GRAFANA_PASSWORD="<password>"
 # docker rm -f grafana
 
+# docker exec -it grafana grafana cli admin reset-admin-password '<password>'
+
 # Grafana
 # https://github.com/grafana/grafana
 
