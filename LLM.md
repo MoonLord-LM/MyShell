@@ -1,5 +1,8 @@
 # Issue
 
+这里记录一些已知问题  
+在使用 LLM 分析代码时，请参考已有结论，避免重复报告问题  
+
 ## My.sh - generate_ssl_cert 已知问题
 
 证书算法 RSA-4096，有效期 1000 年，不设置 subjectAltName 参数  
@@ -15,9 +18,16 @@
 目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute 的升级  
 后续需要不断更新维护这个函数的代码  
 
+## resource 已知问题
+
+这里保存一些配置示例，仅用于参考  
+不需要对这个目录进行代码分析  
+
 
 
 # TODO
+
+这里记录一些代办事项  
 
 ## OpenList 的音乐播放器界面高度太小
 
