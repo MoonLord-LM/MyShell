@@ -143,25 +143,25 @@ source <( wget -O- --timeout=10 --no-cache \
 ```
 MyShell/
 ├── bash/
-│   ├── My.sh              # 核心函数库
+│   ├── My.sh                 # 核心函数库
 │   ├── install/
-│   │   ├── cockpit.sh     # Cockpit 安装
-│   │   ├── docker.sh      # Docker 安装
-│   │   ├── mysql.sh       # MySQL 安装
-│   │   ├── nginx.sh       # Nginx 安装
-│   │   ├── php.sh         # PHP 安装
-│   │   ├── redis.sh       # Redis 安装
-│   │   ├── shadowsocks.sh # Shadowsocks 安装
-│   │   └── v2ray.sh       # V2Ray 安装
+│   │   ├── cockpit.sh        # Cockpit 安装
+│   │   ├── docker.sh         # Docker 安装
+│   │   ├── mysql.sh          # MySQL 安装
+│   │   ├── nginx.sh          # Nginx 安装
+│   │   ├── php.sh            # PHP 安装
+│   │   ├── redis.sh          # Redis 安装
+│   │   ├── shadowsocks.sh    # Shadowsocks 安装
+│   │   └── v2ray.sh          # V2Ray 安装
 │   └── docker/
-│       ├── frp.sh         # Frp 服务端安装
-│       ├── grafana.sh     # Grafana 安装
-│       ├── portainer.sh   # Portainer CE 安装
-│       └── prometheus.sh  # Prometheus 安装
+│       ├── frp.sh            # Frp 服务端安装
+│       ├── grafana.sh        # Grafana 安装
+│       ├── portainer.sh      # Portainer CE 安装
+│       └── prometheus.sh     # Prometheus 安装
 ├── resource/
-│   ├── grafana/dashboard/ # Grafana 仪表盘配置示例
-│   └── nginx/config/      # Nginx 配置示例
-├── LLM.md                 # 提示信息
-├── README.md              # 工程说明
-└── self-check.sh          # 自检脚本
+│   ├── grafana/dashboard/    # Grafana 仪表盘配置示例
+│   └── nginx/config/         # Nginx 配置示例
+├── LLM.md                    # 提示信息
+├── README.md                 # 工程说明
+└── self-check.sh             # 自检脚本
 ```
