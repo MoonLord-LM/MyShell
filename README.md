@@ -4,8 +4,8 @@
 Common Linux Shell scripts and functions  
 One-click installation and configuration scripts for common software on Ubuntu / Debian servers, along with some practical functions  
 
-常用的 Linux Shell 脚本和函数库  
-在 Ubuntu / Debian 服务器上，提供一些常用软件的一键安装配置脚本，以及一些实用的功能函数  
+常用 Linux Shell 脚本和函数库  
+提供一些在 Ubuntu / Debian 服务器上的常用软件的一键安装配置脚本，以及一些实用的功能函数  
 
 ## [使用说明]
 
