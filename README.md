@@ -29,7 +29,7 @@ source <( wget -O- --timeout=10 --no-cache \
 | 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
 | 设置 | `update_software`                | 更新软件 |
 | 设置 | `update_software_aggressive`     | 更新软件，更激进 |
-| 设置 | `update_system`                  | 系统版本升级 |
+| 设置 | `update_system`                  | 系统版本升级（Debian 升级到 13，Ubuntu 升级到 26.04） |
 | 查看 | `get_system_name`                | 获取系统名称 |
 | 查看 | `get_system_version_codename`    | 获取系统版本代号 |
 | 查看 | `get_system_ip`                  | 获取系统的 IP |
