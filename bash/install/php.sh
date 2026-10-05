@@ -103,10 +103,10 @@ php "$tmp_file" --install-dir='/usr/local/bin' --filename='composer'
 }
 rm -f "$tmp_file"
 
-log_attention "php version: $(php -r 'echo PHP_VERSION;')"
-log_attention "php extensions: $(php -m | wc -l)"
-log_attention "php fpm service: ${php_fpm_service}"
-log_attention "php fastcgi_pass: unix:${php_fpm_listen};"
+log_important "php version: $(php -r 'echo PHP_VERSION;')"
+log_important "php extensions: $(php -m | wc -l)"
+log_important "php fpm service: ${php_fpm_service}"
+log_important "php fastcgi_pass: unix:${php_fpm_listen};"
 
 
 

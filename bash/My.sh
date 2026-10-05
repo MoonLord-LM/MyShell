@@ -64,12 +64,12 @@ function log_info(){
     check_parameter "$1" || return 1
     my_log '1;34' "$1"
 }
-# 输出紫色的提示信息（$1）
-function log_attention(){
+# 输出紫色的重要信息（$1），为保证安全，仅在终端展示
+function log_important(){
     check_parameter "$1" || return 1
     my_log '1;35' "$1"
 }
-# 输出浅蓝色的提示信息（$1）
+# 输出浅蓝色的信息（$1）
 function log_notice(){
     check_parameter "$1" || return 1
     my_log '1;36' "$1"
@@ -108,7 +108,7 @@ function reset_root_password(){
         return 1
     fi
 
-    log_attention "reset_root_password ok, new root password is: ${root_password}"
+    log_important "reset_root_password ok, new root password is: ${root_password}"
 }
 
 
@@ -452,7 +452,7 @@ function prepare_dir(){
 
     log_info "prepare_dir ok, \"$target_dir\" is ready"
 }
-# 备份文件（把指定路径 $1 的文件，保存到 [ - 时间.bak] 后缀的文件中）
+# 备份文件（把指定路径 $1 的文件，保存到 [ - 时间.bak] 后缀的文件中，文件不存在时不备份）
 function backup_file(){
     check_parameter "$1" || return 1
     local source_file="$1"
@@ -461,9 +461,10 @@ function backup_file(){
     local backup_new_file="$source_file - $current_time.bak"
 
     if [ ! -f "$source_file" ]; then
-        log_attention "file \"$source_file\" is not found"
-        return 1
+        log_info "file \"$source_file\" is not found, skip backup"
+        return 0
     fi
+
     if [ -f "$backup_new_file" ]; then
         log_error "file \"$backup_new_file\" already exists"
         return 1

@@ -131,17 +131,17 @@ docker run -d \
 portainer_server_name=$(hostname)
 portainer_server_ip=$(get_system_ip)
 
-log_attention "portainer server name: ${portainer_server_name}"
-log_attention "portainer server ip: ${portainer_server_ip}"
-log_attention "portainer server port: ${portainer_server_port}"
+log_important "portainer server name: ${portainer_server_name}"
+log_important "portainer server ip: ${portainer_server_ip}"
+log_important "portainer server port: ${portainer_server_port}"
 
-log_attention "portainer dashboard url: https://${portainer_server_ip}:${portainer_server_port}"
-log_attention "portainer user: ${portainer_admin_user}"
-log_attention "portainer password: ${portainer_admin_password}"
+log_important "portainer dashboard url: https://${portainer_server_ip}:${portainer_server_port}"
+log_important "portainer user: ${portainer_admin_user}"
+log_important "portainer password: ${portainer_admin_password}"
 
-log_attention "portainer volume: ${portainer_volume_name}"
-log_attention "portainer ssl cert: ${portainer_sslcert}"
-log_attention "portainer ssl key: ${portainer_sslkey}"
+log_important "portainer volume: ${portainer_volume_name}"
+log_important "portainer ssl cert: ${portainer_sslcert}"
+log_important "portainer ssl key: ${portainer_sslkey}"
 
 
 

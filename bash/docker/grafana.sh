@@ -118,15 +118,15 @@ docker run -d \
 grafana_server_name=$(hostname)
 grafana_server_ip=$(get_system_ip)
 
-log_attention "grafana server name: ${grafana_server_name}"
-log_attention "grafana server ip: ${grafana_server_ip}"
-log_attention "grafana server port: ${grafana_port}"
+log_important "grafana server name: ${grafana_server_name}"
+log_important "grafana server ip: ${grafana_server_ip}"
+log_important "grafana server port: ${grafana_port}"
 
-log_attention "grafana dashboard url: https://${grafana_server_ip}:${grafana_port}"
-log_attention "grafana user: ${grafana_admin_user}"
-log_attention "grafana password: ${grafana_admin_password}"
+log_important "grafana dashboard url: https://${grafana_server_ip}:${grafana_port}"
+log_important "grafana user: ${grafana_admin_user}"
+log_important "grafana password: ${grafana_admin_password}"
 
-log_attention "grafana data dir: ${grafana_data_dir}"
+log_important "grafana data dir: ${grafana_data_dir}"
 
 
 

@@ -194,7 +194,7 @@ if [ -z "$docker_host_ip" ]; then
     log_error 'cannot detect docker bridge gateway, quit now'
     exit 1
 fi
-log_attention "docker host ip: ${docker_host_ip}"
+log_important "docker host ip: ${docker_host_ip}"
 
 prepare_dir "$prometheus_config_dir" "$run_uid_gid"
 {
@@ -259,18 +259,18 @@ docker run -d \
     if_error_then_exit 'prometheus container start failed, quit now'
 }
 
-log_attention "prometheus server name: ${prometheus_server_name}"
-log_attention "prometheus server ip: ${prometheus_server_ip}"
-log_attention "prometheus server port: ${prometheus_port}"
+log_important "prometheus server name: ${prometheus_server_name}"
+log_important "prometheus server ip: ${prometheus_server_ip}"
+log_important "prometheus server port: ${prometheus_port}"
 
-log_attention "prometheus dashboard url: https://${prometheus_server_ip}:${prometheus_port}"
-log_attention "prometheus user: ${prometheus_user}"
-log_attention "prometheus password: ${prometheus_password}"
+log_important "prometheus dashboard url: https://${prometheus_server_ip}:${prometheus_port}"
+log_important "prometheus user: ${prometheus_user}"
+log_important "prometheus password: ${prometheus_password}"
 
-log_attention "prometheus config dir: ${prometheus_config_dir}"
-log_attention "prometheus config file: ${prometheus_config_file}"
-log_attention "prometheus web config file: ${prometheus_web_config_file}"
-log_attention "prometheus data dir: ${prometheus_data_dir}"
+log_important "prometheus config dir: ${prometheus_config_dir}"
+log_important "prometheus config file: ${prometheus_config_file}"
+log_important "prometheus web config file: ${prometheus_web_config_file}"
+log_important "prometheus data dir: ${prometheus_data_dir}"
 
 docker inspect "$node_exporter_container_name" >'/dev/null' 2>&1
 if [ $? -ne 0 ]; then
@@ -294,7 +294,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         log_error 'node_exporter container start failed, skip'
     else
-        log_attention "node_exporter installed on ${docker_host_ip}:${node_exporter_port}"
+        log_important "node_exporter installed on ${docker_host_ip}:${node_exporter_port}"
     fi
 else
     log_info 'node_exporter container already exists, restart'
@@ -320,7 +320,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         log_error 'nginx_exporter container start failed, skip'
     else
-        log_attention "nginx_exporter installed on ${docker_host_ip}:${nginx_exporter_port}"
+        log_important "nginx_exporter installed on ${docker_host_ip}:${nginx_exporter_port}"
     fi
 else
     log_info 'nginx_exporter container already exists, restart'
@@ -361,7 +361,7 @@ EOF
             if [ $? -ne 0 ]; then
                 log_error 'mysqld_exporter container start failed, skip'
             else
-                log_attention "mysqld_exporter installed on ${docker_host_ip}:${mysqld_exporter_port}"
+                log_important "mysqld_exporter installed on ${docker_host_ip}:${mysqld_exporter_port}"
             fi
         else
             log_info 'mysqld_exporter container already exists, restart'
@@ -412,7 +412,7 @@ EOF
             if [ $? -ne 0 ]; then
                 log_error 'redis_exporter container start failed, skip'
             else
-                log_attention "redis_exporter installed on ${docker_host_ip}:${redis_exporter_port}"
+                log_important "redis_exporter installed on ${docker_host_ip}:${redis_exporter_port}"
             fi
         else
             log_info 'redis_exporter container already exists, restart'
