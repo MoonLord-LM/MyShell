@@ -68,6 +68,12 @@ if [ ! -S "$portainer_docker_socket_file" ]; then
     exit 1
 fi
 
+if [ "${#portainer_admin_password}" -lt 12 ]; then
+    log_error 'portainer admin password is too short, at least 12 characters are required, quit now'
+    log_error 'export PORTAINER_PASSWORD="<password>"'
+    exit 1
+fi
+
 docker inspect "$portainer_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'portainer container already exists, quit now'

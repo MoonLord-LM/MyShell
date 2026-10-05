@@ -107,7 +107,7 @@ docker run -d \
     -e "GF_SERVER_CERT_FILE=/etc/grafana/certs/grafana.crt" \
     -e "GF_SECURITY_ADMIN_USER=$grafana_admin_user" \
     -e "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password" \
-    -e "GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel" \
+    -e "GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel" \
     "$grafana_image"
 {
     if_error_then_exit 'grafana container start failed, quit now'

@@ -180,6 +180,12 @@ log_warn 'export PROMETHEUS_PASSWORD="<password>"'
 docker inspect "$prometheus_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then
     log_info 'prometheus container already exists, quit now'
+    log_info 'To reinstall prometheus and all exporters:'
+    log_info 'export MYSQL_PASSWORD="<password>"'
+    log_info 'export REDIS_PASSWORD="<password>"'
+    log_info 'export PROMETHEUS_PASSWORD="<password>"'
+    log_info 'docker rm -f prometheus prometheus_node_exporter prometheus_nginx_exporter prometheus_mysql_exporter prometheus_redis_exporter'
+    log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
     exit 0
 fi
 
@@ -352,9 +358,12 @@ EOF
     fi
 else
     log_warn 'mysql_password is empty, skip mysqld_exporter installation'
-    log_info 'To enable mysql_exporter:'
-    log_info 'export MYSQL_PASSWORD="<password>"'
-    log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
+    log_warn 'To reinstall prometheus and all exporters:'
+    log_warn 'export MYSQL_PASSWORD="<password>"'
+    log_warn 'export REDIS_PASSWORD="<password>"'
+    log_warn 'export PROMETHEUS_PASSWORD="<password>"'
+    log_warn 'docker rm -f prometheus prometheus_node_exporter prometheus_nginx_exporter prometheus_mysql_exporter prometheus_redis_exporter'
+    log_warn 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
 if [ "$redis_password" != '' ]; then
@@ -396,9 +405,12 @@ EOF
     fi
 else
     log_warn 'redis_password is empty, skip redis_exporter installation'
-    log_info 'To enable redis_exporter:'
-    log_info 'export REDIS_PASSWORD="<password>"'
-    log_info 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
+    log_warn 'To reinstall prometheus and all exporters:'
+    log_warn 'export MYSQL_PASSWORD="<password>"'
+    log_warn 'export REDIS_PASSWORD="<password>"'
+    log_warn 'export PROMETHEUS_PASSWORD="<password>"'
+    log_warn 'docker rm -f prometheus prometheus_node_exporter prometheus_nginx_exporter prometheus_mysql_exporter prometheus_redis_exporter'
+    log_warn 'wget -O- --timeout=10 --no-cache https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh | bash'
 fi
 
 
