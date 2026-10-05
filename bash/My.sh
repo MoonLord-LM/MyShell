@@ -433,9 +433,7 @@ function update_system(){
     sed -i "s/${codename}/${target_codename}/g" "$sources_list"
     log_warn "update_system modify file: \"$sources_list\""
 
-    local apt_list_files="$(find '/etc/apt' -name '*.list' -type f)"
-
-    while IFS= read -r list_file; do
+    while IFS= read -r -d '' list_file; do
         if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$sources_list" ]; then
             continue
         fi
@@ -448,7 +446,12 @@ function update_system(){
             sed -i "s/${codename}/${target_codename}/g" "$list_file"
             log_warn "update_system modify file: \"$list_file\""
         fi
-    done <<< "$apt_list_files"
+    done < <(
+        find '/etc/apt' \
+            -name '*.list' \
+            -type f \
+            -print0
+    )
 
     update_software_aggressive
     if [ $? -ne 0 ]; then
@@ -809,13 +812,7 @@ function set_memory_swap_to_4GB(){
     fi
 
     # 取 /proc/swaps 与 /etc/fstab 的并集
-    local active_swap_files=$(awk '$2=="file"{print $1}' '/proc/swaps')
-    local all_swap_files=$({
-        echo "$active_swap_files"
-        awk '!/^[[:space:]]*#/ && $3=="swap"{print $1}' "$fstab_file"
-    } | sort -u)
-
-    while IFS= read -r swap_path; do
+    while IFS= read -r -d '' swap_path; do
         if [ "$swap_path" == '' ] || [ ! -f "$swap_path" ] || [ "$swap_path" == "$swap_file" ]; then
             continue
         fi
@@ -834,7 +831,12 @@ function set_memory_swap_to_4GB(){
             continue
         fi
         sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
-    done <<< "$all_swap_files"
+    done < <(
+        {
+            echo "$active_swap_files" | awk 'NF{printf "%s\0", $0}'
+            awk '!/^[[:space:]]*#/ && $3=="swap"{printf "%s\0", $1}' "$fstab_file"
+        } | sort -z -u
+    )
 
     # 写入 /etc/fstab 以便重启后自动挂载
     grep -q -F "$swap_file" "$fstab_file"

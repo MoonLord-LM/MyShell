@@ -4,9 +4,7 @@
 
 echo 'MyShell self-check begin'
 
-shell_files=$(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*")
-
-while IFS= read -r file; do
+while IFS= read -r -d '' file; do
     if [ "$file" == '' ] || [ ! -f "$file" ]; then
         continue
     fi
@@ -49,6 +47,14 @@ while IFS= read -r file; do
         echo "Syntax check failed in $file"
         exit 1
     fi
-done <<< "$shell_files"
+done < <(
+    find . \
+        -name "*.sh" \
+        -not -path "*/.git/*" \
+        -not -path "*/.github/*" \
+        -not -samefile "$0" \
+        -type f \
+        -print0
+)
 
 echo 'MyShell self-check end'
