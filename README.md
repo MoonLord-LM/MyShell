@@ -121,6 +121,7 @@ source <( wget -O- --timeout=10 --no-cache \
 
 | 分类 | 函数 | 说明 |
 | --- | --- | --- |
+| 设置 | `prepare_common_command`         | 安装常用命令（curl、openssl 等） |
 | 设置 | `reset_root_password`            | 重设 root 密码为 Base64 编码的 256 bit 随机数，并显示新密码 |
 | 设置 | `set_timezone_china`             | 设置系统时区为中国时区（Asia/Shanghai GMT+08:00） |
 | 设置 | `set_tcp_congestion_control_bbr` | 设置 TCP 拥塞控制算法为 BBR |
@@ -133,7 +134,6 @@ source <( wget -O- --timeout=10 --no-cache \
 | 查看 | `get_system_name`                | 获取系统名称 |
 | 查看 | `get_system_version_codename`    | 获取系统版本代号 |
 | 查看 | `get_system_ip`                  | 获取系统的 IP |
-| 查看 | `prepare_common_command`         | 安装常用命令 |
 | 查看 | `show_tcp_listening`             | 展示正在监听的 TCP 端口 |
 | 查看 | `show_disk_usage`                | 展示物理磁盘使用 |
 

@@ -104,6 +104,7 @@ server {
     }
 
     location = /nginx_status {
+        stub_status;
         allow 127.0.0.1;
         allow 172.17.0.1;
         deny all;
