@@ -1,3 +1,12 @@
+# Issue
+
+## My.sh - generate_ssl_cert 安全性
+
+证书算法 RSA-4096，有效期 1000 年，不添加 subjectAltName 设置  
+安全性有限，仅用于临时证书，或前端额外有 CloudFlare 等 CDN 保护的场景  
+
+
+
 # TODO
 
 ## OpenList 的音乐播放器界面高度太小
