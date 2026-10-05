@@ -538,13 +538,13 @@ function update_file(){
         local old_content=$(cat "$target_file")
         local new_content=$(printf '%s' "$target_content")
         if [ "$old_content" == "$new_content" ]; then
-            log_info "update_file skip, \"$target_file\" is not changed"
-            return 0
-        fi
-        backup_file "$target_file"
-        if [ $? -ne 0 ]; then
-            log_error "update_file failed, backup_file \"$target_file\" error"
-            return 1
+            log_info "update_file skip backup, \"$target_file\" is not changed"
+        else
+            backup_file "$target_file"
+            if [ $? -ne 0 ]; then
+                log_error "update_file failed, backup_file \"$target_file\" error"
+                return 1
+            fi
         fi
     fi
 
