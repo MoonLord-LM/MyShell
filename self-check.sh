@@ -14,8 +14,8 @@ while IFS= read -r file; do
     fi
 
     # 替换中文冒号为 1 个英文冒号和 1 个空格
-    if grep -q '：' "$file"; then
-        sed -i 's/：/: /g' "$file"
+    if grep -q ': ' "$file"; then
+        sed -i 's/: /: /g' "$file"
         echo "Fixed colons in $file"
     fi
 
