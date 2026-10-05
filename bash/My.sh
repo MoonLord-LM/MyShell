@@ -195,7 +195,7 @@ function check_command_exist(){
         log_info "check_command_exist: \"$cmd\" exists in \"$cmd_file_path\""
     fi
 }
-# 更新软件（保守，允许安装新依赖，不删除已安装的软件）
+# 更新软件（较保守）
 function update_software(){
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
@@ -224,7 +224,7 @@ function update_software(){
         return 1
     fi
 }
-# 更新软件（激进，允许安装新依赖，允许删除已安装的软件）
+# 更新软件（更激进）
 function update_software_aggressive(){
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
