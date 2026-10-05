@@ -33,11 +33,20 @@ run_uid_gid='472:472'
 
 
 # ———————————————————————— Init ————————————————————————
-source <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+tmp_file="/tmp/MyShell_My.sh_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.sh"
+wget -O "$tmp_file" --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh'
 if [ $? -ne 0 ]; then
-    echo -ne '\e[1;31m' && echo 'My.sh: load failed, quit now' && echo -ne '\e[0m'
+    echo -ne '\e[1;31m' && echo 'My.sh: download failed, quit now' && echo -ne '\e[0m'
+    rm -f "$tmp_file"
     exit 1
 fi
+source "$tmp_file"
+if [ $? -ne 0 ]; then
+    echo -ne '\e[1;31m' && echo 'My.sh: load failed, quit now' && echo -ne '\e[0m'
+    rm -f "$tmp_file"
+    exit 1
+fi
+rm -f "$tmp_file"
 prepare_common_command
 
 
