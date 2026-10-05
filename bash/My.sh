@@ -812,6 +812,7 @@ function set_memory_swap_to_4GB(){
     fi
 
     # 取 /proc/swaps 与 /etc/fstab 的并集
+    local active_swap_files=$(awk '$2=="file"{print $1}' '/proc/swaps')
     while IFS= read -r -d '' swap_path; do
         if [ "$swap_path" == '' ] || [ ! -f "$swap_path" ] || [ "$swap_path" == "$swap_file" ]; then
             continue

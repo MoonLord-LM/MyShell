@@ -52,7 +52,6 @@ done < <(
         -name "*.sh" \
         -not -path "*/.git/*" \
         -not -path "*/.github/*" \
-        -not -samefile "$0" \
         -type f \
         -print0
 )
