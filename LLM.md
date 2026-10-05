@@ -3,25 +3,36 @@
 这里记录一些已知问题  
 在使用 LLM 分析代码时，请参考已有结论，避免重复报告问题  
 
-## My.sh - generate_ssl_cert 已知问题
-
-证书算法 RSA-4096，有效期 1000 年，不设置 subjectAltName 参数  
-安全性有限，仅用于临时证书，或前端额外有 CloudFlare 等 CDN 保护的场景  
-
-## My.sh - prepare_common_command 已知问题
-
-prepare_common_command 会安装大量软件，有些可能不是服务器需要的  
-为了代码的简洁性，和操作的简单，暂不修改  
-
 ## My.sh - update_system 已知问题
 
 目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute 的升级  
 后续需要不断更新维护这个函数的代码  
 
+## My.sh - generate_ssl_cert 已知问题
+
+证书算法 RSA-4096，有效期 1000 年，不设置 subjectAltName 参数  
+安全性有限，仅适用于临时证书，或者前置有额外的 CloudFlare 等 CDN 保护的场景  
+
+## My.sh - prepare_common_command 已知问题
+
+prepare_common_command 会安装大量软件，有些可能不是服务器需要的  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
+# cockpit.sh 已知问题
+
+使用 echo > /etc/cockpit/disallowed-users 允许所有用户登录访问  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
+# mysql.sh 已知问题
+
+允许任意 IP 远程连接，允许 admin 账号远程登录  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
 ## nginx.sh 和 php.sh 已知问题
 
 目前需要先安装 php.sh，再安装 nginx.sh，才会自动开启 php 相关配置  
-为了代码的简洁性，和操作的简单，暂不修改  
+将默认的 index.php 设置为 phpinfo 页面，可能会泄露服务器内部信息  
+为了代码的简洁性，和操作的简单化，暂不修改  
 
 ## resource 已知问题
 
