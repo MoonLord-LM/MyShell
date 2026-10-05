@@ -1,13 +1,41 @@
 # MyShell
 [![self-check](https://github.com/MoonLord-LM/MyShell/actions/workflows/self-check.yml/badge.svg)](https://github.com/MoonLord-LM/MyShell/actions/workflows/self-check.yml)
 
-Common Linux Shell scripts and functions  
-One-click installation and configuration scripts for common software on Ubuntu / Debian servers, along with some practical functions  
+Common Linux Shell scripts and function library  
+Provides some practical utility functions on Ubuntu / Debian servers, and one-click installation, configuration and tuning scripts for common software  
 
 常用 Linux Shell 脚本和函数库  
-提供一些在 Ubuntu / Debian 服务器上的常用软件的一键安装配置脚本，以及一些实用的功能函数  
+提供在 Ubuntu / Debian 服务器上的一些实用的功能函数，以及一些常用软件的一键安装配置调优脚本  
 
 ## [使用说明]
+
+### 功能函数
+
+需要先执行 source 命令，加载 My.sh 之后，才可以执行函数  
+
+```bash
+source <( wget -O- --timeout=10 --no-cache \
+'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
+```
+
+| 分类 | 函数 | 说明 |
+| --- | --- | --- |
+| 设置 | `prepare_common_command`         | 安装常用命令（curl、openssl 等） |
+| 设置 | `reset_root_password`            | 重设 root 密码为 Base64 编码的 256 bit 随机数，并显示新密码 |
+| 设置 | `set_timezone_china`             | 设置系统时区为中国时区（Asia/Shanghai GMT+08:00） |
+| 设置 | `set_tcp_congestion_control_bbr` | 设置 TCP 拥塞控制算法为 BBR |
+| 设置 | `set_tcp_network_buffer`         | 设置 TCP 收发缓冲区上限为 16MB |
+| 设置 | `set_tcp_fastopen`               | 设置 TCP Fast Open 为 3（客户端+服务端） |
+| 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
+| 设置 | `update_software`                | 更新软件 |
+| 设置 | `update_software_aggressive`     | 更新软件，更激进 |
+| 设置 | `update_system`                  | 系统版本升级 |
+| 查看 | `get_system_name`                | 获取系统名称 |
+| 查看 | `get_system_version_codename`    | 获取系统版本代号 |
+| 查看 | `get_system_ip`                  | 获取系统的 IP |
+| 查看 | `show_software_list`             | 展示所有已安装的程序和版本 |
+| 查看 | `show_tcp_listening`             | 展示正在监听的 TCP 端口 |
+| 查看 | `show_disk_usage`                | 展示物理磁盘使用 |
 
 ### 部署脚本
 
@@ -109,34 +137,6 @@ export PROMETHEUS_PASSWORD="<预设密码>"
 wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh' | bash
 ```
-
-### 功能函数
-
-需要先执行 source 命令，加载 My.sh 之后，才可以执行函数  
-
-```bash
-source <( wget -O- --timeout=10 --no-cache \
-'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/My.sh' )
-```
-
-| 分类 | 函数 | 说明 |
-| --- | --- | --- |
-| 设置 | `prepare_common_command`         | 安装常用命令（curl、openssl 等） |
-| 设置 | `reset_root_password`            | 重设 root 密码为 Base64 编码的 256 bit 随机数，并显示新密码 |
-| 设置 | `set_timezone_china`             | 设置系统时区为中国时区（Asia/Shanghai GMT+08:00） |
-| 设置 | `set_tcp_congestion_control_bbr` | 设置 TCP 拥塞控制算法为 BBR |
-| 设置 | `set_tcp_network_buffer`         | 设置 TCP 收发缓冲区上限为 16MB |
-| 设置 | `set_tcp_fastopen`               | 设置 TCP Fast Open 为 3（客户端+服务端） |
-| 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
-| 设置 | `update_software`                | 更新软件 |
-| 设置 | `update_software_aggressive`     | 更新软件，更激进 |
-| 设置 | `update_system`                  | 系统版本升级 |
-| 查看 | `get_system_name`                | 获取系统名称 |
-| 查看 | `get_system_version_codename`    | 获取系统版本代号 |
-| 查看 | `get_system_ip`                  | 获取系统的 IP |
-| 查看 | `show_software_list`             | 展示所有已安装的程序和版本 |
-| 查看 | `show_tcp_listening`             | 展示正在监听的 TCP 端口 |
-| 查看 | `show_disk_usage`                | 展示物理磁盘使用 |
 
 ## [目录结构]
 
