@@ -433,7 +433,7 @@ function update_system(){
     sed -i "s/${codename}/${target_codename}/g" "$sources_list"
     log_warn "update_system modify file: \"$sources_list\""
 
-    local apt_list_files="$(find '/etc/apt' -type f -name '*.list')"
+    local apt_list_files="$(find '/etc/apt' -name '*.list' -type f)"
 
     while IFS= read -r list_file; do
         if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$sources_list" ]; then
