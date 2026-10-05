@@ -7,6 +7,10 @@ echo 'MyShell self-check begin'
 shell_files=$(find . -name "*.sh" -not -path "*/.git/*" -not -path "*/.github/*")
 
 while IFS= read -r file; do
+    if [ "$file" == '' ] || [ ! -f "$file" ]; then
+        continue
+    fi
+
     # 替换制表符为 4 个空格
     if grep -q $'\t' "$file"; then
         sed -i 's/\t/    /g' "$file"

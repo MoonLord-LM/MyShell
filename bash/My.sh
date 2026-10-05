@@ -393,6 +393,7 @@ function update_system(){
     local target_codename=''
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
+        # Debian
         if [[ "${codename}" == 'trixie' ]]; then
             log_success "update_system: no need to update, current: $(get_system_name) / ${codename}"
             return 0
@@ -403,6 +404,7 @@ function update_system(){
             return 1
         fi
     else
+        # Ubuntu
         if [[ "${codename}" == 'resolute' ]]; then
             log_success "update_system: no need to update, current: $(get_system_name) / ${codename}"
             return 0
@@ -429,6 +431,24 @@ function update_system(){
         return 1
     fi
     sed -i "s/${codename}/${target_codename}/g" "$sources_list"
+    log_warn "update_system modify file: \"$sources_list\""
+
+    local apt_list_files="$(find '/etc/apt' -type f -name '*.list')"
+
+    while IFS= read -r list_file; do
+        if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$sources_list" ]; then
+            continue
+        fi
+        if grep -q -F "$codename" "$list_file"; then
+            backup_file "$list_file"
+            if [ $? -ne 0 ]; then
+                log_error "update_system failed, backup_file \"$list_file\" error"
+                return 1
+            fi
+            sed -i "s/${codename}/${target_codename}/g" "$list_file"
+            log_warn "update_system modify file: \"$list_file\""
+        fi
+    done <<< "$apt_list_files"
 
     update_software_aggressive
     if [ $? -ne 0 ]; then
@@ -795,9 +815,8 @@ function set_memory_swap_to_4GB(){
         awk '!/^[[:space:]]*#/ && $3=="swap"{print $1}' "$fstab_file"
     } | sort -u)
 
-    local swap_path=''
-    while read -r swap_path; do
-        if [ "$swap_path" == '' ] || [ "$swap_path" == "$swap_file" ] || [ ! -f "$swap_path" ]; then
+    while IFS= read -r swap_path; do
+        if [ "$swap_path" == '' ] || [ ! -f "$swap_path" ] || [ "$swap_path" == "$swap_file" ]; then
             continue
         fi
         log_info "set_memory_swap_to_4GB remove old swap file: \"$swap_path\""
