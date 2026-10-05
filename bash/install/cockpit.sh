@@ -21,6 +21,7 @@ cockpit_ssl_cert='/etc/cockpit/ws-certs.d/1-self-signed.cert'
 
 cockpit_server_port=19190
 
+# IdleTimeout unit is minute
 cockpit_idle_timeout=1440
 
 run_uid_gid='root:root'
@@ -103,6 +104,7 @@ update_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
 }
 systemctl daemon-reload
 
+# every system user can log in
 echo > /etc/cockpit/disallowed-users
 
 generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert" "$run_uid_gid"
@@ -114,7 +116,6 @@ cockpit_server_ip=$(get_system_ip)
 log_attention "cockpit server ip: ${cockpit_server_ip}"
 log_attention "cockpit server port: ${cockpit_server_port}"
 log_attention "cockpit dashboard url: https://${cockpit_server_ip}:${cockpit_server_port}"
-log_attention "cockpit allow login group: ${cockpit_allow_groups}"
 
 log_attention "cockpit config: ${cockpit_conf_file}"
 log_attention "cockpit socket config: ${cockpit_socket_conf_file}"
