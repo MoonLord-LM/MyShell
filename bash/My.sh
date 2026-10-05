@@ -330,17 +330,6 @@ function prepare_common_command(){
     check_command_exist 'gcc' || install_software 'gcc'
     check_command_exist 'g++' || install_software 'g++'
 }
-# 查看系统已安装的程序和版本
-function show_software_list(){
-    check_system_is_ubuntu || check_system_is_debian
-    if [ $? -ne 0 ]; then
-        log_error "show_software_list failed, unknown system"
-        return 1
-    fi
-
-    log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
-    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2>'/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
-}
 # 搜索已安装的软件（$1 为关键字，模糊匹配包名和描述等），显示名称和版本
 function search_software(){
     check_parameter "$1" || return 1
@@ -367,7 +356,7 @@ function search_software(){
     log_info "search_software: search \"$keyword\""
     echo "$result"
 }
-# 系统版本升级（例如，Debian bookworm → trixie 和 Ubuntu noble → resolute）
+# 系统版本升级（目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute）
 function update_system(){
     check_system_is_ubuntu || check_system_is_debian
     if [ $? -ne 0 ]; then
@@ -841,7 +830,18 @@ function set_memory_swap_to_4GB(){
 
 
 
-# 获取正在监听的 TCP 端口信息
+# 展示所有已安装的程序和版本信息
+function show_software_list(){
+    check_system_is_ubuntu || check_system_is_debian
+    if [ $? -ne 0 ]; then
+        log_error "show_software_list failed, unknown system"
+        return 1
+    fi
+
+    log_info "dpkg-query -W -f='\${Package} \${Version}' | grep 'install ok installed'"
+    dpkg-query -W -f='${Package} ${Version} ${Status}\n' 2>'/dev/null' | grep 'install ok installed' | awk '{print $1" "$2}'
+}
+# 展示正在监听的 TCP 端口信息
 function show_tcp_listening(){
     if command -v 'ss' &>'/dev/null'; then
         log_info 'ss --tcp --listening --numeric --processes'
@@ -854,7 +854,7 @@ function show_tcp_listening(){
         return 1
     fi
 }
-# 获取物理磁盘使用信息
+# 展示物理磁盘使用信息
 function show_disk_usage(){
     log_info "df -h | grep '^/dev/'"
     df -h | grep '^/dev/'

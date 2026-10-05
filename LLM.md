@@ -10,6 +10,11 @@
 会安装大量软件，有些可能不是服务器需要的  
 但是为了代码的简洁性，和操作的简单，仍然按照现有的方案  
 
+## My.sh - update_system 已知问题
+
+目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute 的升级  
+后续需要不断更新维护这个函数的代码  
+
 
 
 # TODO

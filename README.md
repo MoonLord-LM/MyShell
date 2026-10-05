@@ -134,6 +134,7 @@ source <( wget -O- --timeout=10 --no-cache \
 | 查看 | `get_system_name`                | 获取系统名称 |
 | 查看 | `get_system_version_codename`    | 获取系统版本代号 |
 | 查看 | `get_system_ip`                  | 获取系统的 IP |
+| 查看 | `show_software_list`             | 展示所有已安装的程序和版本 |
 | 查看 | `show_tcp_listening`             | 展示正在监听的 TCP 端口 |
 | 查看 | `show_disk_usage`                | 展示物理磁盘使用 |
 
