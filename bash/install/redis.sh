@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 
-# export REDIS_PASSWORD="<password>"
+# export REDIS_PASSWORD='<password>'
 # apt remove -y redis-server
 
 # Redis
@@ -90,7 +90,7 @@ if [ $? -eq 0 ]; then
 fi
 
 log_warn 'if $REDIS_PASSWORD is not set, a random password will be generated:'
-log_warn 'export REDIS_PASSWORD="<password>"'
+log_warn "export REDIS_PASSWORD='<password>'"
 
 tmp_file="/tmp/redis-gpg-key_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.asc"
 wget -O "$tmp_file" --timeout=120 --no-cache "${redis_apt_repo_url}/gpg"

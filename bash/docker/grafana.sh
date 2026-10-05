@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/grafana.sh' | bash
 
-# export GRAFANA_PASSWORD="<password>"
+# export GRAFANA_PASSWORD='<password>'
 # docker rm -f grafana
 
 # docker exec -it grafana grafana cli admin reset-admin-password '<password>'
@@ -62,7 +62,7 @@ check_command_exist 'docker'
 }
 
 log_warn 'if $GRAFANA_PASSWORD is not set, a random password will be generated:'
-log_warn 'export GRAFANA_PASSWORD="<password>"'
+log_warn "export GRAFANA_PASSWORD='<password>'"
 
 docker inspect "$grafana_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then

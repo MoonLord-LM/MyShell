@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/shadowsocks.sh' | bash
 
-# export SS_PASSWORD="<password>"
+# export SS_PASSWORD='<password>'
 # systemctl disable --now 'ssserver' && rm -f '/usr/local/bin/ssserver' "$ss_server_service_file" && rm -rf '/usr/local/etc/ssserver/'
 
 # Shadowsocks
@@ -85,7 +85,7 @@ if [ $? -eq 0 ]; then
 fi
 
 log_warn 'if $SS_PASSWORD is not set, a random password will be generated:'
-log_warn 'export SS_PASSWORD="<password>"'
+log_warn "export SS_PASSWORD='<password>'"
 
 tmp_file="/tmp/shadowsocks-rust_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.tar"
 ss_file_name_match="$(uname -m)-unknown-linux-musl"

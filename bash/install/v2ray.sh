@@ -2,8 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/v2ray.sh' | bash
 
-# export V2RAY_CLIENT_ID="<uuid>"
-# export V2RAY_WS_PATH="<path>"
+# export V2RAY_CLIENT_ID='<uuid>'
+# export V2RAY_WS_PATH='<path>'
 # bash <( wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh' ) --remove && rm -rf '/usr/local/etc/v2ray/'
 
 # V2Ray
@@ -112,10 +112,10 @@ if [ $? -eq 0 ]; then
 fi
 
 log_warn 'if $V2RAY_CLIENT_ID is not set, a random client id will be generated:'
-log_warn 'export V2RAY_CLIENT_ID="<uuid>"'
+log_warn "export V2RAY_CLIENT_ID='<uuid>'"
 
 log_warn 'if $V2RAY_WS_PATH is not set, a random ws path will be generated:'
-log_warn 'export V2RAY_WS_PATH="<path>"'
+log_warn "export V2RAY_WS_PATH='<path>'"
 
 tmp_file="/tmp/v2ray-install-release_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.sh"
 wget -O "$tmp_file" --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh'

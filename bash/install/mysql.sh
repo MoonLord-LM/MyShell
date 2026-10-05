@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/mysql.sh' | bash
 
-# export MYSQL_PASSWORD="<password>"
+# export MYSQL_PASSWORD='<password>'
 # apt remove -y mysql-community-server-core && apt purge -y mysql-apt-config
 
 # MySQL
@@ -97,7 +97,7 @@ if [ $? -eq 0 ]; then
 fi
 
 log_warn 'if $MYSQL_PASSWORD is not set, a random password will be generated:'
-log_warn 'export MYSQL_PASSWORD="<password>"'
+log_warn "export MYSQL_PASSWORD='<password>'"
 
 search_software 'mysql-apt-config'
 if [ $? -ne 0 ]; then

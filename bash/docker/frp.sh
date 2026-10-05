@@ -2,8 +2,8 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/frp.sh' | bash
 
-# export FRP_TOKEN="<token>"
-# export FRP_DASHBOARD_PASSWORD="<password>"
+# export FRP_TOKEN='<token>'
+# export FRP_DASHBOARD_PASSWORD='<password>'
 # docker rm -f frp
 
 # Frp
@@ -124,10 +124,10 @@ check_command_exist 'docker'
 }
 
 log_warn 'if $FRP_TOKEN is not set, a random token will be generated:'
-log_warn 'export FRP_TOKEN="<token>"'
+log_warn "export FRP_TOKEN='<token>'"
 
 log_warn 'if $FRP_DASHBOARD_PASSWORD is not set, a random password will be generated:'
-log_warn 'export FRP_DASHBOARD_PASSWORD="<password>"'
+log_warn "export FRP_DASHBOARD_PASSWORD='<password>'"
 
 docker inspect "$frp_container_name" >'/dev/null' 2>&1
 if [ $? -eq 0 ]; then

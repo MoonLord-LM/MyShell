@@ -2,7 +2,7 @@
 
 # wget -O- --timeout=10 --no-cache 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/portainer.sh' | bash
 
-# export PORTAINER_PASSWORD="<password>"
+# export PORTAINER_PASSWORD='<password>'
 # docker rm -f portainer && docker volume rm portainer_data
 
 # Portainer CE
@@ -61,7 +61,7 @@ check_command_exist 'docker'
 }
 
 log_warn 'if $PORTAINER_PASSWORD is not set, a random password will be generated:'
-log_warn 'export PORTAINER_PASSWORD="<password>"'
+log_warn "export PORTAINER_PASSWORD='<password>'"
 
 if [ ! -S "$portainer_docker_socket_file" ]; then
     log_error 'docker socket not found, quit now'
@@ -70,7 +70,7 @@ fi
 
 if [ "${#portainer_admin_password}" -lt 12 ]; then
     log_error 'portainer admin password is too short, at least 12 characters are required, quit now'
-    log_error 'export PORTAINER_PASSWORD="<password>"'
+    log_error "export PORTAINER_PASSWORD='<password>'"
     exit 1
 fi
 
