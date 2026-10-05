@@ -141,7 +141,7 @@ update_file "$mysql_conf_file" "$(mysql_config_cnf)"
     if_error_then_exit 'mysql config file write failed, quit now'
 }
 
-mysqld --validate-config
+mysqld --validate-config --user='mysql'
 {
     if_error_then_exit 'mysql-community-server config failed, quit now'
 }

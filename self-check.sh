@@ -13,10 +13,10 @@ while IFS= read -r file; do
         echo "Fixed tabs in $file"
     fi
 
-    # 替换 \r\n 为 \n
-    if grep -q $'\r' "$file"; then
-        sed -i 's/\r//g' "$file"
-        echo "Fixed line endings in $file"
+    # 替换中文冒号为 1 个英文冒号和 1 个空格
+    if grep -q '：' "$file"; then
+        sed -i 's/：/: /g' "$file"
+        echo "Fixed colons in $file"
     fi
 
     # 确保文件以 #!/bin/bash 开头
@@ -25,6 +25,12 @@ while IFS= read -r file; do
         cat "$file" >> "$file.tmp"
         mv "$file.tmp" "$file"
         echo "Added #!/bin/bash to $file"
+    fi
+
+    # 替换 \r\n 为 \n
+    if grep -q $'\r' "$file"; then
+        sed -i 's/\r//g' "$file"
+        echo "Fixed line endings in $file"
     fi
 
     # 检查 bash 语法错误

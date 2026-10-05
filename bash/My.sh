@@ -315,6 +315,7 @@ function remove_software(){
 function prepare_common_command(){
     check_command_exist 'netstat' || install_software 'net-tools'
     check_command_exist 'curl' || install_software 'curl'
+    check_command_exist 'gpg' || install_software 'gnupg'
 
     check_command_exist 'openssl' || install_software 'openssl'
     check_command_exist 'htpasswd' || install_software 'apache2-utils'
@@ -420,7 +421,7 @@ function update_system(){
 
 
 
-# 准备文件夹（$1 目录路径；$2 可选参数：设置归属用户；$3 可选参数：设置目录权限）
+# 准备文件夹（$1 目录路径；$2 可选参数: 设置归属用户；$3 可选参数: 设置目录权限）
 function prepare_dir(){
     check_parameter "$1" || return 1
     local target_dir="$1"
@@ -476,7 +477,7 @@ function backup_file(){
 
     log_info "backup_file ok, from \"$source_file\" to \"$backup_new_file\""
 }
-# 更新文件内容（$1 文件路径；$2 文件内容；$3 可选参数：设置归属用户；$4 可选参数：设置文件权限）
+# 更新文件内容（$1 文件路径；$2 文件内容；$3 可选参数: 设置归属用户；$4 可选参数: 设置文件权限）
 function update_file(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
@@ -529,7 +530,7 @@ function update_file(){
 
     log_info "update_file ok, \"$target_file\" is updated"
 }
-# 生成 SSL 证书文件（$1 证书名称；$2 私钥文件路径；$3 证书文件路径；$4 可选参数：设置归属用户）
+# 生成 SSL 证书文件（$1 证书名称；$2 私钥文件路径；$3 证书文件路径；$4 可选参数: 设置归属用户）
 function generate_ssl_cert(){
     check_parameter "$1" || return 1
     check_parameter "$2" || return 1
@@ -709,62 +710,62 @@ function set_tcp_fastopen(){
 function set_memory_swap_to_4GB(){
     local mem_size=$(free -m | awk '/^Mem:/{print $2}')
     local swap_size=$(free -m | awk '/^Swap:/{print $2}')
-    log_info "set_memory_swap begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
+    log_info "set_memory_swap_to_4GB begin, physical memory is $mem_size MB, virtual memory is $swap_size MB"
 
     # 总量已满足 4GB 要求时直接返回
     if [ $(( mem_size + swap_size )) -ge 4096 ]; then
-        log_info 'set_memory_swap end, memory is enough'
+        log_info 'set_memory_swap_to_4GB end, memory is enough'
         return 0
     fi
 
     local need_size=$(( 4096 - mem_size ))
     if [ "$need_size" -le 0 ]; then
-        log_info 'set_memory_swap end, memory is enough'
+        log_info 'set_memory_swap_to_4GB end, memory is enough'
         return 0
     fi
-    log_info "set_memory_swap need swap memory: $need_size MB"
+    log_info "set_memory_swap_to_4GB need swap memory: $need_size MB"
 
     local swap_file='/swapfile'
     if awk '$2=="file"{print $1}' '/proc/swaps' | grep -q -F "$swap_file"; then
-        log_info "set_memory_swap: \"$swap_file\" is active, try to swapoff it first"
+        log_info "set_memory_swap_to_4GB: \"$swap_file\" is active, try to swapoff it first"
         swapoff "$swap_file"
         if [ $? -ne 0 ]; then
-            log_error 'set_memory_swap failed, swapoff old swap file error'
+            log_error 'set_memory_swap_to_4GB failed, swapoff old swap file error'
             return 1
         fi
     fi
     rm -f "$swap_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, remove old swap file error'
+        log_error 'set_memory_swap_to_4GB failed, remove old swap file error'
         return 1
     fi
 
     # 额外多分配 1MB
     dd if='/dev/zero' of="$swap_file" bs='1M' count="$(( need_size + 1 ))"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, dd error'
+        log_error 'set_memory_swap_to_4GB failed, dd error'
         return 1
     fi
     chmod 600 "$swap_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, chmod error'
+        log_error 'set_memory_swap_to_4GB failed, chmod error'
         return 1
     fi
     mkswap "$swap_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, mkswap error'
+        log_error 'set_memory_swap_to_4GB failed, mkswap error'
         return 1
     fi
     swapon "$swap_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, swapon error'
+        log_error 'set_memory_swap_to_4GB failed, swapon error'
         return 1
     fi
 
     local fstab_file='/etc/fstab'
     backup_file "$fstab_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, backup fstab error'
+        log_error 'set_memory_swap_to_4GB failed, backup fstab error'
         return 1
     fi
 
@@ -780,18 +781,18 @@ function set_memory_swap_to_4GB(){
         if [ "$swap_path" == '' ] || [ "$swap_path" == "$swap_file" ] || [ ! -f "$swap_path" ]; then
             continue
         fi
-        log_info "set_memory_swap remove old swap file: \"$swap_path\""
+        log_info "set_memory_swap_to_4GB remove old swap file: \"$swap_path\""
         echo "$active_swap_files" | grep -q -F -x "$swap_path"
         if [ $? -eq 0 ]; then
             swapoff "$swap_path" >'/dev/null' 2>&1
             if [ $? -ne 0 ]; then
-                log_warn "set_memory_swap skip, swapoff \"$swap_path\" error, keep it"
+                log_warn "set_memory_swap_to_4GB skip, swapoff \"$swap_path\" error, keep it"
                 continue
             fi
         fi
         rm -f "$swap_path"
         if [ $? -ne 0 ]; then
-            log_warn "set_memory_swap skip, remove \"$swap_path\" error, keep it"
+            log_warn "set_memory_swap_to_4GB skip, remove \"$swap_path\" error, keep it"
             continue
         fi
         sed -i "\|^[[:space:]]*$swap_path[[:space:]]|d" "$fstab_file"
@@ -804,27 +805,27 @@ function set_memory_swap_to_4GB(){
     fi
     swapon -a
     if [ $? -ne 0 ]; then
-        log_warn 'set_memory_swap skip, swapon -a error'
+        log_warn 'set_memory_swap_to_4GB skip, swapon -a error'
     fi
 
     local sysctl_conf_file='/etc/sysctl.conf'
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, backup sysctl.conf error'
+        log_error 'set_memory_swap_to_4GB failed, backup sysctl.conf error'
         return 1
     fi
 
     sed -i '/vm.swappiness/d' "$sysctl_conf_file"
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
 
-    log_info 'set_memory_swap changed config, now reload'
+    log_info 'set_memory_swap_to_4GB changed config, now reload'
     sysctl --load
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap failed, sysctl --load error'
+        log_error 'set_memory_swap_to_4GB failed, sysctl --load error'
         return 1
     fi
 
-    log_info 'set_memory_swap end, show current value'
+    log_info 'set_memory_swap_to_4GB end, show current value'
     free -m
 }
 

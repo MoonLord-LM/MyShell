@@ -10,13 +10,18 @@
 
 ## My.sh - prepare_common_command 已知问题
 
-会安装大量软件，有些可能不是服务器需要的  
-但是为了代码的简洁性，和操作的简单，仍然按照现有的方案  
+prepare_common_command 会安装大量软件，有些可能不是服务器需要的  
+为了代码的简洁性，和操作的简单，暂不修改  
 
 ## My.sh - update_system 已知问题
 
 目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute 的升级  
 后续需要不断更新维护这个函数的代码  
+
+## nginx.sh 和 php.sh 已知问题
+
+目前需要先安装 php.sh，再安装 nginx.sh，才会自动开启 php 相关配置  
+为了代码的简洁性，和操作的简单，暂不修改  
 
 ## resource 已知问题
 
@@ -48,7 +53,7 @@
 
 ## 增加更多安装脚本
 
-参考：
+参考:
 https://github.com/awesome-selfhosted/awesome-selfhosted
 
 ## 优化默认设置
