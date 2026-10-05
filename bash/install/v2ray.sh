@@ -141,8 +141,8 @@ update_file "$v2ray_server_config_file" "$(v2ray_server_config)" "$run_uid_gid" 
 cat "$v2ray_server_config_file"
 
 v2ray_server_ip=$(get_system_ip)
-log_attention "v2ray server ip: ${v2ray_server_ip}"
-log_attention "v2ray port: ${v2ray_server_port}"
+log_important "v2ray server ip: ${v2ray_server_ip}"
+log_important "v2ray port: ${v2ray_server_port}"
 log_important "v2ray client id: ${v2ray_client_id}"
 log_important "v2ray ws path: ${v2ray_ws_path}"
 

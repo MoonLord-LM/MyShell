@@ -113,14 +113,14 @@ generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert" "$run_uid_gid
 }
 
 cockpit_server_ip=$(get_system_ip)
-log_attention "cockpit server ip: ${cockpit_server_ip}"
-log_attention "cockpit server port: ${cockpit_server_port}"
-log_attention "cockpit dashboard url: https://${cockpit_server_ip}:${cockpit_server_port}"
+log_important "cockpit server ip: ${cockpit_server_ip}"
+log_important "cockpit server port: ${cockpit_server_port}"
+log_important "cockpit dashboard url: https://${cockpit_server_ip}:${cockpit_server_port}"
 
-log_attention "cockpit config: ${cockpit_conf_file}"
-log_attention "cockpit socket config: ${cockpit_socket_conf_file}"
-log_attention "cockpit ssl key: ${cockpit_ssl_key}"
-log_attention "cockpit ssl cert: ${cockpit_ssl_cert}"
+log_important "cockpit config: ${cockpit_conf_file}"
+log_important "cockpit socket config: ${cockpit_socket_conf_file}"
+log_important "cockpit ssl key: ${cockpit_ssl_key}"
+log_important "cockpit ssl cert: ${cockpit_ssl_cert}"
 
 
 

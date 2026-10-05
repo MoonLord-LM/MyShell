@@ -157,11 +157,11 @@ mysqld --validate-config --user='mysql'
 allow_remote_access
 
 mysql_server_ip=$(get_system_ip)
-log_attention "mysql server ip: ${mysql_server_ip}"
-log_attention "mysql server port: ${mysql_server_port}"
-log_attention "mysql user: ${mysql_user}"
+log_important "mysql server ip: ${mysql_server_ip}"
+log_important "mysql server port: ${mysql_server_port}"
+log_important "mysql user: ${mysql_user}"
 log_important "mysql password: ${mysql_password}"
-log_attention "mysql ssl cert: ${mysql_ssl_cert}"
+log_important "mysql ssl cert: ${mysql_ssl_cert}"
 
 
 
