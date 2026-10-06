@@ -803,6 +803,39 @@ function set_tcp_keepalive(){
     sysctl 'net.ipv4.tcp_keepalive_intvl'
     sysctl 'net.ipv4.tcp_keepalive_probes'
 }
+# 设置系统的 TCP 全局开启 TIME_WAIT 状态的端口复用
+function set_tcp_time_wait_reuse(){
+    log_info 'set_tcp_time_wait_reuse begin, show current value'
+    sysctl 'net.ipv4.tcp_tw_reuse'
+    sysctl 'net.ipv4.tcp_timestamps'
+
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
+    backup_file "$sysctl_conf_file"
+    if [ $? -ne 0 ]; then
+        log_error "set_tcp_time_wait_reuse failed, backup_file \"$sysctl_conf_file\" error"
+        return 1
+    fi
+
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/net.ipv4.tcp_tw_reuse/d' "$sysctl_conf_file"
+        sed -i '/net.ipv4.tcp_timestamps/d' "$sysctl_conf_file"
+    fi
+
+    echo 'net.ipv4.tcp_tw_reuse = 1' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_timestamps = 1' >> "$sysctl_conf_file"
+
+    log_info 'set_tcp_time_wait_reuse changed config, now reload'
+    sysctl --system
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_time_wait_reuse failed, sysctl --system error'
+        return 1
+    fi
+
+    log_info 'set_tcp_time_wait_reuse ok, show current value'
+    sysctl 'net.ipv4.tcp_tw_reuse'
+    sysctl 'net.ipv4.tcp_timestamps'
+}
 # 尝试设置 /swapfile 文件为虚拟内存，以保证物理内存和虚拟内存的总量在 4GB 以上
 function set_memory_swap_to_4GB(){
     local mem_size=$(free -m | awk '/^Mem:/{print $2}')
