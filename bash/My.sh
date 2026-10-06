@@ -668,10 +668,11 @@ function set_tcp_congestion_control_bbr(){
         return 1
     fi
 
-    local sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_congestion_control_bbr failed, backup sysctl.conf error'
+        log_error "set_tcp_congestion_control_bbr failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
@@ -682,9 +683,9 @@ function set_tcp_congestion_control_bbr(){
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_congestion_control_bbr changed config, now reload'
-    sysctl --load
+    sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_congestion_control_bbr failed, sysctl --load error'
+        log_error 'set_tcp_congestion_control_bbr failed, sysctl --system error'
         return 1
     fi
 
@@ -701,10 +702,11 @@ function set_tcp_network_buffer(){
     sysctl 'net.ipv4.tcp_rmem'
     sysctl 'net.ipv4.tcp_wmem'
 
-    local sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_network_buffer failed, backup sysctl.conf error'
+        log_error "set_tcp_network_buffer failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
@@ -719,9 +721,9 @@ function set_tcp_network_buffer(){
     echo 'net.ipv4.tcp_wmem = 4096 16384 16777216' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_network_buffer changed config, now reload'
-    sysctl --load
+    sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_network_buffer failed, sysctl --load error'
+        log_error 'set_tcp_network_buffer failed, sysctl --system error'
         return 1
     fi
 
@@ -736,10 +738,11 @@ function set_tcp_fastopen(){
     log_info 'set_tcp_fastopen begin, show current value'
     sysctl 'net.ipv4.tcp_fastopen'
 
-    local sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_fastopen failed, backup sysctl.conf error'
+        log_error "set_tcp_fastopen failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
@@ -748,9 +751,9 @@ function set_tcp_fastopen(){
     echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_fastopen changed config, now reload'
-    sysctl --load
+    sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_fastopen failed, sysctl --load error'
+        log_error 'set_tcp_fastopen failed, sysctl --system error'
         return 1
     fi
 
@@ -764,10 +767,11 @@ function set_tcp_keepalive(){
     sysctl 'net.ipv4.tcp_keepalive_intvl'
     sysctl 'net.ipv4.tcp_keepalive_probes'
 
-    local sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_keepalive failed, backup sysctl.conf error'
+        log_error "set_tcp_keepalive failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
@@ -780,9 +784,9 @@ function set_tcp_keepalive(){
     echo 'net.ipv4.tcp_keepalive_probes = 3' >> "$sysctl_conf_file"
 
     log_info 'set_tcp_keepalive changed config, now reload'
-    sysctl --load
+    sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_tcp_keepalive failed, sysctl --load error'
+        log_error 'set_tcp_keepalive failed, sysctl --system error'
         return 1
     fi
 
@@ -893,10 +897,11 @@ function set_memory_swap_to_4GB(){
         log_warn 'set_memory_swap_to_4GB skip, swapon -a error'
     fi
 
-    local sysctl_conf_file='/etc/sysctl.conf'
+    local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
+    mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap_to_4GB failed, backup sysctl.conf error'
+        log_error "set_memory_swap_to_4GB failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
@@ -904,9 +909,9 @@ function set_memory_swap_to_4GB(){
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
 
     log_info 'set_memory_swap_to_4GB changed config, now reload'
-    sysctl --load
+    sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap_to_4GB failed, sysctl --load error'
+        log_error 'set_memory_swap_to_4GB failed, sysctl --system error'
         return 1
     fi
 
