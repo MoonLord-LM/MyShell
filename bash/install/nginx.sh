@@ -214,8 +214,8 @@ upstream backend_${forward_key} {
 }
 
 server {
-    listen 443 ssl reuseport so_keepalive=15:15:3;
-    listen [::]:443 ssl reuseport so_keepalive=15:15:3;
+    listen 443 ssl;
+    listen [::]:443 ssl;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
