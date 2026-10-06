@@ -17,6 +17,7 @@ function check_parameter(){
         local current_function="${FUNCNAME[0]}"
     fi
     local color_red='1;31'
+    local i=''
     for i in $(seq 1 "$#"); do
         if [ "${!i}" == '' ]; then
             if [ -t 2 ]; then
@@ -439,6 +440,7 @@ function update_system(){
     sed -i "s/${codename}/${target_codename}/g" "$main_list_file"
     log_warn "update_system modify main source list: \"$main_list_file\""
 
+    local list_file=''
     while IFS= read -r -d '' list_file; do
         if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$main_list_file" ]; then
             continue
@@ -819,6 +821,7 @@ function set_memory_swap_to_4GB(){
 
     # 取 /proc/swaps 与 /etc/fstab 的并集
     local active_swap_files=$(awk '$2=="file"{print $1}' '/proc/swaps')
+    local swap_path=''
     while IFS= read -r -d '' swap_path; do
         if [ "$swap_path" == '' ] || [ ! -f "$swap_path" ] || [ "$swap_path" == "$swap_file" ]; then
             continue

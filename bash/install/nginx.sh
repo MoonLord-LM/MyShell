@@ -150,6 +150,7 @@ EOF
 }
 
 EOF
+    local forward=''
     for forward in $nginx_forward_server_and_port; do
         local forward_key="${forward%%:*}"
         local forward_port="${forward#*:}"
