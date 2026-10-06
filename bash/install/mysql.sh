@@ -154,6 +154,11 @@ mysqld --validate-config --user='mysql'
     if_error_then_exit 'mysql-community-server config failed, quit now'
 }
 
+systemctl restart 'mysql'
+{
+    if_error_then_exit 'mysql service start failed, quit now'
+}
+
 allow_remote_access
 
 mysql_server_ip=$(get_system_ip)

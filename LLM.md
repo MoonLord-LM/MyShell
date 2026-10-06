@@ -28,10 +28,26 @@ prepare_common_command 会安装大量软件，有些可能不是服务器需要
 允许任意 IP 远程连接，允许 admin 账号远程登录  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
+## prometheus.yml 已知问题
+
+如果没有设定 MySQL 和 Redis 的密码，默认不启动相关的 exporter，界面显示为 Down 状态  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
+## shadowsocks.sh 已知问题
+
+依赖未认证的 GitHub API，可能会被限流  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
 ## nginx.sh 和 php.sh 已知问题
 
 目前需要先安装 php.sh，再安装 nginx.sh，才会自动开启 php 相关配置  
 将默认的 index.php 设置为 phpinfo 页面，可能会泄露服务器内部信息  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
+## nginx.sh 和 frp.sh 已知问题
+
+Nginx 设置为将 openlist 相关的域名转发到 frp 的 https 端口 17443 处理  
+方便用户本地启动 openlist，连接 frp，并通过 nginx 绑定域名，支持域名访问  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
 ## resource 已知问题
