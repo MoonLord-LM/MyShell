@@ -26,6 +26,7 @@ source <( wget -O- --timeout=10 --no-cache \
 | 设置 | `set_tcp_congestion_control_bbr` | 设置 TCP 拥塞控制算法为 BBR |
 | 设置 | `set_tcp_network_buffer`         | 设置 TCP 收发缓冲区上限为 16MB |
 | 设置 | `set_tcp_fastopen`               | 设置 TCP Fast Open 为 3（客户端+服务端） |
+| 设置 | `set_tcp_keepalive`              | 设置 TCP Keepalive 为每隔 15 秒发包检测，连续 3 次异常时关闭连接 |
 | 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
 | 设置 | `update_software`                | 更新软件 |
 | 设置 | `update_software_aggressive`     | 更新软件，更激进 |

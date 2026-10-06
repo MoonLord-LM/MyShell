@@ -757,6 +757,40 @@ function set_tcp_fastopen(){
     log_info 'set_tcp_fastopen ok, show current value'
     sysctl 'net.ipv4.tcp_fastopen'
 }
+# 设置系统的 TCP keepalive 为每隔 15 秒发包检测，连续 3 次异常时关闭连接
+function set_tcp_keepalive(){
+    log_info 'set_tcp_keepalive begin, show current value'
+    sysctl 'net.ipv4.tcp_keepalive_time'
+    sysctl 'net.ipv4.tcp_keepalive_intvl'
+    sysctl 'net.ipv4.tcp_keepalive_probes'
+
+    local sysctl_conf_file='/etc/sysctl.conf'
+    backup_file "$sysctl_conf_file"
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_keepalive failed, backup sysctl.conf error'
+        return 1
+    fi
+
+    sed -i '/net.ipv4.tcp_keepalive_time/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_keepalive_intvl/d' "$sysctl_conf_file"
+    sed -i '/net.ipv4.tcp_keepalive_probes/d' "$sysctl_conf_file"
+
+    echo 'net.ipv4.tcp_keepalive_time = 15' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_keepalive_intvl = 15' >> "$sysctl_conf_file"
+    echo 'net.ipv4.tcp_keepalive_probes = 3' >> "$sysctl_conf_file"
+
+    log_info 'set_tcp_keepalive changed config, now reload'
+    sysctl --load
+    if [ $? -ne 0 ]; then
+        log_error 'set_tcp_keepalive failed, sysctl --load error'
+        return 1
+    fi
+
+    log_info 'set_tcp_keepalive ok, show current value'
+    sysctl 'net.ipv4.tcp_keepalive_time'
+    sysctl 'net.ipv4.tcp_keepalive_intvl'
+    sysctl 'net.ipv4.tcp_keepalive_probes'
+}
 # 尝试设置 /swapfile 文件为虚拟内存，以保证物理内存和虚拟内存的总量在 4GB 以上
 function set_memory_swap_to_4GB(){
     local mem_size=$(free -m | awk '/^Mem:/{print $2}')
