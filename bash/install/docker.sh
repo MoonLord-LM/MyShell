@@ -81,7 +81,7 @@ rm -f "$tmp_file"
 
 codename=$(get_system_version_codename)
 {
-    if_error_then_exit 'docker get_system_version_codename failed, quit now'
+    if_error_then_exit 'docker get system version codename failed, quit now'
 }
 
 system_arch="$(dpkg --print-architecture)"

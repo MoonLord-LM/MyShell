@@ -62,7 +62,7 @@ wget -O "$php_gpg_key_file" --timeout=120 --no-cache "$php_apt_repo_url/apt.gpg"
 }
 codename=$(get_system_version_codename)
 {
-    if_error_then_exit 'php get_system_version_codename failed, quit now'
+    if_error_then_exit 'php get system version codename failed, quit now'
 }
 
 update_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
