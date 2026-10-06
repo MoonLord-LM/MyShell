@@ -44,7 +44,7 @@ prepare_common_command 会安装大量软件，有些可能不是服务器需要
 
 ## nginx.sh 和 php.sh 已知问题
 
-目前需要先安装 php.sh，再安装 nginx.sh，才会自动开启 php 相关配置  
+目前需要在 php.sh 安装之后，再 安装/卸载重新安装 nginx.sh，才会自动识别开启 php 相关配置  
 将默认的 index.php 设置为 phpinfo 页面，可能会泄露服务器内部信息  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
