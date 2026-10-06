@@ -543,6 +543,7 @@ function update_file(){
     fi
 
     if [ -f "$target_file" ]; then
+        # $( ... ) will remove trailing newlines
         local old_content=$(cat "$target_file")
         local new_content=$(printf '%s' "$target_content")
         if [ "$old_content" == "$new_content" ]; then
