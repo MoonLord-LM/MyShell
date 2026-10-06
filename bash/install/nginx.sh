@@ -76,7 +76,6 @@ include /etc/nginx/modules-enabled/*.conf;
 events {
     worker_connections 10240;
     multi_accept on;
-    reuseport on;
 }
 
 http {
@@ -125,14 +124,14 @@ function nginx_server_config(){
 map \$http_upgrade \$connection_upgrade { default upgrade; '' ''; }
 
 server {
-    listen 80 so_keepalive=15:15:3 default_server;
-    listen [::]:80 so_keepalive=15:15:3 default_server;
+    listen 80 reuseport so_keepalive=15:15:3 default_server;
+    listen [::]:80 reuseport so_keepalive=15:15:3 default_server;
     return 301 https://\$host\$request_uri;
 }
 
 server {
-    listen 443 ssl so_keepalive=15:15:3 default_server;
-    listen [::]:443 ssl so_keepalive=15:15:3 default_server;
+    listen 443 ssl reuseport so_keepalive=15:15:3 default_server;
+    listen [::]:443 ssl reuseport so_keepalive=15:15:3 default_server;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
@@ -215,8 +214,8 @@ upstream backend_${forward_key} {
 }
 
 server {
-    listen 443 ssl so_keepalive=15:15:3;
-    listen [::]:443 ssl so_keepalive=15:15:3;
+    listen 443 ssl reuseport so_keepalive=15:15:3;
+    listen [::]:443 ssl reuseport so_keepalive=15:15:3;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
