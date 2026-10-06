@@ -212,7 +212,6 @@ upstream backend_${forward_key} {
     keepalive 100;
     keepalive_timeout 300s;
     keepalive_requests 10000;
-    proxy_ssl_session_reuse on;
 }
 
 server {
@@ -232,8 +231,9 @@ server {
         proxy_set_header Host \$http_host;
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_ssl_server_name on;
         proxy_ssl_name \$http_host;
+        proxy_ssl_server_name on;
+        proxy_ssl_session_reuse on;
         proxy_ssl_verify off;
         proxy_redirect off;
     }
