@@ -105,6 +105,10 @@ gpg --dearmor --yes -o "$redis_gpg_key_file" "$tmp_file"
 rm -f "$tmp_file"
 
 codename=$(get_system_version_codename)
+{
+    if_error_then_exit 'redis get_system_version_codename failed, quit now'
+}
+
 update_file "$redis_apt_source_file" "deb [signed-by=$redis_gpg_key_file] ${redis_apt_repo_url}/deb $codename main"
 {
     if_error_then_exit 'redis apt source setup failed, quit now'

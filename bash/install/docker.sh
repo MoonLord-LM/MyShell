@@ -80,6 +80,10 @@ gpg --dearmor --yes -o "$docker_gpg_key_file" "$tmp_file"
 rm -f "$tmp_file"
 
 codename=$(get_system_version_codename)
+{
+    if_error_then_exit 'docker get_system_version_codename failed, quit now'
+}
+
 system_arch="$(dpkg --print-architecture)"
 update_file "$docker_apt_source_file" "deb [arch=$system_arch signed-by=$docker_gpg_key_file] $docker_repo_url $codename stable"
 {

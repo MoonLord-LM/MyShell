@@ -61,6 +61,10 @@ wget -O "$php_gpg_key_file" --timeout=120 --no-cache "$php_apt_repo_url/apt.gpg"
     if_error_then_exit 'add sury gpg key failed, quit now'
 }
 codename=$(get_system_version_codename)
+{
+    if_error_then_exit 'php get_system_version_codename failed, quit now'
+}
+
 update_file "$php_apt_source_file" "deb [signed-by=$php_gpg_key_file] $php_apt_repo_url $codename main"
 {
     if_error_then_exit 'php apt source setup failed, quit now'
