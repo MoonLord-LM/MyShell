@@ -15,6 +15,7 @@
 nginx_ssl_key='/etc/nginx/ssl/server-key.pem'
 nginx_ssl_cert='/etc/nginx/ssl/server-cert.pem'
 
+nginx_main_config_file='/etc/nginx/nginx.conf'
 nginx_default_config_file='/etc/nginx/sites-available/default'
 nginx_web_root='/var/www/html'
 
@@ -60,6 +61,56 @@ print(str(inbound["port"]) + ":" + inbound["streamSettings"]["wsSettings"]["path
     echo "${v2ray_port}:${v2ray_path}"
 }
 
+function nginx_main_config(){
+    cat <<EOF
+user www-data;
+
+worker_processes auto;
+worker_cpu_affinity auto;
+worker_rlimit_nofile 163840;
+
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 10240;
+    multi_accept on;
+    reuseport on;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    keepalive_timeout 300;
+    keepalive_requests 10000;
+
+    types_hash_max_size 2048;
+    server_tokens off;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 30m;
+
+    access_log /var/log/nginx/access.log;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+EOF
+}
+
 function nginx_server_config(){
     local php_fpm_listen=$(get_php_fpm_listen)
     local v2ray_forward=$(get_v2ray_ws_forward)
@@ -73,14 +124,14 @@ function nginx_server_config(){
 map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
 
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+    listen 80 so_keepalive=on default_server;
+    listen [::]:80 so_keepalive=on default_server;
     return 301 https://\$host\$request_uri;
 }
 
 server {
-    listen 443 ssl default_server;
-    listen [::]:443 ssl default_server;
+    listen 443 ssl so_keepalive=on default_server;
+    listen [::]:443 ssl so_keepalive=on default_server;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
@@ -156,8 +207,8 @@ EOF
         local forward_port="${forward#*:}"
         cat <<EOF
 server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
+    listen 443 ssl so_keepalive=on;
+    listen [::]:443 ssl so_keepalive=on;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
@@ -239,6 +290,12 @@ if [ "$(get_php_fpm_listen)" != '' ]; then
     fi
     rm -f "${nginx_web_root}/index.nginx-debian.html"
 fi
+
+update_file "$nginx_main_config_file" "$(nginx_main_config)"
+{
+    if_error_then_exit 'nginx main config write failed, quit now'
+}
+cat "$nginx_main_config_file"
 
 update_file "$nginx_default_config_file" "$(nginx_server_config)"
 {
