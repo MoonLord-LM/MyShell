@@ -20,7 +20,7 @@ frp_image='fatedier/frps:v0.71.0'
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
-frp_client_demo_config_file="${frp_config_dir}/frp-client-demo.toml"
+frp_client_demo_config_file="${frp_config_dir}/frpc.toml"
 frp_log_file="${frp_data_dir}/frp.log"
 
 frp_ssl_key="${frp_config_dir}/frp.key"
@@ -201,9 +201,9 @@ log_important "frp ssl cert file: ${frp_ssl_cert}"
 echo
 log_important "frp client demo config file: ${frp_client_demo_config_file}"
 if [ -t 2 ]; then
-    log_success "==================== frp-client-demo.toml - begin ===================="
+    log_success "==================== frpc.toml - begin ===================="
     log_success "$(generate_frp_client_demo_config)"
-    log_success "==================== frp-client-demo.toml - end ===================="
+    log_success "==================== frpc.toml - end ===================="
 fi
 echo
 
