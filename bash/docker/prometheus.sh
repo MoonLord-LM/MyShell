@@ -21,7 +21,7 @@ prometheus_data_dir='/var/lib/prometheus'
 prometheus_config_dir='/etc/prometheus'
 prometheus_config_file="${prometheus_config_dir}/prometheus.yml"
 prometheus_web_config_file="${prometheus_config_dir}/prometheus-web.yml"
-prometheus_scrape_password_file="${prometheus_config_dir}/prometheus-scrape-password"
+prometheus_scrape_password_config_file="${prometheus_config_dir}/prometheus-scrape-password"
 prometheus_port=19090
 prometheus_user='admin'
 prometheus_password="${PROMETHEUS_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
@@ -201,7 +201,7 @@ prepare_dir "$prometheus_config_dir" "$run_uid_gid"
     if_error_then_exit 'prometheus config dir create failed, quit now'
 }
 
-update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
+update_file "$prometheus_scrape_password_config_file" "$prometheus_password" "$run_uid_gid" '600'
 {
     if_error_then_exit 'prometheus scrape password file create failed, quit now'
 }
@@ -249,7 +249,7 @@ docker run -d \
     -v "$(dirname "$prometheus_ssl_key_file"):/etc/prometheus/certs:ro" \
     -v "$prometheus_config_file:/etc/prometheus/prometheus.yml:ro" \
     -v "$prometheus_web_config_file:/etc/prometheus/prometheus-web.yml:ro" \
-    -v "$prometheus_scrape_password_file:/etc/prometheus/prometheus-scrape-password:ro" \
+    -v "$prometheus_scrape_password_config_file:/etc/prometheus/prometheus-scrape-password:ro" \
     -v "$prometheus_data_dir:/prometheus" \
     "$prometheus_image" \
     --config.file=/etc/prometheus/prometheus.yml \
