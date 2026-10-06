@@ -193,7 +193,6 @@ EOF
         proxy_set_header Host \$http_host;
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_tcp_nodelay on;
         proxy_buffering off;
     }
 EOF
@@ -231,7 +230,6 @@ server {
         proxy_set_header Host \$http_host;
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_tcp_nodelay on;
         proxy_buffering off;
         proxy_ssl_name \$http_host;
         proxy_ssl_server_name on;
