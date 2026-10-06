@@ -27,6 +27,9 @@ portainer_admin_password="${PORTAINER_PASSWORD:-$(head -c 32 '/dev/urandom' | ba
 portainer_sslkey='/etc/portainer/certs/portainer.key'
 portainer_sslcert='/etc/portainer/certs/portainer.crt'
 
+portainer_server_name=$(hostname)
+portainer_server_ip=$(get_system_ip)
+
 run_uid_gid='0:0'
 
 
@@ -127,9 +130,6 @@ docker run -d \
 {
     if_error_then_exit 'portainer container start failed, quit now'
 }
-
-portainer_server_name=$(hostname)
-portainer_server_ip=$(get_system_ip)
 
 log_important "portainer server name: ${portainer_server_name}"
 log_important "portainer server ip: ${portainer_server_ip}"

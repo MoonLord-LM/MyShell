@@ -427,7 +427,7 @@ function update_system(){
     else
         main_list_file='/etc/apt/sources.list.d/ubuntu.sources'
         if [ ! -f "$main_list_file" ]; then
-            main_lmain_list_filest='/etc/apt/sources.list'
+            main_list_file='/etc/apt/sources.list'
         fi
     fi
 

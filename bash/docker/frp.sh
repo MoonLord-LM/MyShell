@@ -36,6 +36,9 @@ frp_dashboard_user='admin'
 frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
+frp_server_name=$(hostname)
+frp_server_ip=$(get_system_ip)
+
 run_uid_gid='65534:65534'
 
 function generate_frp_server_config(){
@@ -176,9 +179,6 @@ docker run -d \
 {
     if_error_then_exit 'frp server container start failed, quit now'
 }
-
-frp_server_name=$(hostname)
-frp_server_ip=$(get_system_ip)
 
 log_important "frp server name: ${frp_server_name}"
 log_important "frp server ip: ${frp_server_ip}"

@@ -59,6 +59,9 @@ redis_scheme='rediss'
 redis_password="${REDIS_PASSWORD:-}"
 redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
+prometheus_server_name=$(hostname)
+prometheus_server_ip=$(get_system_ip)
+
 run_uid_gid='65534:65534'
 
 function prometheus_config_yml(){
@@ -200,9 +203,6 @@ prepare_dir "$prometheus_config_dir" "$run_uid_gid"
 {
     if_error_then_exit 'prometheus config dir create failed, quit now'
 }
-
-prometheus_server_name=$(hostname)
-prometheus_server_ip=$(get_system_ip)
 
 prometheus_password_hash=$(htpasswd -nbB "$prometheus_user" "$prometheus_password" | cut -d: -f2)
 if [ -z "$prometheus_password_hash" ]; then

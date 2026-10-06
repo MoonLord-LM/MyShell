@@ -28,6 +28,9 @@ grafana_port=13000
 grafana_admin_user='admin'
 grafana_admin_password="${GRAFANA_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
+grafana_server_name=$(hostname)
+grafana_server_ip=$(get_system_ip)
+
 run_uid_gid='472:472'
 
 
@@ -114,9 +117,6 @@ docker run -d \
 {
     if_error_then_exit 'grafana container start failed, quit now'
 }
-
-grafana_server_name=$(hostname)
-grafana_server_ip=$(get_system_ip)
 
 log_important "grafana server name: ${grafana_server_name}"
 log_important "grafana server ip: ${grafana_server_ip}"
