@@ -3,6 +3,10 @@
 这里记录一些已知问题  
 在使用 LLM 分析代码时，请参考已有结论，避免重复报告问题  
 
+## 关于环境信息
+
+操作系统，只需要 Debian 和 Ubuntu 系统的较新版本  
+
 ## My.sh - update_system 已知问题
 
 目前只支持 Debian bookworm → trixie 和 Ubuntu noble → resolute 的升级  
