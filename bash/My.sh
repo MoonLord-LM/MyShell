@@ -676,8 +676,10 @@ function set_tcp_congestion_control_bbr(){
         return 1
     fi
 
-    sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
-    sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/net.ipv4.tcp_congestion_control/d' "$sysctl_conf_file"
+        sed -i '/net.core.default_qdisc/d' "$sysctl_conf_file"
+    fi
 
     echo 'net.ipv4.tcp_congestion_control = bbr' >> "$sysctl_conf_file"
     echo 'net.core.default_qdisc = fq' >> "$sysctl_conf_file"
@@ -710,10 +712,12 @@ function set_tcp_network_buffer(){
         return 1
     fi
 
-    sed -i '/net.core.rmem_max/d' "$sysctl_conf_file"
-    sed -i '/net.core.wmem_max/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_rmem/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_wmem/d' "$sysctl_conf_file"
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/net.core.rmem_max/d' "$sysctl_conf_file"
+        sed -i '/net.core.wmem_max/d' "$sysctl_conf_file"
+        sed -i '/net.ipv4.tcp_rmem/d' "$sysctl_conf_file"
+        sed -i '/net.ipv4.tcp_wmem/d' "$sysctl_conf_file"
+    fi
 
     echo 'net.core.rmem_max = 16777216' >> "$sysctl_conf_file"
     echo 'net.core.wmem_max = 16777216' >> "$sysctl_conf_file"
@@ -746,7 +750,9 @@ function set_tcp_fastopen(){
         return 1
     fi
 
-    sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/net.ipv4.tcp_fastopen/d' "$sysctl_conf_file"
+    fi
 
     echo 'net.ipv4.tcp_fastopen = 3' >> "$sysctl_conf_file"
 
@@ -775,9 +781,11 @@ function set_tcp_keepalive(){
         return 1
     fi
 
-    sed -i '/net.ipv4.tcp_keepalive_time/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_keepalive_intvl/d' "$sysctl_conf_file"
-    sed -i '/net.ipv4.tcp_keepalive_probes/d' "$sysctl_conf_file"
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/net.ipv4.tcp_keepalive_time/d' "$sysctl_conf_file"
+        sed -i '/net.ipv4.tcp_keepalive_intvl/d' "$sysctl_conf_file"
+        sed -i '/net.ipv4.tcp_keepalive_probes/d' "$sysctl_conf_file"
+    fi
 
     echo 'net.ipv4.tcp_keepalive_time = 15' >> "$sysctl_conf_file"
     echo 'net.ipv4.tcp_keepalive_intvl = 15' >> "$sysctl_conf_file"
@@ -905,7 +913,9 @@ function set_memory_swap_to_4GB(){
         return 1
     fi
 
-    sed -i '/vm.swappiness/d' "$sysctl_conf_file"
+    if [ -f "$sysctl_conf_file" ]; then
+        sed -i '/vm.swappiness/d' "$sysctl_conf_file"
+    fi
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
 
     log_info 'set_memory_swap_to_4GB changed config, now reload'
