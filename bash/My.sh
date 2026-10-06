@@ -417,24 +417,30 @@ function update_system(){
     fi
     log_warn "update_system: ${codename} → ${target_codename}"
 
-    local sources_list=''
+    local main_list_file=''
     check_system_is_ubuntu
     if [ $? -ne 0 ]; then
-        sources_list='/etc/apt/sources.list'
+        main_list_file='/etc/apt/sources.list.d/debian.sources'
+        if [ ! -f "$main_list_file" ]; then
+            main_list_file='/etc/apt/sources.list'
+        fi
     else
-        sources_list='/etc/apt/sources.list.d/ubuntu.sources'
+        main_list_file='/etc/apt/sources.list.d/ubuntu.sources'
+        if [ ! -f "$main_list_file" ]; then
+            main_lmain_list_filest='/etc/apt/sources.list'
+        fi
     fi
 
-    backup_file "$sources_list"
+    backup_file "$main_list_file"
     if [ $? -ne 0 ]; then
         log_error 'update_system failed, backup_file failed'
         return 1
     fi
-    sed -i "s/${codename}/${target_codename}/g" "$sources_list"
-    log_warn "update_system modify file: \"$sources_list\""
+    sed -i "s/${codename}/${target_codename}/g" "$main_list_file"
+    log_warn "update_system modify main source list: \"$main_list_file\""
 
     while IFS= read -r -d '' list_file; do
-        if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$sources_list" ]; then
+        if [ "$list_file" == '' ] || [ ! -f "$list_file" ] || [ "$list_file" = "$main_list_file" ]; then
             continue
         fi
         if grep -q -F "$codename" "$list_file"; then
@@ -444,11 +450,11 @@ function update_system(){
                 return 1
             fi
             sed -i "s/${codename}/${target_codename}/g" "$list_file"
-            log_warn "update_system modify file: \"$list_file\""
+            log_warn "update_system modify source list: \"$list_file\""
         fi
     done < <(
         find '/etc/apt' \
-            -name '*.list' \
+            \( -name '*.list' -o -name '*.sources' \) \
             -type f \
             -print0
     )
