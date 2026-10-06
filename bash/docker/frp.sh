@@ -36,9 +36,6 @@ frp_dashboard_user='admin'
 frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
 frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
-frp_server_name=$(hostname)
-frp_server_ip=$(get_system_ip)
-
 run_uid_gid='65534:65534'
 
 function generate_frp_server_config(){
@@ -122,6 +119,7 @@ prepare_common_command
 
 
 # ———————————————————————— Install ————————————————————————
+
 check_command_exist 'docker'
 {
     if_error_then_exit 'docker not installed, please install docker first'
@@ -144,20 +142,23 @@ prepare_dir "$frp_data_dir" "$run_uid_gid"
     if_error_then_exit 'frp data directory creation failed, quit now'
 }
 
-generate_ssl_cert 'Frp' "$frp_ssl_key" "$frp_ssl_cert" "$run_uid_gid"
-{
-    if_error_then_exit 'frp ssl cert generate failed, quit now'
-}
-
 update_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '600'
 {
     if_error_then_exit 'frp server config file creation failed, quit now'
 }
 log_info "frp server config file: ${frp_config_file} (mode 600)"
 
+frp_server_name=$(hostname)
+frp_server_ip=$(get_system_ip)
+
 update_file "$frp_client_demo_config_file" "$(generate_frp_client_demo_config)" "$run_uid_gid" '600'
 {
     if_error_then_exit 'frp client demo config file creation failed, quit now'
+}
+
+generate_ssl_cert 'Frp' "$frp_ssl_key" "$frp_ssl_cert" "$run_uid_gid"
+{
+    if_error_then_exit 'frp ssl cert generate failed, quit now'
 }
 
 docker pull "$frp_image"

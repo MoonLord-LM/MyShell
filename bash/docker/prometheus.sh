@@ -59,10 +59,17 @@ redis_scheme='rediss'
 redis_password="${REDIS_PASSWORD:-}"
 redis_password_escaped=$(printf '%s' "$redis_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
-prometheus_server_name=$(hostname)
-prometheus_server_ip=$(get_system_ip)
-
 run_uid_gid='65534:65534'
+
+function prometheus_web_config_yml(){
+    cat <<EOF
+basic_auth_users:
+  ${prometheus_user}: ${prometheus_password_hash}
+tls_server_config:
+  cert_file: /etc/prometheus/certs/prometheus.crt
+  key_file: /etc/prometheus/certs/prometheus.key
+EOF
+}
 
 function prometheus_config_yml(){
     cat <<EOF
@@ -116,16 +123,6 @@ scrape_configs:
         labels:
           server: "${prometheus_server_name}"
           server_ip: "${prometheus_server_ip}"
-EOF
-}
-
-function prometheus_web_config_yml(){
-    cat <<EOF
-basic_auth_users:
-  ${prometheus_user}: ${prometheus_password_hash}
-tls_server_config:
-  cert_file: /etc/prometheus/certs/prometheus.crt
-  key_file: /etc/prometheus/certs/prometheus.key
 EOF
 }
 
@@ -204,26 +201,24 @@ prepare_dir "$prometheus_config_dir" "$run_uid_gid"
     if_error_then_exit 'prometheus config dir create failed, quit now'
 }
 
+update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
+{
+    if_error_then_exit 'prometheus scrape password file create failed, quit now'
+}
+
 prometheus_password_hash=$(htpasswd -nbB "$prometheus_user" "$prometheus_password" | cut -d: -f2)
 if [ -z "$prometheus_password_hash" ]; then
     log_error 'prometheus password hash generate failed, quit now'
     exit 1
 fi
 
-generate_ssl_cert 'Prometheus' "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file" "$run_uid_gid"
-{
-    if_error_then_exit 'prometheus ssl cert generate failed, quit now'
-}
-
 update_file "$prometheus_web_config_file" "$(prometheus_web_config_yml)" "$run_uid_gid" '600'
 {
     if_error_then_exit 'prometheus web config file create failed, quit now'
 }
 
-update_file "$prometheus_scrape_password_file" "$prometheus_password" "$run_uid_gid" '600'
-{
-    if_error_then_exit 'prometheus scrape password file create failed, quit now'
-}
+prometheus_server_name=$(hostname)
+prometheus_server_ip=$(get_system_ip)
 
 update_file "$prometheus_config_file" "$(prometheus_config_yml)" "$run_uid_gid" '644'
 {
@@ -233,6 +228,11 @@ update_file "$prometheus_config_file" "$(prometheus_config_yml)" "$run_uid_gid" 
 prepare_dir "$prometheus_data_dir" "$run_uid_gid"
 {
     if_error_then_exit 'prometheus data dir create failed, quit now'
+}
+
+generate_ssl_cert 'Prometheus' "$prometheus_ssl_key_file" "$prometheus_ssl_cert_file" "$run_uid_gid"
+{
+    if_error_then_exit 'prometheus ssl cert generate failed, quit now'
 }
 
 docker pull "$prometheus_image"
