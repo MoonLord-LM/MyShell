@@ -84,7 +84,7 @@ http {
     tcp_nopush on;
     tcp_nodelay on;
 
-    keepalive_timeout 300;
+    keepalive_timeout 300s;
     keepalive_requests 10000;
 
     types_hash_max_size 2048;
@@ -96,7 +96,8 @@ http {
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers off;
     ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 30m;
+    ssl_session_timeout 1800s;
+    ssl_session_tickets on;
 
     access_log /var/log/nginx/access.log;
 
@@ -121,7 +122,7 @@ function nginx_server_config(){
         nginx_not_found_files='/404.php /404.html'
     fi
     cat <<EOF
-map \$http_upgrade \$connection_upgrade { default upgrade; '' close; }
+map \$http_upgrade \$connection_upgrade { default upgrade; '' ''; }
 
 server {
     listen 80 so_keepalive=on default_server;
@@ -206,6 +207,14 @@ EOF
         local forward_key="${forward%%:*}"
         local forward_port="${forward#*:}"
         cat <<EOF
+upstream backend_${forward_key} {
+    server ${nginx_forward_server_ip}:${forward_port};
+    keepalive 100;
+    keepalive_timeout 300s;
+    keepalive_requests 10000;
+    proxy_ssl_session_reuse on;
+}
+
 server {
     listen 443 ssl so_keepalive=on;
     listen [::]:443 ssl so_keepalive=on;
@@ -218,7 +227,7 @@ server {
     server_name ~^[^.]*${forward_key}[^.]*\.[^.]+\.[^.]+;
 
     location / {
-        proxy_pass https://${nginx_forward_server_ip}:${forward_port};
+        proxy_pass https://backend_${forward_key};
         proxy_http_version 1.1;
         proxy_set_header Host \$http_host;
         proxy_set_header Connection \$connection_upgrade;
