@@ -905,28 +905,37 @@ function set_memory_swap_to_4GB(){
         log_warn 'set_memory_swap_to_4GB skip, swapon -a error'
     fi
 
+    log_info 'set_memory_swap_to_4GB end, show current value'
+    free -m
+}
+# 设置虚拟内存的使用倾向为 10（优先保留进程内存，而不是磁盘文件缓存）
+function set_memory_swap_prefer_process(){
+    log_info 'set_memory_swap_prefer_process begin, show current value'
+    sysctl 'vm.swappiness'
+
     local sysctl_conf_file='/etc/sysctl.d/99-MyShell-custom.conf'
     mkdir -p "$(dirname "$sysctl_conf_file")"
     backup_file "$sysctl_conf_file"
     if [ $? -ne 0 ]; then
-        log_error "set_memory_swap_to_4GB failed, backup_file \"$sysctl_conf_file\" error"
+        log_error "set_memory_swap_prefer_process failed, backup_file \"$sysctl_conf_file\" error"
         return 1
     fi
 
     if [ -f "$sysctl_conf_file" ]; then
         sed -i '/vm.swappiness/d' "$sysctl_conf_file"
     fi
+
     echo 'vm.swappiness = 10' >> "$sysctl_conf_file"
 
-    log_info 'set_memory_swap_to_4GB changed config, now reload'
+    log_info 'set_memory_swap_prefer_process changed config, now reload'
     sysctl --system
     if [ $? -ne 0 ]; then
-        log_error 'set_memory_swap_to_4GB failed, sysctl --system error'
+        log_error 'set_memory_swap_prefer_process failed, sysctl --system error'
         return 1
     fi
 
-    log_info 'set_memory_swap_to_4GB end, show current value'
-    free -m
+    log_info 'set_memory_swap_prefer_process ok, show current value'
+    sysctl 'vm.swappiness'
 }
 
 

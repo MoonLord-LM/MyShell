@@ -28,6 +28,7 @@ source <( wget -O- --timeout=10 --no-cache \
 | 设置 | `set_tcp_fastopen`               | 设置 TCP Fast Open 为 3（客户端+服务端） |
 | 设置 | `set_tcp_keepalive`              | 设置 TCP Keepalive 为每隔 15 秒发包检测，连续 3 次异常时关闭连接 |
 | 设置 | `set_memory_swap_to_4GB`         | 设置虚拟内存，保证物理内存 + 虚拟内存总量在 4GB 以上 |
+| 设置 | `set_memory_swap_prefer_process` | 设置虚拟内存的使用倾向，优先保留进程内存，而不是磁盘文件缓存 |
 | 设置 | `update_software`                | 更新软件 |
 | 设置 | `update_software_aggressive`     | 更新软件，更激进 |
 | 设置 | `update_system`                  | 系统版本升级（Debian 升级到 13，Ubuntu 升级到 26.04） |
