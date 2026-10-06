@@ -20,6 +20,7 @@ frp_image='fatedier/frps:v0.71.0'
 frp_config_dir='/etc/frp'
 frp_data_dir='/var/lib/frp'
 frp_config_file="${frp_config_dir}/frp.toml"
+frp_client_demo_config_file="${frp_config_dir}/frp-client-demo.toml"
 frp_log_file="${frp_data_dir}/frp.log"
 
 frp_ssl_key="${frp_config_dir}/frp.key"
@@ -67,7 +68,7 @@ webServer.tls.certFile = "${frp_ssl_cert}"
 EOF
 }
 
-function generate_frp_client_config(){
+function generate_frp_client_demo_config(){
     cat <<EOF
 serverAddr = "${frp_server_ip}"
 serverPort = ${frp_bind_port}
@@ -151,6 +152,11 @@ update_file "$frp_config_file" "$(generate_frp_server_config)" "$run_uid_gid" '6
 }
 log_info "frp server config file: ${frp_config_file} (mode 600)"
 
+update_file "$frp_client_demo_config_file" "$(generate_frp_client_demo_config)" "$run_uid_gid" '600'
+{
+    if_error_then_exit 'frp client demo config file creation failed, quit now'
+}
+
 docker pull "$frp_image"
 {
     if_error_then_exit 'frp server image pull failed, quit now'
@@ -192,9 +198,12 @@ log_important "frp ssl key file: ${frp_ssl_key}"
 log_important "frp ssl cert file: ${frp_ssl_cert}"
 
 echo
-log_success "==================== frpc.toml example - begin ===================="
-log_success "$(generate_frp_client_config)"
-log_success "==================== frpc.toml example - end ===================="
+log_important "frp client demo config file: ${frp_client_demo_config_file}"
+if [ -t 2 ]; then
+    log_success "==================== frp-client-demo.toml - begin ===================="
+    log_success "$(generate_frp_client_demo_config)"
+    log_success "==================== frp-client-demo.toml - end ===================="
+fi
 echo
 
 log_info "client run command: frpc.exe -c frpc.toml"
