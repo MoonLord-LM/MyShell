@@ -61,7 +61,7 @@ wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/install/redis.sh' | bash
 ```
 
-#### 安装 Nginx（监听端口 80、443，开启 Http 强制跳转 Https）
+#### 安装 Nginx（监听端口 80、443，开启 Http 强制跳转 Https，开启 HTTP/2）
 
 ```bash
 wget -O- --timeout=10 --no-cache \
