@@ -79,6 +79,7 @@ events {
 }
 
 http {
+    http2 on;
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
@@ -130,8 +131,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2 reuseport so_keepalive=15:15:3 default_server;
-    listen [::]:443 ssl http2 reuseport so_keepalive=15:15:3 default_server;
+    listen 443 ssl reuseport so_keepalive=15:15:3 default_server;
+    listen [::]:443 ssl reuseport so_keepalive=15:15:3 default_server;
 
     ssl_certificate_key "${nginx_ssl_key}";
     ssl_certificate "${nginx_ssl_cert}";
