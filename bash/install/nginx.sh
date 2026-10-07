@@ -194,6 +194,7 @@ EOF
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_buffering off;
+        proxy_request_buffering off;
     }
 EOF
     fi
@@ -231,6 +232,7 @@ server {
         proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_buffering off;
+        proxy_request_buffering off;
         proxy_ssl_name \$host;
         proxy_ssl_server_name on;
         proxy_ssl_session_reuse on;
