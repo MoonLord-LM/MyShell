@@ -23,6 +23,11 @@
 prepare_common_command 会安装大量软件，有些可能不是服务器需要的  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
+## nginx.sh 已知问题
+
+配置里使用的 `http2 on;` 需要 nginx 版本在 1.25.1 以上  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
 ## cockpit.sh 已知问题
 
 使用 echo > /etc/cockpit/disallowed-users 允许所有用户登录访问  
