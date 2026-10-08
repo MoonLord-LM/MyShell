@@ -602,6 +602,17 @@ function generate_ssl_cert(){
         return 1
     fi
 
+    backup_file "$ssl_key_file"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed, backup_file \"$ssl_key_file\" error"
+        return 1
+    fi
+    backup_file "$ssl_cert_file"
+    if [ $? -ne 0 ]; then
+        log_error "generate_ssl_cert failed, backup_file \"$ssl_cert_file\" error"
+        return 1
+    fi
+
     openssl req \
         -newkey rsa:4096 -nodes -keyout "$ssl_key_file" \
         -x509 -days 365000 -out "$ssl_cert_file" \
