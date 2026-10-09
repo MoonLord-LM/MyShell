@@ -117,6 +117,11 @@ log_warn "export V2RAY_CLIENT_ID='<uuid>'"
 log_warn 'if $V2RAY_WS_PATH is not set, a random ws path will be generated:'
 log_warn "export V2RAY_WS_PATH='<path>'"
 
+[[ "$v2ray_ws_path" == '/'* ]]
+{
+    if_error_then_exit "v2ray ws path \"${v2ray_ws_path}\" is invalid, it must start with \"/\", quit now"
+}
+
 tmp_file="/tmp/v2ray-install-release_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.sh"
 wget -O "$tmp_file" --timeout=10 --no-cache 'https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh'
 {
