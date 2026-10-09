@@ -137,7 +137,7 @@ log_important "portainer server port: ${portainer_server_port}"
 
 log_important "portainer dashboard url: https://${portainer_server_ip}:${portainer_server_port}"
 log_important "portainer user: ${portainer_admin_user}"
-log_secret "portainer password: ${portainer_admin_password}"
+log_important "portainer password: ${portainer_admin_password}"
 
 log_important "portainer volume: ${portainer_volume_name}"
 log_important "portainer ssl cert: ${portainer_sslcert}"

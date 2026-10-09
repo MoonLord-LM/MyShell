@@ -130,11 +130,11 @@ ss_server_ip=$(get_system_ip)
 log_important "shadowsocks server ip: ${ss_server_ip}"
 log_important "shadowsocks port: ${ss_server_port}"
 log_important "shadowsocks method: ${ss_method}"
-log_secret "shadowsocks password: ${ss_password}"
+log_important "shadowsocks password: ${ss_password}"
 log_important "shadowsocks config file: ${ss_server_config_file}"
 
 ss_share_url='ss://'$(printf '%s' "${ss_method}:${ss_password}" | base64 -w 0 | tr '+' '-' | tr '/' '_' | tr -d '=')'@'${ss_server_ip}':'${ss_server_port}'#'${ss_server_ip}
-log_secret "shadowsocks share url: ${ss_share_url}"
+log_important "shadowsocks share url: ${ss_share_url}"
 
 
 

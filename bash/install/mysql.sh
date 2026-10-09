@@ -165,7 +165,7 @@ mysql_server_ip=$(get_system_ip)
 log_important "mysql server ip: ${mysql_server_ip}"
 log_important "mysql server port: ${mysql_server_port}"
 log_important "mysql user: ${mysql_user}"
-log_secret "mysql password: ${mysql_password}"
+log_important "mysql password: ${mysql_password}"
 log_important "mysql ssl cert: ${mysql_ssl_cert}"
 
 

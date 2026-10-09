@@ -70,24 +70,6 @@ function log_important(){
     check_parameter "$1" || return 1
     my_log '1;35' "$1"
 }
-# 输出紫色的敏感信息（$1），仅在交互模式中完整展示，在非交互模式中隐藏冒号之后的部分
-function log_secret(){
-    check_parameter "$1" || return 1
-    local message="$1"
-    local hidden_tag='/*** (hidden in non-interactive mode) ***/'
-
-    if [ -t 2 ]; then
-        my_log '1;35' "$message"
-        return 0
-    fi
-
-    local prefix="${message%%':'*}"
-    if [ "$prefix" == "$message" ]; then
-        my_log '1;35' "$hidden_tag"
-    else
-        my_log '1;35' "${prefix}: ${hidden_tag}"
-    fi
-}
 # 输出浅蓝色的信息（$1）
 function log_notice(){
     check_parameter "$1" || return 1
@@ -127,7 +109,7 @@ function reset_root_password(){
         return 1
     fi
 
-    log_secret "reset_root_password ok, new root password is: ${root_password}"
+    log_important "reset_root_password ok, new root password is: ${root_password}"
 }
 
 
