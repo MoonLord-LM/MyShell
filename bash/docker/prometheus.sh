@@ -299,6 +299,9 @@ if [ $? -ne 0 ]; then
 else
     log_info 'node_exporter container already exists, restart'
     docker restart "$node_exporter_container_name"
+    if [ $? -ne 0 ]; then
+        log_error 'node_exporter container restart failed, skip'
+    fi
 fi
 
 docker inspect "$nginx_exporter_container_name" >'/dev/null' 2>&1
@@ -325,6 +328,9 @@ if [ $? -ne 0 ]; then
 else
     log_info 'nginx_exporter container already exists, restart'
     docker restart "$nginx_exporter_container_name"
+    if [ $? -ne 0 ]; then
+        log_error 'nginx_exporter container restart failed, skip'
+    fi
 fi
 
 if [ "$mysql_password" != '' ]; then
@@ -366,6 +372,9 @@ EOF
         else
             log_info 'mysqld_exporter container already exists, restart'
             docker restart "$mysqld_exporter_container_name"
+            if [ $? -ne 0 ]; then
+                log_error 'mysqld_exporter container restart failed, skip'
+            fi
         fi
     fi
 else
@@ -417,6 +426,9 @@ EOF
         else
             log_info 'redis_exporter container already exists, restart'
             docker restart "$redis_exporter_container_name"
+            if [ $? -ne 0 ]; then
+                log_error 'redis_exporter container restart failed, skip'
+            fi
         fi
     fi
 else
