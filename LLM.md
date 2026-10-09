@@ -60,6 +60,11 @@ Nginx 设置为将 openlist 相关的域名转发到 frp 的 https 端口 17443 
 方便用户本地启动 openlist，连接 frp，并通过 nginx 绑定域名，支持域名访问  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
+## docker 已知问题
+
+除了 frp.sh 使用 'fatedier/frps:v0.71.0' 的固定版本镜像，其它 sh 文件均使用 'latest' 的最新版本镜像  
+主要原因是 frp 官方镜像不提供 'latest' 版本，当前 0.71.0 就是最新版本  
+
 ## resource 已知问题
 
 这里保存一些配置示例，仅用于参考  
