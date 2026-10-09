@@ -101,14 +101,14 @@ wget -O "$tmp_file" --timeout=120 --no-cache 'https://getcomposer.org/installer'
 {
     if_error_then_exit 'composer download failed, quit now'
 }
-php "$tmp_file" --install-dir='/usr/local/bin' --filename='composer'
+"php${php_version}" "$tmp_file" --install-dir='/usr/local/bin' --filename='composer'
 {
     if_error_then_exit 'composer install failed, quit now'
 }
 rm -f "$tmp_file"
 
-log_important "php version: $(php -r 'echo PHP_VERSION;')"
-log_important "php extensions: $(php -m | wc -l)"
+log_important "php version: $(php${php_version} -r 'echo PHP_VERSION;')"
+log_important "php extensions: $(php${php_version} -m | wc -l)"
 log_important "php fpm service: ${php_fpm_service}"
 log_important "php fastcgi_pass: unix:${php_fpm_listen};"
 

@@ -557,7 +557,11 @@ function update_file(){
         fi
     fi
 
-    printf '%s\n' "$target_content" > "$target_file"
+    if [[ "$target_content" == *$'\n'* ]]; then
+        printf '%s\n' "$target_content" > "$target_file"
+    else
+        printf '%s' "$target_content" > "$target_file"
+    fi
     if [ $? -ne 0 ]; then
         log_error "update_file failed, write file \"$target_file\" error"
         return 1
