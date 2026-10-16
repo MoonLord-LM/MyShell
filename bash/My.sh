@@ -321,11 +321,12 @@ function prepare_common_command(){
     check_command_exist 'openssl' || install_software 'openssl'
     check_command_exist 'htpasswd' || install_software 'apache2-utils'
 
-    check_command_exist 'python3' || install_software 'python3'
-    check_command_exist 'java' || install_software 'openjdk-17-jre-headless'
-
     check_command_exist 'git' || install_software 'git'
     check_command_exist 'mvn' || install_software 'maven'
+    check_command_exist 'rsync' || install_software 'rsync'
+
+    check_command_exist 'python3' || install_software 'python3'
+    check_command_exist 'java' || install_software 'openjdk-17-jre-headless'
 
     check_command_exist 'make' || install_software 'make'
     check_command_exist 'cmake' || install_software 'cmake'
