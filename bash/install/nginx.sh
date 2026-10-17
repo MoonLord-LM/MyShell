@@ -274,16 +274,6 @@ if [ $? -eq 0 ]; then
     exit 0
 fi
 
-install_software 'nginx'
-{
-    if_error_then_exit 'nginx install failed, quit now'
-}
-
-nginx -v
-{
-    if_error_then_exit 'nginx version check failed, quit now'
-}
-
 generate_ssl_cert 'Nginx' "$nginx_ssl_key" "$nginx_ssl_cert"
 {
     if_error_then_exit 'nginx ssl cert generate failed, quit now'
@@ -310,6 +300,16 @@ update_file "$nginx_default_config_file" "$(nginx_server_config)"
     if_error_then_exit 'nginx default config write failed, quit now'
 }
 cat "$nginx_default_config_file"
+
+install_software 'nginx'
+{
+    if_error_then_exit 'nginx install failed, quit now'
+}
+
+nginx -v
+{
+    if_error_then_exit 'nginx version check failed, quit now'
+}
 
 nginx -t
 {
