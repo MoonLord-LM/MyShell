@@ -179,6 +179,7 @@ EOF
         }
 
         include snippets/fastcgi-php.conf;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_pass unix:${php_fpm_listen};
     }
 EOF
