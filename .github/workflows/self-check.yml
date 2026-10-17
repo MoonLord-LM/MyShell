@@ -33,6 +33,9 @@ jobs:
       - name: Commit and push
         if: github.event_name != 'pull_request'
         run: |
+          git config --local core.autocrlf false
+          git config --local core.safecrlf false
+          git config --local core.ignorecase false
           git add -A
           if ! git diff --cached --quiet; then
             git config --local user.name "github-actions[bot]"
