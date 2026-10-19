@@ -141,7 +141,7 @@ wget -O- --timeout=10 --no-cache \
 'https://raw.githubusercontent.com/MoonLord-LM/MyShell/master/bash/docker/prometheus.sh' | bash
 ```
 
-## [目录结构]
+## [工程结构]
 
 ```
 MyShell/
