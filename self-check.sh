@@ -4,6 +4,14 @@
 
 echo 'MyShell self-check begin'
 
+# 设置 Git 仓库的本地配置
+git config --local core.autocrlf false
+git config --local core.safecrlf false
+git config --local core.ignorecase false
+git config --local core.quotepath false
+git config --local i18n.logoutputencoding utf-8
+git config --local i18n.commitencoding utf-8
+
 while IFS= read -r -d '' file; do
     if [ "$file" == '' ] || [ ! -f "$file" ]; then
         continue
