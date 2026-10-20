@@ -8,9 +8,6 @@ on:
   push:
     branches: [master]
     paths: ['**/*.sh', 'self-check.sh', '.github/workflows/self-check.yml']
-  pull_request:
-    branches: [master]
-    paths: ['**/*.sh', 'self-check.sh', '.github/workflows/self-check.yml']
 
 permissions:
   contents: write
@@ -23,6 +20,17 @@ jobs:
   self-check:
     runs-on: ubuntu-latest
     steps:
+      - name: Git Config
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.safecrlf false
+          git config --global core.ignorecase false
+          git config --global core.quotepath false
+          git config --global i18n.logoutputencoding utf-8
+          git config --global i18n.commitencoding utf-8
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -32,16 +40,7 @@ jobs:
           bash self-check.sh
 
       - name: Commit and push
-        if: github.event_name != 'pull_request'
         run: |
-          git config --local core.autocrlf false
-          git config --local core.safecrlf false
-          git config --local core.ignorecase false
-          git config --local core.quotepath false
-          git config --local i18n.logoutputencoding utf-8
-          git config --local i18n.commitencoding utf-8
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "auto-fix by [ self-check.sh ]"
