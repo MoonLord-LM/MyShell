@@ -176,7 +176,10 @@ function get_system_ip(){
 
 
 
-# 判断指定命令（$1）是否存在
+# Check whether command name or path $1 is available to the shell, including
+# builtins and functions. Return 1 if $1 is empty or unavailable.
+# Report results to stderr; a failed package lookup is nonfatal.
+# For an available command, return the diagnostic write status (normally 0).
 function check_command_exist(){
     check_parameter "$1" || return 1
     local cmd="$1"
