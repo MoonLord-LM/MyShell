@@ -30,10 +30,10 @@ frp_bind_port=17000
 frp_vhost_https_port=17443
 frp_dashboard_port=17500
 
-frp_token="${FRP_TOKEN:-$(head -c 32 /dev/urandom | base64 -w 0)}"
+frp_token="${FRP_TOKEN:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 frp_token_escaped=$(printf '%s' "$frp_token" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 frp_dashboard_user='admin'
-frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 /dev/urandom | base64 -w 0)}"
+frp_dashboard_password="${FRP_DASHBOARD_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 frp_dashboard_password_escaped=$(printf '%s' "$frp_dashboard_password" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
 
 run_uid_gid='65534:65534'
@@ -113,7 +113,6 @@ if [ $? -ne 0 ]; then
 fi
 rm -f "$tmp_file"
 prepare_common_command
-
 
 
 
