@@ -105,7 +105,7 @@ update_file "${cockpit_socket_conf_file}" "$(cockpit_socket_override)"
 systemctl daemon-reload
 
 # every system user can log in
-echo > /etc/cockpit/disallowed-users
+echo > '/etc/cockpit/disallowed-users'
 
 generate_ssl_cert 'Cockpit' "$cockpit_ssl_key" "$cockpit_ssl_cert" "$run_uid_gid"
 {
