@@ -24,8 +24,8 @@ portainer_docker_socket_file='/var/run/docker.sock'
 portainer_admin_user='admin'
 portainer_admin_password="${PORTAINER_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
 
-portainer_sslkey='/etc/portainer/certs/portainer.key'
-portainer_sslcert='/etc/portainer/certs/portainer.crt'
+portainer_ssl_key='/etc/portainer/certs/portainer.key'
+portainer_ssl_cert='/etc/portainer/certs/portainer.crt'
 
 run_uid_gid='0:0'
 
@@ -101,7 +101,7 @@ if [ -z "$portainer_admin_password_hash" ]; then
     exit 1
 fi
 
-generate_ssl_cert 'Portainer' "$portainer_sslkey" "$portainer_sslcert" "$run_uid_gid"
+generate_ssl_cert 'Portainer' "$portainer_ssl_key" "$portainer_ssl_cert" "$run_uid_gid"
 {
     if_error_then_exit 'portainer ssl cert generate failed, quit now'
 }
@@ -118,8 +118,8 @@ docker run -d \
     -p "$portainer_server_port:9443" \
     -v "$portainer_docker_socket_file:/var/run/docker.sock" \
     -v "$portainer_volume_name:/data" \
-    -v "$portainer_sslcert:/certs/portainer.crt:ro" \
-    -v "$portainer_sslkey:/certs/portainer.key:ro" \
+    -v "$portainer_ssl_cert:/certs/portainer.crt:ro" \
+    -v "$portainer_ssl_key:/certs/portainer.key:ro" \
     "$portainer_image" \
     --sslcert /certs/portainer.crt \
     --sslkey /certs/portainer.key \
@@ -140,8 +140,8 @@ log_important "portainer user: ${portainer_admin_user}"
 log_important "portainer password: ${portainer_admin_password}"
 
 log_important "portainer volume: ${portainer_volume_name}"
-log_important "portainer ssl cert: ${portainer_sslcert}"
-log_important "portainer ssl key: ${portainer_sslkey}"
+log_important "portainer ssl cert: ${portainer_ssl_cert}"
+log_important "portainer ssl key: ${portainer_ssl_key}"
 
 
 
