@@ -96,18 +96,12 @@ else
     log_info "portainer volume reuse: ${portainer_volume_name}"
 fi
 
-portainer_admin_password_hash=$(htpasswd -nbB "$portainer_admin_user" "$portainer_admin_password" | cut -d: -f2)
-if [ -z "$portainer_admin_password_hash" ]; then
-    log_error 'portainer admin password hash generate failed, quit now'
-    exit 1
-fi
-
 prepare_dir "$(dirname "$portainer_admin_password_file")" "$run_uid_gid"
 {
     if_error_then_exit 'portainer secrets dir create failed, quit now'
 }
 
-update_file "$portainer_admin_password_file" "$portainer_admin_password_hash" "$run_uid_gid" '600'
+update_file "$portainer_admin_password_file" "$portainer_admin_password" "$run_uid_gid" '600'
 {
     if_error_then_exit 'portainer password file create failed, quit now'
 }
@@ -133,8 +127,8 @@ docker run -d \
     -v "$portainer_ssl_key:/certs/portainer.key:ro" \
     -v "$portainer_admin_password_file:/run/secrets/portainer_admin_password:ro" \
     "$portainer_image" \
-    --sslcert /certs/portainer.crt \
-    --sslkey /certs/portainer.key \
+    --tlscert /certs/portainer.crt \
+    --tlskey /certs/portainer.key \
     --admin-password-file /run/secrets/portainer_admin_password
 {
     if_error_then_exit 'portainer container start failed, quit now'
