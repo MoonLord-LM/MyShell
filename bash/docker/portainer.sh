@@ -23,6 +23,7 @@ portainer_docker_socket_file='/var/run/docker.sock'
 
 portainer_admin_user='admin'
 portainer_admin_password="${PORTAINER_PASSWORD:-$(head -c 32 '/dev/urandom' | base64 -w 0)}"
+portainer_admin_password_file='/etc/portainer/secrets/admin_password'
 
 portainer_ssl_key='/etc/portainer/certs/portainer.key'
 portainer_ssl_cert='/etc/portainer/certs/portainer.crt'
@@ -101,6 +102,16 @@ if [ -z "$portainer_admin_password_hash" ]; then
     exit 1
 fi
 
+prepare_dir "$(dirname "$portainer_admin_password_file")" "$run_uid_gid"
+{
+    if_error_then_exit 'portainer secrets dir create failed, quit now'
+}
+
+update_file "$portainer_admin_password_file" "$portainer_admin_password_hash" "$run_uid_gid" '600'
+{
+    if_error_then_exit 'portainer password file create failed, quit now'
+}
+
 generate_ssl_cert 'Portainer' "$portainer_ssl_key" "$portainer_ssl_cert" "$run_uid_gid"
 {
     if_error_then_exit 'portainer ssl cert generate failed, quit now'
@@ -120,10 +131,11 @@ docker run -d \
     -v "$portainer_volume_name:/data" \
     -v "$portainer_ssl_cert:/certs/portainer.crt:ro" \
     -v "$portainer_ssl_key:/certs/portainer.key:ro" \
+    -v "$portainer_admin_password_file:/run/secrets/portainer_admin_password:ro" \
     "$portainer_image" \
     --sslcert /certs/portainer.crt \
     --sslkey /certs/portainer.key \
-    --admin-password "$portainer_admin_password_hash"
+    --admin-password-file /run/secrets/portainer_admin_password
 {
     if_error_then_exit 'portainer container start failed, quit now'
 }
