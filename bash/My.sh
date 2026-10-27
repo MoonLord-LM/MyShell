@@ -9,7 +9,7 @@
 
 
 
-# 检查函数入参（最多9个）必须全都不为空字符串，否则报错
+# 检查函数入参，必须全都不为空字符串，否则报错
 function check_parameter(){
     if [ "${FUNCNAME[1]}" != '' ]; then
         local current_function="${FUNCNAME[1]}"
