@@ -7,6 +7,7 @@
 
 操作系统，只需要支持 Debian 和 Ubuntu 系统的较新版本  
 执行用户，只需要用户有权限执行命令即可，不需要一定是 root 用户  
+代码中不需要做 root 用户检测，无权限执行时报错即可  
 
 ## My.sh - update_system 已知问题
 
@@ -21,6 +22,11 @@
 ## My.sh - prepare_common_command 已知问题
 
 prepare_common_command 会安装大量软件，有些可能不是服务器需要的  
+为了代码的简洁性，和操作的简单化，暂不修改  
+
+## My.sh - install_software 已知问题
+
+重复调用 install_software 会重复执行 apt update -y，是没必要的操作  
 为了代码的简洁性，和操作的简单化，暂不修改  
 
 ## nginx.sh 已知问题
@@ -69,6 +75,12 @@ Nginx 设置为将 openlist 相关的域名转发到 frp 的 https 端口 17443 
 
 这里保存一些配置示例，仅用于参考  
 不需要对这个目录进行代码分析  
+
+## 临时文件问题
+
+目前大量使用 `tmp_file="/tmp/MyShell_My.sh_${RANDOM}_${RANDOM}_${RANDOM}_${RANDOM}.sh"` 的临时文件写法  
+理论上可以被预测，存在被利用风险  
+为了代码的简洁性，和操作的简单化，暂不修改  
 
 
 
