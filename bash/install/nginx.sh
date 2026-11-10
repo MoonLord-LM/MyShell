@@ -116,10 +116,28 @@ function nginx_server_config(){
     local php_fpm_listen=$(get_php_fpm_listen)
     local v2ray_forward=$(get_v2ray_ws_forward)
     local nginx_index='index.html index.htm index.nginx-debian.html'
-    local nginx_not_found_files='/404.html'
+    local nginx_not_found_config='location @not_found {
+        try_files /404.html =404;
+    }'
     if [ "$php_fpm_listen" != '' ]; then
         nginx_index='index.php index.html'
-        nginx_not_found_files='/404.php /404.html'
+        nginx_not_found_config='location @not_found {
+        try_files /404.php @not_found_html;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Access-Control-Allow-Origin "*" always;
+        add_header Access-Control-Allow-Methods "GET,POST,OPTIONS,HEAD,PUT,DELETE" always;
+        add_header Access-Control-Allow-Headers "Content-Type,X-Requested-With" always;
+        add_header X-Content-Type-Options nosniff always;
+
+        include fastcgi.conf;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_pass unix:'"${php_fpm_listen}"';
+    }
+
+    location @not_found_html {
+        try_files /404.html =404;
+    }'
     fi
     cat <<EOF
 map \$http_upgrade \$connection_upgrade { default upgrade; '' ''; }
@@ -147,9 +165,7 @@ server {
 
     error_page 404 =404 @not_found;
 
-    location @not_found {
-        try_files ${nginx_not_found_files} =404;
-    }
+    ${nginx_not_found_config}
 
     location / {
         try_files \$uri \$uri/ =404;
