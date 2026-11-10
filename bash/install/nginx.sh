@@ -163,7 +163,7 @@ server {
 
     index ${nginx_index};
 
-    error_page 404 =404 @not_found;
+    error_page 404 = @not_found;
 
     ${nginx_not_found_config}
 
