@@ -183,7 +183,7 @@ EOF
     if [ "$php_fpm_listen" != '' ]; then
         cat <<EOF
 
-    location ~ \.php\$ {
+    location ~ \.php(/|\$) {
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header Access-Control-Allow-Origin "*" always;
         add_header Access-Control-Allow-Methods "GET,POST,OPTIONS,HEAD,PUT,DELETE" always;
